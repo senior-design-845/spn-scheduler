@@ -18,14 +18,15 @@ connection.connect(function(err){
 });
 
 app.get('/', function(req, res) {
-       connection.query('call dailyRoomReservations(1, \'2019-01-22 00:00:00\',\'2019-01-23 00:00:00\')', function(err, data) {
+        //call dailyRoomReservations(1, '2019-01-22 00:00:00','2019-01-23 00:00:00)
+       connection.query('call calendarDisplay(1,1)', function(err, data) {
            (err)? res.send(err) : res.json({schedule :data});
        });
 });
 
 app.get('/reservation', function (req, res) {
 
-    connection.query('call dailyRoomReservations(1, \'2019-01-22 00:00:00\',\'2019-01-23 00:00:00\')', function(error, results, fields){
+    connection.query('call calendarDisplay(1,1)', function(error, results, fields){
         if(error) throw error;
         console.log('Connected');
         res.send(results[0])
