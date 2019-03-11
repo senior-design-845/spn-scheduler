@@ -1,25 +1,24 @@
 import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
 
 class Reservations extends Component {
     constructor(props) {
         super(props);
         this.state = {reservations: []};
-        fetch('http://localhost:3000/reservation')
+    }
+    componentDidMount(){
+        fetch('/reservation')
             .then(response => response.json())
-            .then(reservations => (this.setState({reservations})))
+            .then(reservations_ => (this.setState({reservations: reservations_})))
     }
     render(){
         return(
             <div>
                 {this.state.reservations.map(record => (
-                    <p key={record.recordID}>Start: {record.start_datetime}</p>
+                    <p>Start: {record.start_datetime}   End: {record.end_datetime}</p>
                 ))}
             </div>
         );
     }
 }
-ReactDOM.render(
-    <Reservations />,
-    document.getElementById('root')
-);
+
+export default Reservations;

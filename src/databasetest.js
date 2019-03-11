@@ -1,3 +1,5 @@
+//Run with node.js
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
@@ -11,26 +13,25 @@ const connection = mysql.createConnection({
 const app = express();
 
 connection.connect(function(err){
-    (err)? console.log(err) : console.log(connection);
+    if(err)
+        console.log(err);
 });
 
 app.get('/', function(req, res) {
        connection.query('call dailyRoomReservations(1, \'2019-01-22 00:00:00\',\'2019-01-23 00:00:00\')', function(err, data) {
-           (err)? res.send(err) : res.json({schedule :data[0]});
+           (err)? res.send(err) : res.json({schedule :data});
        });
 });
 
 app.get('/reservation', function (req, res) {
-    connection.connect();
 
     connection.query('call dailyRoomReservations(1, \'2019-01-22 00:00:00\',\'2019-01-23 00:00:00\')', function(error, results, fields){
         if(error) throw error;
         console.log('Connected');
-        res.send(results)
+        res.send(results[0])
     });
-    connection.end();
 });
 
 app.listen(4000, () => {
-    console.log('g');
+    console.log('Running on port 4000');
 });
