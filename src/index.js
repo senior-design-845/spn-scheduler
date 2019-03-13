@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 //import App from './App.js'
-import Reservations from './reactTest.js'
+import Reservations from './Calendar.js'
 import * as serviceWorker from './serviceWorker';
 
 //Changed App to Reservations for testing
