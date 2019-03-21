@@ -5,7 +5,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 BigCalendar.momentLocalizer(moment);
 
-class App extends Component {
+class calendarApp extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -48,30 +48,30 @@ class App extends Component {
         });
 
         return(
-        <div>
-            <header>{}</header>
-            <div style={{height: 700}}>
-                <BigCalendar
-                    events={temp}
-                    step={30}
-                    defaultView='week'
-                    views={['month','week','day']}
-                    defaultDate={new Date()}
-                    startAccessor = 'start'
-                    endAccessor = 'end'
-                />
+            <div>
+                <header>{}</header>
+                <div style={{height: 700}}>
+                    <BigCalendar
+                        events={temp}
+                        step={30}
+                        defaultView='week'
+                        views={['month','week','day']}
+                        defaultDate={new Date()}
+                        startAccessor = 'start'
+                        endAccessor = 'end'
+                    />
+                </div>
             </div>
-        </div>
         )
 
     }
 
 
     render() {
-    return (
-      this.calendar()
-    );
-  }
+        return (
+            this.calendar()
+        );
+    }
 }
 
-export default App;
+export default calendarApp;

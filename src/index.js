@@ -2,12 +2,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import calendarApp from './CalendarTest.js'
 //import App from './App.js'
-import Reservations from './Calendar.js'
+
 import * as serviceWorker from './serviceWorker';
 
-//Changed App to Reservations for testing
-ReactDOM.render(<Reservations />, document.getElementById('root'));
+ReactDOM.render(<calendarApp />, document.getElementById('root'));
+//Testing BigCalendar
+//ReactDOM.render(<createCalendar />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
