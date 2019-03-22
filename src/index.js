@@ -2,12 +2,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import calendarApp from './CalendarTest.js'
-//import App from './App.js'
+import App from './App.js'
 
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(<calendarApp />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));
 //Testing BigCalendar
 //ReactDOM.render(<createCalendar />, document.getElementById('root'));
 
