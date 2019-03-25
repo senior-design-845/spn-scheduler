@@ -99,7 +99,6 @@ class App extends Component {
     render() {
     return (
         <div>
-            <heading></heading>
             {this.state.uniqueRooms.map((e) => (
                 <button style={{backgroundColor: e.color }} onClick={() => this.handleClick(e.id) }>
                     {e.title + ': '}{ this.state.buttonToggle[e.id] ? 'ON' : 'OFF'}

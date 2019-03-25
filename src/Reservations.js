@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import DatePicker from 'react-datepicker'
+import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import "./Reservations.css";
 
 class Reservations extends Component {
     constructor(props){
@@ -39,13 +40,14 @@ class Reservations extends Component {
     render(){
         return(
             <div>
-                <button onClick={this.showRoomMenu}>
+                <div className="dropdown">
+                <button class="dropbtn" onClick={this.showRoomMenu}>
                     Show Rooms
                 </button>
 
                 {
                     this.state.showRoomMenu ? (
-                        <div className="menu"
+                        <div className="dropdown-content"
                             ref={(element) => {
                                 this.dropdownMenu = element;
                             }}
@@ -56,7 +58,8 @@ class Reservations extends Component {
                         </div>
                     ) : ( null )
                 }
-
+                </div>
+                <br/><br/><br/>
                 <DatePicker
                     selected={this.state.startDate}
                     onChange={this.handleChange}
