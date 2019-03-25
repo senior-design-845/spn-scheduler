@@ -20,9 +20,11 @@ class App extends Component {
     }
 
     componentDidMount(){
+        //Get the room reservation data from the server
         fetch('/reservation')
             .then(response => response.json())
             .then(reservations => {
+                //Parse through the data and update the state
                 let uniquerooms = [];
                 let temp = [];
                 let buttons = [];
@@ -30,6 +32,7 @@ class App extends Component {
                 reservations.map(record => {
                     let roomid = this.search(record.room_name, uniquerooms);
                     if( roomid === -1 ) {
+                        //This event is in a new room, so add the room to uniqueRooms and push a new array of events into roomEvents
                         uniquerooms.push({
                             id: uniquerooms.length,
                             title: record.room_name,
@@ -38,8 +41,8 @@ class App extends Component {
                         buttons.push(true);
 
                         temp.push([{
-                            'id': uniquerooms.length,
-                            'title': 'Event ' + temp.length+1,
+                            'id': uniquerooms.length-1,
+                            'title': record.title,
                             'start': new Date( Date.parse(record.start_datetime) ),
                             'end': new Date (Date.parse(record.end_datetime) )
                         }])
@@ -47,7 +50,7 @@ class App extends Component {
                     else {
                         temp[roomid].push({
                             'id': roomid,
-                            'title': 'Event ' + temp.length + 1,
+                            'title': record.title,
                             'start': new Date(Date.parse(record.start_datetime)),
                             'end': new Date(Date.parse(record.end_datetime))
 
@@ -55,6 +58,7 @@ class App extends Component {
                     }
                 });
 
+                //Pull all the events from roomEvents' arrays and add them to events as default calendar view
                 let totaltemp = temp[0];
                 for(let i=1; i<temp.length; i++){
                     totaltemp = totaltemp.concat(temp[i])

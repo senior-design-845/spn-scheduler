@@ -3,10 +3,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App.js'
+import Reservations from './Reservations'
 
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<Reservations />, document.getElementById('root'));
 //Testing BigCalendar
 //ReactDOM.render(<createCalendar />, document.getElementById('root'));
 
