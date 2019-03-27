@@ -1,26 +1,127 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import BigCalendar from 'react-big-calendar'
+import moment from 'moment'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
+
+BigCalendar.momentLocalizer(moment);
 
 class App extends Component {
-  render() {
+    constructor(props) {
+        super(props);
+        this.state = {
+            reservations: [],
+            uniqueRooms: [],
+            events: [],
+            roomEvents: [],
+            buttonToggle: []
+        };
+
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    componentDidMount(){
+        //Get the room reservation data from the server
+        fetch('/reservation')
+            .then(response => response.json())
+            .then(reservations => {
+                //Parse through the data and update the state
+                let uniquerooms = [];
+                let temp = [];
+                let buttons = [];
+
+                reservations.map(record => {
+                    let roomid = this.search(record.room_name, uniquerooms);
+                    if( roomid === -1 ) {
+                        //This event is in a new room, so add the room to uniqueRooms and push a new array of events into roomEvents
+                        uniquerooms.push({
+                            id: uniquerooms.length,
+                            title: record.room_name,
+                            color: '#'+Math.floor(Math.random()*16777215).toString(16)
+                        });
+                        buttons.push(true);
+
+                        temp.push([{
+                            'id': uniquerooms.length-1,
+                            'title': record.title,
+                            'start': new Date( Date.parse(record.start_datetime) ),
+                            'end': new Date (Date.parse(record.end_datetime) )
+                        }])
+                    }
+                    else {
+                        temp[roomid].push({
+                            'id': roomid,
+                            'title': record.title,
+                            'start': new Date(Date.parse(record.start_datetime)),
+                            'end': new Date(Date.parse(record.end_datetime))
+
+                        });
+                    }
+                });
+
+                //Pull all the events from roomEvents' arrays and add them to events as default calendar view
+                let totaltemp = temp[0];
+                for(let i=1; i<temp.length; i++){
+                    totaltemp = totaltemp.concat(temp[i])
+                }
+                this.setState({reservations: reservations, events: totaltemp, roomEvents: temp, uniqueRooms: uniquerooms, buttonToggle: buttons})
+            });
+    }
+
+    handleClick(i){
+        //Switch this room to OFF
+        let toggleTemp = this.state.buttonToggle
+        toggleTemp[i] = !toggleTemp[i]
+
+        //Rebuild the events shown with those that are ON
+        let temp = [];
+        for(let i =0; i< toggleTemp.length; i++){
+            if(toggleTemp[i]){
+                temp = temp.concat(this.state.roomEvents[i]);
+            }
+        }
+
+        this.setState({
+            buttonToggle: toggleTemp,
+            events: temp
+        });
+    }
+
+    search(nameKey, myArray){
+        for(let i=0; i<myArray.length; i++){
+            if(myArray[i].title === nameKey)
+                return myArray[i].id;
+        }
+        return -1;
+    }
+
+
+
+    render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+        <div>
+            {this.state.uniqueRooms.map((e) => (
+                <button style={{backgroundColor: e.color }} onClick={() => this.handleClick(e.id) }>
+                    {e.title + ': '}{ this.state.buttonToggle[e.id] ? 'ON' : 'OFF'}
+                </button>
+            ))}
+            <br/><br/>
+            <div style={{height: 700}}>
+                <BigCalendar
+                    events={this.state.events}
+                    step={30}
+                    defaultView='week'
+                    views={['month','week','day']}
+                    defaultDate={new Date()}
+                    startAccessor = 'start'
+                    endAccessor = 'end'
+                    eventPropGetter={(event) => ({
+                        style: {
+                            backgroundColor: this.state.uniqueRooms[event.id].color
+                        }
+                    })}
+                />
+            </div>
+        </div>
     );
   }
 }

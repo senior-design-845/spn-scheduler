@@ -18,7 +18,6 @@ connection.connect(function(err){
 });
 
 app.get('/', function(req, res) {
-        //call dailyRoomReservations(1, '2019-01-22 00:00:00','2019-01-23 00:00:00)
        connection.query('call calendarDisplay(1,1)', function(err, data) {
            (err)? res.send(err) : res.json({schedule :data});
        });
@@ -33,6 +32,6 @@ app.get('/reservation', function (req, res) {
     });
 });
 
-app.listen(4000, () => {
-    console.log('Running on port 4000');
+app.listen(5000, () => {
+    console.log('Running on port 5000');
 });

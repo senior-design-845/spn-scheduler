@@ -5,10 +5,11 @@
   "dependencies": {
     "interact.js": "^1.2.8",
     "moment": "^2.24.0",
-    "new-react-calendar-timeline": "^2.2.0",
     "react": "^16.8.4",
+    "react-big-calendar": "^0.19.2",
+    "react-datepicker": "^2.2.0",
     "react-dom": "^16.8.4",
-    "react-scripts": "2.1.5"
+    "react-scripts": "^2.1.8"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -16,7 +17,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:4000/",
+  "proxy": "http://localhost:5000/",
   "eslintConfig": {
     "extends": "react-app"
   },
