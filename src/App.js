@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import BigCalendar from 'react-big-calendar'
 import moment from 'moment'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
+import DatePicker from "./Reservations";
+import Reservations from './Reservations'
 
 BigCalendar.momentLocalizer(moment);
 
@@ -121,6 +123,9 @@ class App extends Component {
                     })}
                 />
             </div>
+            <br/><br/>
+            <Reservations/>
+            <br/><br/>
         </div>
     );
   }
