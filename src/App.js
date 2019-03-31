@@ -24,7 +24,7 @@ class App extends Component {
 
     componentDidMount(){
         //Get the room reservation data from the server
-        fetch('/reservation')
+        fetch('/calendar')
             .then(response => response.json())
             .then(reservations => {
                 //Parse through the data and update the state

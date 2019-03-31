@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import moment from 'moment'
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import "./Reservations.css";
@@ -10,7 +11,10 @@ class Reservations extends Component {
             showRoomMenu: false,
             startDate: new Date(),
             endDate: new Date(),
-            selectedRoom: 'Select Room'
+            selectedRoom: 'Select Room',
+            hoursLeft: 0,
+            dayStart: moment(),
+            dayEnd: moment()
         }
 
         this.showRoomMenu = this.showRoomMenu.bind(this);
@@ -37,6 +41,26 @@ class Reservations extends Component {
     }
 
     handleStartChange(date){
+        fetch('/reservations',{
+            method: 'post',
+            headers: {
+                'Accept': "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: 1,
+                room: this.state.selectedRoom,
+                startDate: date
+            })
+        }).then(response => response.text())
+            .then(text => console.log(text))
+            /*.then( weeklyHours => this.setState({
+                hoursLeft: weeklyHours.hoursLeft,
+                dayStart: weeklyHours.dayStart,
+                dayEnd: weeklyHours.dayEnd
+            }))*/
+
+
         this.setState({ startDate: date });
     }
     handleEndChange(date){
@@ -52,7 +76,7 @@ class Reservations extends Component {
         return(
             <div>
                 <div className="dropdown">
-                <button class="dropbtn" onClick={this.showRoomMenu}>
+                <button className="dropbtn" onClick={this.showRoomMenu}>
                     {this.state.selectedRoom}
                 </button>
 

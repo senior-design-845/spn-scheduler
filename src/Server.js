@@ -11,6 +11,8 @@ const connection = mysql.createConnection({
 });
 
 const app = express();
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 connection.connect(function(err){
     if(err)
@@ -23,13 +25,22 @@ app.get('/', function(req, res) {
        });
 });
 
-app.get('/reservation', function (req, res) {
+app.get('/calendar', function (req, res) {
 
     connection.query('call calendarDisplay(1,1)', function(error, results, fields){
         if(error) throw error;
         console.log('Connected');
         res.send(results[0])
     });
+});
+
+app.post('/reservations', function(req, res) {
+    console.log(req.body.username);
+    /*connection.query('call availableWeeklyHours()', function(error, results, fields){
+       if(error) throw error
+        console.log(results[0]);
+       res.send(results[0]);
+    });*/
 });
 
 app.listen(5000, () => {
