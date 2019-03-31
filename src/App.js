@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import BigCalendar from 'react-big-calendar'
 import moment from 'moment'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import DatePicker from "./Reservations";
-import Reservations from './Reservations'
-
+import Reservations from './Reservations.js'
 BigCalendar.momentLocalizer(moment);
 
 class App extends Component {
@@ -15,10 +13,13 @@ class App extends Component {
             uniqueRooms: [],
             events: [],
             roomEvents: [],
-            buttonToggle: []
+            buttonToggle: [],
+            allToggle: true,
+
         };
 
-        this.handleClick = this.handleClick.bind(this);
+        this.handleRoomClick = this.handleRoomClick.bind(this);
+        this.handleAllClick = this.handleAllClick.bind(this);
     }
 
     componentDidMount(){
@@ -69,7 +70,7 @@ class App extends Component {
             });
     }
 
-    handleClick(i){
+    handleRoomClick(i){
         //Switch this room to OFF
         let toggleTemp = this.state.buttonToggle
         toggleTemp[i] = !toggleTemp[i]
@@ -88,6 +89,24 @@ class App extends Component {
         });
     }
 
+    handleAllClick(){
+        let toggleTemp = this.state.buttonToggle;
+        let allTemp = !this.state.allToggle;
+        let temp = [];
+        for(let i=0; i<toggleTemp.length; i++){
+            toggleTemp[i] = allTemp;
+            if(toggleTemp[i]){
+                temp = temp.concat(this.state.roomEvents[i]);
+            }
+        }
+
+        this.setState({
+            buttonToggle: toggleTemp,
+            events: temp,
+            allToggle: allTemp
+        })
+    }
+
     search(nameKey, myArray){
         for(let i=0; i<myArray.length; i++){
             if(myArray[i].title === nameKey)
@@ -102,10 +121,13 @@ class App extends Component {
     return (
         <div>
             {this.state.uniqueRooms.map((e) => (
-                <button style={{backgroundColor: e.color }} onClick={() => this.handleClick(e.id) }>
+                <button style={{backgroundColor: e.color }} onClick={() => this.handleRoomClick(e.id) }>
                     {e.title + ': '}{ this.state.buttonToggle[e.id] ? 'ON' : 'OFF'}
                 </button>
             ))}
+            <button onClick={() => this.handleAllClick()}>
+                Toggle All Rooms: {this.state.allToggle ? 'ON' : 'OFF'}
+            </button>
             <br/><br/>
             <div style={{height: 700}}>
                 <BigCalendar
@@ -123,9 +145,7 @@ class App extends Component {
                     })}
                 />
             </div>
-            <br/><br/>
-            <Reservations/>
-            <br/><br/>
+            <Reservations uniqueRooms={this.state.uniqueRooms}/>
         </div>
     );
   }

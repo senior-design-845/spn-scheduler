@@ -8,12 +8,16 @@ class Reservations extends Component {
         super(props);
         this.state={
             showRoomMenu: false,
-            startDate: new Date()
+            startDate: new Date(),
+            endDate: new Date(),
+            selectedRoom: 'Select Room'
         }
 
         this.showRoomMenu = this.showRoomMenu.bind(this);
         this.closeRoomMenu = this.closeRoomMenu.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.handleStartChange = this.handleStartChange.bind(this);
+        this.handleEndChange = this.handleEndChange.bind(this);
+        this.handleDropdown = this.handleDropdown.bind(this);
     }
 
     showRoomMenu(event){
@@ -32,8 +36,15 @@ class Reservations extends Component {
         }
     }
 
-    handleChange(date){
+    handleStartChange(date){
         this.setState({ startDate: date });
+    }
+    handleEndChange(date){
+        this.setState({ endDate: date});
+    }
+
+    handleDropdown(i){
+        this.setState({selectedRoom: this.props.uniqueRooms[i].title})
     }
 
 
@@ -42,7 +53,7 @@ class Reservations extends Component {
             <div>
                 <div className="dropdown">
                 <button class="dropbtn" onClick={this.showRoomMenu}>
-                    Show Rooms
+                    {this.state.selectedRoom}
                 </button>
 
                 {
@@ -52,9 +63,11 @@ class Reservations extends Component {
                                 this.dropdownMenu = element;
                             }}
                         >
-                           <button> Room 1</button>
-                           <button> Room 2</button>
-                           <button> Room 3</button>
+                            {this.props.uniqueRooms.map((e) => (
+                                <button onClick={() => this.handleDropdown(e.id) }>
+                                    {e.title}
+                                </button>
+                            ))}
                         </div>
                     ) : ( null )
                 }
@@ -62,13 +75,27 @@ class Reservations extends Component {
                 <br/><br/><br/>
                 <DatePicker
                     selected={this.state.startDate}
-                    onChange={this.handleChange}
+                    onChange={this.handleStartChange}
                     showTimeSelect
                     timeFormat="HH:mm"
                     timeIntervals={30}
                     dateFormat="MMMM d, yyyy h:mm aa"
                     timeCaption="Start"
                 />
+                <br/><br/>
+                <DatePicker
+                    selected={this.state.endDate}
+                    onChange={this.handleEndChange}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    minTime={this.state.startDate.getTime()}
+                    maxTime={this.state.startDate.getTime()}
+                    timeFormat="HH:mm"
+                    timeIntervals={30}
+                    dateFormat="h:mm aa"
+                    timeCaption="End"
+                />
+                <br/>
             </div>
         );
     }
