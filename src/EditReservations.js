@@ -15,23 +15,25 @@ class EditReservations extends Component {
     // This is the creation of the list items
     createItem(item) {
         return(
-            <button id='listItem'>
-                <div id = 'eventTitle'>
-                    {item.title}
+            <div className='dd-list-container'>
+                <div className = 'dd-list-header'>
+                    <div className = 'event-title'>
+                        {item.title}
+                    </div>
+                    <div className = 'event-date'>
+                        {item.start_datetime}
+                    </div>
                 </div>
-                <div id = 'eventDesc'>
-                    {item.event_detail}
-                </div>
-                <div id = 'eventStart'>
-                    {item.start_datetime}
-                </div>
-            </button>
+                <ul className = 'dd-list-items'>
+                    <li>{item.event_detail}</li>
+                </ul>
+            </div>
         );
     }
 
     createItems(items) {
         return(
-            <div id = 'itemContainer'>
+            <div className = 'dd-list-wrapper'>
                     {items.map(this.createItem)}
             </div>
         );
@@ -63,6 +65,7 @@ class EditReservations extends Component {
                         event_detail: record.event_detail,
                         recurring_recordID: record.recurring_recordID
                     });
+                    return null;
                 });
 
                 this.setState({events: events});
@@ -73,5 +76,10 @@ class EditReservations extends Component {
         return(this.createItems(this.state.events));
     }
 }
+
+class eventComponent extends Component {
+
+}
+
 
 export default EditReservations;
