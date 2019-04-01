@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import moment from 'moment'
+import dateFormat from 'dateformat'
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import "./Reservations.css";
@@ -9,18 +10,23 @@ class Reservations extends Component {
         super(props);
         this.state={
             showRoomMenu: false,
-            startDate: new Date(),
-            endDate: new Date(),
+            showStartDate: false,
+            showStartTime: false,
+            showEndTime: false,
+            startDate: null,
+            startTime: null,
+            endTime: null,
             selectedRoom: 'Select Room',
             hoursLeft: 0,
-            dayStart: moment(),
-            dayEnd: moment()
+            dayStart: new Date(),
+            dayEnd: new Date()
         }
 
         this.showRoomMenu = this.showRoomMenu.bind(this);
         this.closeRoomMenu = this.closeRoomMenu.bind(this);
-        this.handleStartChange = this.handleStartChange.bind(this);
-        this.handleEndChange = this.handleEndChange.bind(this);
+        this.handleStartDateChange = this.handleStartDateChange.bind(this);
+        this.handleStartTimeChange = this.handleStartTimeChange.bind(this);
+        this.handleEndTimeChange = this.handleEndTimeChange.bind(this);
         this.handleDropdown = this.handleDropdown.bind(this);
     }
 
@@ -40,7 +46,7 @@ class Reservations extends Component {
         }
     }
 
-    handleStartChange(date){
+    handleStartDateChange(date){
         fetch('/reservations',{
             method: 'post',
             headers: {
@@ -50,25 +56,33 @@ class Reservations extends Component {
             body: JSON.stringify({
                 username: 1,
                 room: this.state.selectedRoom,
+                building: 1,
                 startDate: date
             })
-        }).then(response => response.text())
-            .then(text => console.log(text))
-            /*.then( weeklyHours => this.setState({
-                hoursLeft: weeklyHours.hoursLeft,
-                dayStart: weeklyHours.dayStart,
-                dayEnd: weeklyHours.dayEnd
-            }))*/
+        }).then(response => response.json())
+            .then( weeklyHours => {
+                this.setState({
+                    hoursLeft: weeklyHours.HoursLeft,
+                    dayStart: Date.parse(),
+                    dayEnd: Date.parse(),
+                    showStartTime: true
+                })
+                console.log(this.state)
+            })
+
 
 
         this.setState({ startDate: date });
     }
-    handleEndChange(date){
-        this.setState({ endDate: date});
+    handleStartTimeChange(date){
+        this.setState({ startTime: date, showEndTime: true});
+    }
+    handleEndTimeChange(date){
+        this.setState({ endTime: date});
     }
 
     handleDropdown(i){
-        this.setState({selectedRoom: this.props.uniqueRooms[i].title})
+        this.setState({selectedRoom: this.props.uniqueRooms[i].title, showStartDate: true})
     }
 
 
@@ -96,28 +110,42 @@ class Reservations extends Component {
                     ) : ( null )
                 }
                 </div>
-                <br/><br/><br/>
+                <br/><br/>
                 <DatePicker
                     selected={this.state.startDate}
-                    onChange={this.handleStartChange}
-                    showTimeSelect
-                    timeFormat="HH:mm"
-                    timeIntervals={30}
-                    dateFormat="MMMM d, yyyy h:mm aa"
-                    timeCaption="Start"
+                    onChange={this.handleStartDateChange}
+                    disabled={!this.state.showStartDate}
+                    placeholderText="Please choose a room option"
                 />
                 <br/><br/>
                 <DatePicker
-                    selected={this.state.endDate}
-                    onChange={this.handleEndChange}
+                    selected={this.state.startTime}
+                    onChange={this.handleStartTimeChange}
                     showTimeSelect
                     showTimeSelectOnly
-                    minTime={this.state.startDate.getTime()}
-                    maxTime={this.state.startDate.getTime()}
+                    minTime={this.state.dayStart}
+                    maxTime={this.state.dayEnd}
+                    timeFormat="HH:mm"
+                    timeIntervals={30}
+                    dateFormat="h:mm aa"
+                    timeCaption="Start"
+                    disabled={!this.state.showStartTime}
+                    placeholderText="Please choose a Start date"
+                />
+                <br/><br/>
+                <DatePicker
+                    selected={this.state.endTime}
+                    onChange={this.handleEndTimeChange}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    //minTime={this.state.startTime.getTime()}
+                    //maxTime={this.state.startDate.getTime()}
                     timeFormat="HH:mm"
                     timeIntervals={30}
                     dateFormat="h:mm aa"
                     timeCaption="End"
+                    disabled={!this.state.showEndTime}
+                    placeholderText="Please choose a Start time"
                 />
                 <br/>
             </div>

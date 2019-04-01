@@ -13,6 +13,7 @@ const connection = mysql.createConnection({
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+const dateFormat = require('dateformat');
 
 connection.connect(function(err){
     if(err)
@@ -35,12 +36,11 @@ app.get('/calendar', function (req, res) {
 });
 
 app.post('/reservations', function(req, res) {
-    console.log(req.body.username);
-    /*connection.query('call availableWeeklyHours()', function(error, results, fields){
-       if(error) throw error
+    connection.query(`call availableWeeklyHours( ${req.body.username}, '${req.body.room}',${req.body.building}, '${dateFormat(req.body.startDate, "yyyy-mm-dd hh:MM:ss")}' )`, function(error, results, fields){
+       if(error) throw error;
         console.log(results[0]);
        res.send(results[0]);
-    });*/
+    });
 });
 
 app.listen(5000, () => {
