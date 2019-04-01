@@ -1,13 +1,40 @@
 import React, {Component} from 'react';
+import './EditReservations.css'
 
 class EditReservations extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            userID : 56,
-            buildingID : 1
+            userID : 98,
+            buildingID : 1,
+            events : []
         }
+    }
+
+    // This is the creation of the list items
+    createItem(item) {
+        return(
+            <button id='listItem'>
+                <div id = 'eventTitle'>
+                    {item.title}
+                </div>
+                <div id = 'eventDesc'>
+                    {item.event_detail}
+                </div>
+                <div id = 'eventStart'>
+                    {item.start_datetime}
+                </div>
+            </button>
+        );
+    }
+
+    createItems(items) {
+        return(
+            <div id = 'itemContainer'>
+                    {items.map(this.createItem)}
+            </div>
+        );
     }
 
     componentDidMount(){
@@ -37,12 +64,13 @@ class EditReservations extends Component {
                         recurring_recordID: record.recurring_recordID
                     });
                 });
+
+                this.setState({events: events});
             });
     }
 
     render() {
-
-        return null;
+        return(this.createItems(this.state.events));
     }
 }
 
