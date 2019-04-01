@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "body-parser": "^1.18.3",
     "interact.js": "^1.2.8",
     "moment": "^2.24.0",
     "mysql": "^2.16.0",

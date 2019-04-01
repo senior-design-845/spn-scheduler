@@ -11,8 +11,7 @@ const connection = mysql.createConnection({
 });
 
 const app = express();
-
-//app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 connection.connect(function(err){
@@ -36,16 +35,12 @@ app.get('/reservation', function (req, res) {
 });
 
 app.post('/userReservations', function (req, res) {
-/*  let uid = req.body.uid;
+    let uid = req.body.uid;
     let bid = req.body.bid;
 
-    console.log(uid);
-    console.log(bid);*/
-    console.log(req);
     connection.query(`call userReservations(${uid},${bid})`, function(error, results, fields){
         if(error) throw error;
         console.log('Connected');
-        console.log(results[0]);
         res.send(results[0]);
     });
 });

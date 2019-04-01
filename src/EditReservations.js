@@ -13,23 +13,31 @@ class EditReservations extends Component {
     componentDidMount(){
         //Get the room reservation data from the server
         fetch('/userReservations', {
-            method: 'post',
+            method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'ContentType': 'application/json',
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 uid: this.state.userID,
                 bid: this.state.buildingID,
             }),
         })
-            //.then(response => response.json())
-            /*.then(reservations => {
+            .then(response => response.json())
+            .then(reservations => {
+                let events = [];
 
                 reservations.map(record => {
-
+                    events.push({
+                        roomID: record.roomID,
+                        start_datetime: record.start_datetime,
+                        end_datetime: record.end_datetime,
+                        title: record.title,
+                        event_detail: record.event_detail,
+                        recurring_recordID: record.recurring_recordID
+                    });
                 });
-            });*/
+            });
     }
 
     render() {
