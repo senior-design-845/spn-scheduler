@@ -36,10 +36,11 @@ app.get('/calendar', function (req, res) {
 });
 
 app.post('/reservations', function(req, res) {
+    console.log(req.body);
     connection.query(`call availableWeeklyHours( ${req.body.username}, '${req.body.room}',${req.body.building}, '${dateFormat(req.body.startDate, "yyyy-mm-dd hh:MM:ss")}' )`, function(error, results, fields){
        if(error) throw error;
-        console.log(results[0]);
-       res.send(results[0]);
+       console.log(results[0][0]);
+       res.send(results[0][0]);
     });
 });
 
