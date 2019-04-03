@@ -15,7 +15,8 @@ class Reservations extends Component {
             startTime: null,        //Selected start time
             endTime: null,          //Selected end time
             selectedRoom: 'Select Room',
-            hoursLeft: 0,           //Hours of reservation time left for the user pulled from db
+            dailyHoursLeft: 0,           //Hours of reservation time left for the user pulled from db
+            weeklyHoursLeft: 0,
             dayStart: null,         //Room open time pulled from db
             dayEnd: null,           //Room close time pulled from db
             maxStartTime: null,     //30 minutes before dayEnd
@@ -61,20 +62,21 @@ class Reservations extends Component {
                 startDate: date
             })
         }).then(response => response.json())
-            .then( weeklyHours => {
-                if(weeklyHours.HoursLeft > 0){
+            .then( hours => {
+                if(hours.dailyHours > 0 && hours.weeklyHours > 0){
                     //Getting the date variables for the dayStart and dayEnd state values
-                    let tempTime = String(weeklyHours.dayStart).split(/[:]/);
+                    let tempTime = String(hours.dayStart).split(/[:]/);
                     let tempDate = new Date();
                     tempDate.setMinutes(parseInt(tempTime[1],10))
                     tempDate.setHours(parseInt(tempTime[0], 10))
                     let tempDate2 = new Date();
-                    tempTime =  String(weeklyHours.dayEnd).split(/[:]/);
+                    tempTime =  String(hours.dayEnd).split(/[:]/);
                     tempDate2.setMinutes(parseInt(tempTime[1],10))
                     tempDate2.setHours(parseInt(tempTime[0], 10))
 
                     this.setState({
-                        hoursLeft: weeklyHours.HoursLeft,
+                        dailyHoursLeft: hours.dailyHours,
+                        weeklyHoursLeft: hours.weeklyHours,
                         maxStartTime: new Date(new Date(tempDate2).setMinutes(tempDate2.getMinutes()-30)),
                         dayStart: tempDate,
                         dayEnd: tempDate2,
@@ -85,8 +87,12 @@ class Reservations extends Component {
                 }
                 else{
                     this.setState({
-                        hoursLeft: weeklyHours.HoursLeft,
-                        showStartTime: false
+                        dailyHoursLeft: hours.dailyHours,
+                        weeklyHoursLeft: hours.weeklyHours,
+                        startTime: null,
+                        endTime: null,
+                        showStartTime: false,
+                        showEndTime: false
                     })
                 }
             })
@@ -99,7 +105,7 @@ class Reservations extends Component {
         this.setState({
             startTime: date,
             minStartTime: new Date(new Date(date).setMinutes(date.getMinutes()+30)),
-            maxEndTime: new Date(Math.min(this.state.dayEnd, new Date(date).setHours(date.getHours() + this.state.hoursLeft))),
+            maxEndTime: new Date(Math.min(this.state.dayEnd, new Date(date).setMinutes(date.getMinutes() + Math.min(this.state.dailyHoursLeft, this.state.weeklyHoursLeft)*60))),
             showEndTime: true});
     }
     handleEndTimeChange(date){
@@ -142,8 +148,8 @@ class Reservations extends Component {
                     disabled={!this.state.showStartDate}
                     placeholderText="Please choose a room option"
                 />
-                <header>Daily Hours Left: {}</header>
-                <header>Weekly Hours Left: {this.state.hoursLeft}</header>
+                <header>Daily Hours Left: {this.state.dailyHoursLeft}</header>
+                <header>Weekly Hours Left: {this.state.weeklyHoursLeft}</header>
                 <br/>
                 <DatePicker
                     selected={this.state.startTime}
