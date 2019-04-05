@@ -37,8 +37,9 @@ app.get('/reservation', function (req, res) {
 app.post('/userReservations', function (req, res) {
     let uid = req.body.uid;
     let bid = req.body.bid;
+    let orderBy = req.body.orderBy;
 
-    connection.query(`call userReservations(${uid},${bid})`, function(error, results, fields){
+    connection.query(`call userReservations(${uid},${bid},${orderBy})`, function(error, results, fields){
         if(error) throw error;
         console.log('Connected');
         res.send(results[0]);

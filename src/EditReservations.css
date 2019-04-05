@@ -1,10 +1,20 @@
+body {
+    background: #43a047;
+}
 .dd-list-container {
-    background: rgb(55, 254, 64);
+    background: #ffa726;
     border-radius: 4px;
     width: 50%;
 }
-
+.dd-list-header {
+    cursor: pointer
+}
+.dd-edit-button {
+    cursor: pointer
+}
 .dd-list-items {
-    background: #C9F7CC;
     list-style-type: none;
+}
+.dd-list-content {
+    background: #ffd95b;
 }
