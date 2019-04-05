@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "body-parser": "^1.18.3",
+    "bootstrap": "^4.3.1",
     "interact.js": "^1.2.8",
     "moment": "^2.24.0",
     "mysql": "^2.16.0",
@@ -11,6 +12,7 @@
     "react-big-calendar": "^0.19.2",
     "react-datepicker": "^2.2.0",
     "react-dom": "^16.8.4",
+    "react-modal": "^3.8.1",
     "react-scripts": "^2.1.8"
   },
   "scripts": {

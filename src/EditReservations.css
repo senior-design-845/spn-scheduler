@@ -1,10 +1,14 @@
 body {
     background: #43a047;
 }
+.dd-list-wrapper {
+    width: 40%
+}
 .dd-list-container {
     background: #ffa726;
     border-radius: 4px;
-    width: 50%;
+    margin: 10px;
+    text-align: center;
 }
 .dd-list-header {
     cursor: pointer
@@ -17,4 +21,8 @@ body {
 }
 .dd-list-content {
     background: #ffd95b;
+    text-align: left;
+}
+.dd-edit-button {
+
 }

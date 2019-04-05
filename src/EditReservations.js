@@ -7,9 +7,9 @@ class EditReservations extends Component {
         super(props);
 
         this.state = {
-            userID : 98,
+            userID : 897,
             buildingID : 1,
-            orderBy: 2,
+            orderBy: 1,
             events : []
         }
     }
@@ -22,11 +22,7 @@ class EditReservations extends Component {
     }
 
     createItems(items) {
-        return(
-            <div className = 'dd-list-wrapper'>
-                    {items.map(this.createItem)}
-            </div>
-        );
+        return(items.map(this.createItem));
     }
 
     getReservations() {
@@ -69,7 +65,13 @@ class EditReservations extends Component {
     }
 
     render() {
-        return(this.createItems(this.state.events));
+        return(
+            <div>
+                <div className = 'dd-list-wrapper'>
+                    {this.createItems(this.state.events)}
+                </div>
+            </div>
+        );
     }
 }
 
@@ -91,6 +93,8 @@ class EventDropdown extends Component {
 
         this.showDDContent = this.showDDContent.bind(this);
         this.closeDDContent = this.closeDDContent.bind(this);
+        this.ddEditClick = this.ddEditClick.bind(this);
+        this.ddCancelClick = this.ddCancelClick.bind(this);
 
         this.state = {
             title: this.props.event.title,
@@ -106,7 +110,8 @@ class EventDropdown extends Component {
         event.preventDefault();
 
         this.setState({showDDContent: true}, () => {
-            document.addEventListener('click', this.closeDDContent);
+            if (!this.state.ddEditClick)
+                document.addEventListener('click', this.closeDDContent);
         });
     }
 
@@ -116,6 +121,18 @@ class EventDropdown extends Component {
                 document.removeEventListener('click', this.closeDDContent);
             });
         }
+    }
+
+    ddEditClick(event) {
+        this.setState({showDDContent: true, ddEditClick: true}, () => {
+            document.removeEventListener('click', this.closeDDContent);
+        });
+    }
+
+    ddCancelClick(event) {
+        this.setState({showDDContent: true, ddEditClick: false}, () => {
+            document.addEventListener('click', this.closeDDContent);
+        });
     }
 
     convertDate(rawDate) {
@@ -143,10 +160,23 @@ class EventDropdown extends Component {
                     this.state.showDDContent ? (
                         <div className = 'dd-list-content' ref={(element) => {this.dropdownMenu = element;}}>
 
-                            <ul className = 'dd-list-items'>
-                                <li>Description: {this.state.description}</li>
-                            </ul>
-                            <button className = 'dd-edit-button'>EDIT</button>
+                            <div className = 'dd-list-items'>
+                                Description: {this.state.description}
+                            </div>
+                            {
+                                !this.state.ddEditClick ? (
+                                    <button className = 'dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
+                                ) : (
+                                    <form onSubmit={this.handleSubmit}>
+                                        <label>
+                                            Name:
+                                            <input type="text" value={this.state.value} onChange={this.handleChange} />
+                                        </label>
+                                        <input type="submit" value="Submit" />
+                                        <button className = 'dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
+                                    </form>
+                                )
+                            }
 
                         </div>
                     ) : ( null )
