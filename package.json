@@ -11,6 +11,8 @@
     "react-big-calendar": "^0.19.2",
     "react-datepicker": "^2.2.0",
     "react-dom": "^16.8.4",
+    "react-dropdown": "^1.6.4",
+    "react-numeric-input": "^2.2.3",
     "react-scripts": "^2.1.8"
   },
   "scripts": {

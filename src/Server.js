@@ -36,11 +36,18 @@ app.get('/calendar', function (req, res) {
 });
 
 app.post('/reservations', function(req, res) {
-    console.log(req.body);
     connection.query(`call availableHours( ${req.body.username}, '${req.body.room}',${req.body.building}, '${dateFormat(req.body.startDate, "yyyy-mm-dd hh:MM:ss")}' )`, function(error, results, fields){
        if(error) throw error;
        console.log(results[0][0]);
        res.send(results[0][0]);
+    });
+});
+
+app.post('/semester', function(req, res) {
+    connection.query(`call getSemester(${req.body.building})`, function(error, results, fields){
+        if(error) throw error;
+        console.log(results[0][0]);
+        res.send(results[0][0]);
     });
 });
 
