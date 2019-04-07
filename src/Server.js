@@ -46,6 +46,21 @@ app.post('/userReservations', function (req, res) {
     });
 });
 
+app.post('/editReservation', function (req, res) {
+    let recordID = req.body.recordID;
+    let start_datetime = req.body.start_datetime;
+    let end_datetime = req.body.end_datetime;
+    let title = req.body.title;
+    let event_detail = req.body.event_detail;
+    let recurring = req.body.recurring;
+
+    connection.query(`call editReservation(${uid},${bid},${orderBy})`, function(error, results, fields){
+        if(error) throw error;
+        console.log('Connected');
+        res.send(results[0]);
+    });
+});
+
 app.listen(5000, () => {
     console.log('Running on port 5000');
 });

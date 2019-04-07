@@ -1,8 +1,15 @@
 body {
     background: #43a047;
 }
-.dd-list-wrapper {
-    width: 40%
+.page-title {
+    background: rgba(255, 156, 47, 0.88);
+    color: white;
+    margin-bottom: 2px;
+    font-size: 50px;
+    width: 100%;
+}
+.event-list-wrapper {
+    width: 70%;
 }
 .dd-list-container {
     background: #ffa726;
@@ -11,7 +18,8 @@ body {
     text-align: center;
 }
 .dd-list-header {
-    cursor: pointer
+    cursor: pointer;
+    color: white;
 }
 .dd-edit-button {
     cursor: pointer
@@ -23,6 +31,9 @@ body {
     background: #ffd95b;
     text-align: left;
 }
-.dd-edit-button {
-
+.dd-form-content {
+    background: whitesmoke;
+}
+.dd-edit-item {
+    float: left;
 }
