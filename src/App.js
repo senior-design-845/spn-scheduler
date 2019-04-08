@@ -20,6 +20,7 @@ class App extends Component {
 
         this.handleRoomClick = this.handleRoomClick.bind(this);
         this.handleAllClick = this.handleAllClick.bind(this);
+        this.addReservations = this.addReservations.bind(this);
     }
 
     componentDidMount(){
@@ -40,14 +41,14 @@ class App extends Component {
                     if( roomid === -1 ) {
                         //This event is in a new room, so add the room to uniqueRooms and push a new array of events into roomEvents
                         uniquerooms.push({
-                            id: uniquerooms.length,
+                            id: record.roomID,
                             title: record.room_name,
                             color: colors[i]
                         });
 
                         if (i === 16)
-                            i= 0
-                        else i++
+                            i= 0;
+                        else i++;
 
                         buttons.push(true);
 
@@ -79,7 +80,7 @@ class App extends Component {
     }
 
     handleRoomClick(i){
-        //Switch this room to OFF
+        //Switch this room to opposite state
         let toggleTemp = this.state.buttonToggle
         toggleTemp[i] = !toggleTemp[i]
 
@@ -115,22 +116,53 @@ class App extends Component {
         })
     }
 
+    addReservations(events) {
+
+        let newReservations = this.state.roomEvents;
+        events.map(v => {
+            if (v.valid.accepted === 0) {      //Fix and change to 1
+                newReservations[this.searchIndex(v.id, this.state.uniqueRooms)].push({
+                    id: this.searchIndex(v.id, this.state.uniqueRooms),
+                    title: v.title,
+                    start: new Date(v.start),
+                    end: new Date(v.end)
+                })
+            }
+        })
+
+        let temp = [];
+        for(let i=0; i<this.state.buttonToggle.length; i++){
+            if(this.state.buttonToggle[i]){
+                temp = temp.concat(newReservations[i]);
+            }
+        }
+        this.setState({roomEvents: newReservations, events:temp})
+        //insert into db
+    }
+
+
     search(nameKey, myArray){
         for(let i=0; i<myArray.length; i++){
             if(myArray[i].title === nameKey)
-                return myArray[i].id;
+                return i;
         }
         return -1;
     }
-
+    searchIndex(id, array){
+        for(let i=0; i<array.length;i++){
+            if(array[i].id === id)
+                return i;
+        }
+        return -1;
+    }
 
 
     render() {
     return (
         <div>
             {this.state.uniqueRooms.map((e) => (
-                <button style={{backgroundColor: e.color }} onClick={() => this.handleRoomClick(e.id) }>
-                    {e.title + ': '}{ this.state.buttonToggle[e.id] ? 'ON' : 'OFF'}
+                <button style={{backgroundColor: e.color}} onClick={() => this.handleRoomClick(this.search(e.title, this.state.uniqueRooms))}>
+                    {e.title + ': '}{this.state.buttonToggle[this.search(e.title, this.state.uniqueRooms)] ? 'ON' : 'OFF'}
                 </button>
             ))}
             <button onClick={() => this.handleAllClick()}>
@@ -153,7 +185,7 @@ class App extends Component {
                     })}
                 />
             </div>
-            <Reservations uniqueRooms={this.state.uniqueRooms}/>
+            <Reservations uniqueRooms={this.state.uniqueRooms} onEventUpdate={this.addReservations}/>
         </div>
     );
   }

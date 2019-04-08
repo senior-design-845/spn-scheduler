@@ -35,7 +35,8 @@ class Reservations extends Component {
             minStartTime: null,     //30 minutes after chosen StartTime
             maxEndTime: null,        //Min of dayEnd and ( chosen StartTime + hoursLeft)
             recurringNumber: 1,
-            weekdays: []
+            weekdays: [false,false,false,false,false,false,false],
+            weekInMonth: 0
         }
 
         this.handleStartDateChange = this.handleStartDateChange.bind(this);
@@ -66,6 +67,16 @@ class Reservations extends Component {
     }
 
     handleStartDateChange(date){
+        let tempDate = new Date(date);
+        let month = tempDate.getMonth();
+        let count = 0;
+
+
+        while(tempDate.getMonth() == month) {
+            tempDate.setDate(tempDate.getDate() - 7);
+            count++;
+        }
+
         fetch('/reservations',{
             method: 'post',
             headers: {
@@ -105,7 +116,8 @@ class Reservations extends Component {
                         startTime: null,
                         endTime: null,
                         endDate: null,
-                        selectedRecurring: 'Recurring'
+                        selectedRecurring: 'Recurring',
+                        weekInMonth: count
                     })
                 }
                 else{
@@ -120,7 +132,8 @@ class Reservations extends Component {
                         showEndTime: false,
                         showRecurring: false,
                         showEndDate: false,
-                        selectedRecurring: 'Recurring'
+                        selectedRecurring: 'Recurring',
+                        weekInMonth: count
                     })
                 }
             })
@@ -149,14 +162,17 @@ class Reservations extends Component {
     }
 
     handleRecurring(selected){
+        let days = [false,false,false,false,false,false,false]
+        days[this.state.startDate.getDay()] = true;
+
         this.setState({
             showEndDate: selected.value != 'Does not repeat' ? true : false,
             showCustom: selected.value === 'Custom' ? true : false,
             selectedRecurring: selected.value,
             endDate: null,
             customOption: '',
-            recurringNumber: 0,
-            weekdays: []
+            recurringNumber: 1,
+            weekdays: days
         })
     }
 
@@ -187,6 +203,94 @@ class Reservations extends Component {
         this.setState({weekdays: w})
     }
 
+    handleVerify(props){
+        //Get room integer
+        let roomID =-1;
+        props.uniqueRooms.map(e => {
+            if(e.title === this.state.selectedRoom)
+                roomID = e.id;
+        })
+
+        let resDates = [];
+        if(this.state.selectedRecurring === 'Does not repeat') {
+            resDates = [this.state.startDate];
+            //Combine startDate and startTime, and combine startDate and endTime
+            //Send those for verification
+        }
+        else{
+            let tempDate = new Date(this.state.startDate);
+            if(this.state.selectedRecurring.includes('Daily') || this.state.customOption.includes('Days')){
+                while(tempDate <= this.state.endDate){
+
+                    resDates.push(new Date(tempDate));
+                    tempDate.setDate(tempDate.getDate()+ this.state.recurringNumber)
+                }
+            }
+            else if(this.state.selectedRecurring.includes('Weekly') || this.state.customOption.includes('Weeks')){
+
+                    while (tempDate <= this.state.endDate){
+                        let dayofweek = this.state.startDate.getDay();
+                        for (let i = 0; i < 7; i++) {
+                            if (this.state.weekdays[i]) {
+                                let check = new Date(new Date(tempDate).setDate(tempDate.getDate() + (i - dayofweek)))
+                                if (check <= this.state.endDate && check >= this.state.startDate)
+                                    resDates.push(check);
+                            }
+                        }
+                        tempDate.setDate(tempDate.getDate() + (7 * this.state.recurringNumber));
+                    }
+            }
+            else if(this.state.selectedRecurring.includes('Monthly') || this.state.customOption.includes('Months')){
+
+                while(tempDate <= this.state.endDate){
+                    resDates.push(new Date(tempDate));
+                    while(tempDate.getMonth() === this.state.startDate.getMonth()){
+                        tempDate.setDate(tempDate.getDate() + 7);
+                    }
+                    let addNum = this.state.weekInMonth - (this.state.weekInMonth===5 ? 2 : 1);
+                    tempDate.setDate(tempDate.getDate() + (7* (addNum)));
+                }
+            }
+
+            //for daily
+                //while startDate <= endDate
+                    //push startDate+startTime startDate+endTime into array
+                    //add recurringNumber days to startDate
+            //for weekly
+                //while startDate <= endDate
+                    //(startDate + dayofweek offset)+startTime and endTime
+                    //push above if it is <= endDate
+                    //add recurringNumber*7 days to startDate
+            //for monthly
+                //while startDate <= endDate
+                    //tempDate = startDate
+                    //while tempDate.month() == startDate.month
+                        //add 7 days to tempDate
+                    //add 7*(weekinMonth-1 (-2 if 5)) days to tempDate
+                    //push that onto stack
+        }
+        console.log('dates: '+ resDates);
+        fetch('/verifyReservations',{
+            method: 'post',
+            headers: {
+                'Accept': "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                reservations: resDates,
+                startTime: this.state.startTime,
+                endTime: this.state.endTime,
+                roomID: roomID
+            })
+        }).then(response => response.json())
+            .then(valid => {
+
+                this.props.onEventUpdate(valid);
+
+            })
+
+    }
+
     render(){
         let uniquerooms = []
         this.props.uniqueRooms.map(e => {
@@ -195,9 +299,6 @@ class Reservations extends Component {
         let dayofweek =''
         let weekofmonth =''
         if(this.state.startDate != null) {
-            let tempDate = new Date(this.state.startDate);
-            let month = tempDate.getMonth();
-
             switch(this.state.startDate.getDay()){
                 case 0: dayofweek = 'Sunday'; break;
                 case 1: dayofweek = 'Monday'; break;
@@ -208,14 +309,7 @@ class Reservations extends Component {
                 case 6: dayofweek = 'Saturday';
             }
 
-            let count = 0;
-
-            while(tempDate.getMonth() == month){
-                tempDate.setDate(tempDate.getDate() - 7);
-                count++;
-            }
-
-            switch(count){
+            switch(this.state.weekInMonth){
                 case 1: weekofmonth = 'first'; break;
                 case 2: weekofmonth = 'second'; break;
                 case 3: weekofmonth = 'third'; break;
@@ -254,7 +348,6 @@ class Reservations extends Component {
                         showTimeSelectOnly
                         minTime={this.state.dayStart}
                         maxTime={this.state.maxStartTime}
-                        timeFormat="HH:mm"
                         timeIntervals={30}
                         dateFormat="h:mm aa"
                         timeCaption="Start"
@@ -269,7 +362,6 @@ class Reservations extends Component {
                         showTimeSelectOnly
                         minTime={this.state.minStartTime}
                         maxTime={this.state.maxEndTime}
-                        timeFormat="HH:mm"
                         timeIntervals={30}
                         dateFormat="h:mm aa"
                         timeCaption="End"
@@ -337,7 +429,7 @@ class Reservations extends Component {
                 }
                 <br/><br/>
                 <div>
-                    <header>Submit button</header>
+                    <button onClick={() => this.handleVerify(this.props)}>Verify</button>
                 </div>
             </div>
         );
