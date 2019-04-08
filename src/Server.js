@@ -11,6 +11,8 @@ const connection = mysql.createConnection({
 });
 
 const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 connection.connect(function(err){
     if(err)
@@ -28,7 +30,34 @@ app.get('/reservation', function (req, res) {
     connection.query('call calendarDisplay(1,1)', function(error, results, fields){
         if(error) throw error;
         console.log('Connected');
-        res.send(results[0])
+        res.send(results[0]);
+    });
+});
+
+app.post('/userReservations', function (req, res) {
+    let uid = req.body.uid;
+    let bid = req.body.bid;
+    let orderBy = req.body.orderBy;
+
+    connection.query(`call userReservations(${uid},${bid},${orderBy})`, function(error, results, fields){
+        if(error) throw error;
+        console.log('Connected');
+        res.send(results[0]);
+    });
+});
+
+app.post('/editReservation', function (req, res) {
+    let recordID = req.body.recordID;
+    let start_datetime = req.body.start_datetime;
+    let end_datetime = req.body.end_datetime;
+    let title = req.body.title;
+    let event_detail = req.body.event_detail;
+    let recurring = req.body.recurring;
+
+    connection.query(`call editReservation(${recordID},"${start_datetime}","${end_datetime}","${title}","${event_detail}",${recurring})`, function(error, results, fields){
+        if(error) throw error;
+        console.log('Connected');
+        res.send(results[0]);
     });
 });
 
