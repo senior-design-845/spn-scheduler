@@ -9,7 +9,7 @@ class EditReservations extends Component {
         super(props);
 
         this.state = {
-            userID : 987,
+            userID : 478,
             buildingID : 1,
             orderBy: 1,
             events : []
@@ -52,6 +52,7 @@ class EditReservations extends Component {
                         end_datetime: record.end_datetime,
                         title: record.title,
                         event_detail: record.event_detail,
+                        recordID: record.recordID,
                         recurring_recordID: record.recurring_recordID,
                         room_name: record.room_name,
                     });
@@ -101,6 +102,8 @@ class EventDropdown extends Component {
         this.ddCancelClick = this.ddCancelClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
+        this.handleStartTimeChange = this.handleStartTimeChange.bind(this);
+        this.handleEndTimeChange = this.handleEndTimeChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
 
         this.state = {
@@ -114,11 +117,13 @@ class EventDropdown extends Component {
             endTime: endTime,
             room_name: this.props.event.room_name,
             roomID: this.props.event.roomID,
+            recordID: this.props.event.recordID,
             tempDate: dateObjectStart,
-            tempStartTime: startTime,
-            tempEndTime: endTime,
+            tempStartTime: dateObjectStart,
+            tempEndTime: dateObjectEnd,
             tempTitle: this.props.event.title,
             tempDescription: this.props.event.event_detail,
+            recurring: this.props.event.recurring_recordID,
         }
     }
 
@@ -150,8 +155,8 @@ class EventDropdown extends Component {
             showDDContent: true,
             ddEditClick: false,
             tempDate: this.state.dateObjectStart,
-            tempStartTime: this.state.startTime,
-            tempEndTime: this.state.endTime,
+            tempStartTime: this.state.dateObjectStart,
+            tempEndTime: this.state.dateObjectEnd,
             tempTitle: this.state.title,
             tempDescription: this.state.description,
         }, () => {
@@ -166,21 +171,52 @@ class EventDropdown extends Component {
         return (new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])));
     }
 
+    convertDateTime(rawDate, rawTime) {
+        let stringDate = moment(rawDate).format('YYYY-MM-DD');
+        let stringTime = moment(rawTime).format('HH:mm:ss');
+
+        let fullString = stringDate + ' ' + stringTime;
+
+        return fullString;
+    }
+
     handleChange(event) {
-        console.log(`${event.target.name} : ${event.target.value}`);
         return this.setState({[event.target.name]: event.target.value});
 
     }
 
     handleDateChange(date) {
         this.setState({tempDate: date});
-        console.log(date);
+    }
+
+    handleStartTimeChange(time) {
+        this.setState({tempStartTime: time});
+    }
+
+    handleEndTimeChange(time) {
+        this.setState({tempEndTime: time});
     }
 
     handleSubmit(event) {
         event.preventDefault();
 
-        console.log(event.target);
+        fetch('/editReservation', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                recordID: this.state.recordID,
+                start_datetime: this.convertDateTime(this.state.tempDate, this.state.tempStartTime),
+                end_datetime: this.convertDateTime(this.state.tempDate, this.state.tempEndTime),
+                title: this.state.tempTitle,
+                event_detail: this.state.tempDescription,
+                recurring: this.state.recurring,
+            }),
+        });
+
+        window.location.reload();
     }
 
     render() {
@@ -237,33 +273,31 @@ class EventDropdown extends Component {
                                             <label className = 'dd-edit-item'>
                                                 Start Time :
                                                 <DatePicker
-                                                    selected={this.state.dateObjectStart}
-                                                    //onChange={this.handleStartTimeChange}
+                                                    name = 'tempStartTime'
+                                                    selected={this.state.tempStartTime}
+                                                    onChange={this.handleStartTimeChange}
                                                     showTimeSelect
                                                     showTimeSelectOnly
                                                     //minTime={this.state.dayStart}
                                                     //maxTime={this.state.maxStartTime}
-                                                    timeFormat="HH:mm"
                                                     timeIntervals={30}
                                                     dateFormat="h:mm aa"
                                                     timeCaption="Start"
-                                                    //disabled={!this.state.showStartTime}
                                                 />
                                             </label>
                                             <label className = 'dd-edit-item'>
                                                 End Time :
                                                 <DatePicker
-                                                    selected={this.state.dateObjectEnd}
-                                                    //onChange={this.handleEndTimeChange}
+                                                    name = 'tempEndTime'
+                                                    selected={this.state.tempEndTime}
+                                                    onChange={this.handleEndTimeChange}
                                                     showTimeSelect
                                                     showTimeSelectOnly
-                                                    //minTime={this.state.minStartTime}
-                                                    //maxTime={this.state.maxEndTime}
-                                                    timeFormat="HH:mm"
+                                                    // minTime={this.state.tempStartTime}
+                                                    // maxTime={this.state.}
                                                     timeIntervals={30}
                                                     dateFormat="h:mm aa"
                                                     timeCaption="End"
-                                                    //disabled={!this.state.showEndTime}
                                                 />
                                             </label>
                                             <input type="submit" value="Submit" />

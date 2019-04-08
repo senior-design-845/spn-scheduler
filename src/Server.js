@@ -54,7 +54,7 @@ app.post('/editReservation', function (req, res) {
     let event_detail = req.body.event_detail;
     let recurring = req.body.recurring;
 
-    connection.query(`call editReservation(${uid},${bid},${orderBy})`, function(error, results, fields){
+    connection.query(`call editReservation(${recordID},"${start_datetime}","${end_datetime}","${title}","${event_detail}",${recurring})`, function(error, results, fields){
         if(error) throw error;
         console.log('Connected');
         res.send(results[0]);
