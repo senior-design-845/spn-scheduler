@@ -5,6 +5,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './App.css'
 import Reservations from './Reservations'
 
+
 BigCalendar.momentLocalizer(moment);
 
 class App extends Component {
@@ -22,6 +23,8 @@ class App extends Component {
     }
 
     componentDidMount(){
+        var colors = [ '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#9a6324', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075' ]
+        var i = 0;
         //Get the room reservation data from the server
         fetch('/reservation')
             .then(response => response.json())
@@ -30,7 +33,6 @@ class App extends Component {
                 let uniquerooms = [];
                 let temp = [];
                 let buttons = [];
-
                 reservations.map(record => {
                     let roomid = this.search(record.room_name, uniquerooms);
                     if( roomid === -1 ) {
@@ -38,10 +40,14 @@ class App extends Component {
                         uniquerooms.push({
                             id: uniquerooms.length,
                             title: record.room_name,
-                            color: '#'+Math.floor(Math.random()*16777215).toString(16)
+                            color: colors[i]
+                           //color: '#'+Math.floor(Math.random()*16777215).toString(16)
                         });
                         buttons.push(true);
 
+                        if (i === 16)
+                            i= 0
+                        else i++
                         temp.push([{
                             'id': uniquerooms.length-1,
                             'title': record.title,
@@ -58,6 +64,7 @@ class App extends Component {
 
                         });
                     }
+
                 });
 
                 //Pull all the events from roomEvents' arrays and add them to events as default calendar view
