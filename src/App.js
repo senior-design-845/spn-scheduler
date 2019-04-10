@@ -117,27 +117,44 @@ class App extends Component {
     }
 
     addReservations(events) {
-
+        let check = false;
         let newReservations = this.state.roomEvents;
+        let string;
         events.map(v => {
-            if (v.valid.accepted === 0) {      //Fix and change to 1
+            string = 'Start: ' + v.start;
+            if(v.valid.conflict === 1 || v.valid.dailyOver === 1 || v.valid.weeklyOver === 1) {
+                if (v.valid.conflict === 1) {
+                    string += ' -> Schedule conflict';
+                }
+                if (v.valid.dailyOver === 1) {
+                    string += ' -> Over daily hours'
+                }
+                if (v.valid.weeklyOver === 1) {
+                    string += ' -> Over weekly hours'
+                }
+            }
+            else{
                 newReservations[this.searchIndex(v.id, this.state.uniqueRooms)].push({
                     id: this.searchIndex(v.id, this.state.uniqueRooms),
                     title: v.title,
                     start: new Date(v.start),
                     end: new Date(v.end)
                 })
+                check = true;
             }
+            console.log(string);
         })
 
-        let temp = [];
-        for(let i=0; i<this.state.buttonToggle.length; i++){
-            if(this.state.buttonToggle[i]){
-                temp = temp.concat(newReservations[i]);
+        if(check) {
+            let temp = [];
+            for (let i = 0; i < this.state.buttonToggle.length; i++) {
+                if (this.state.buttonToggle[i]) {
+                    temp = temp.concat(newReservations[i]);
+                }
             }
+            this.setState({roomEvents: newReservations, events: temp})
+            //insert into db
         }
-        this.setState({roomEvents: newReservations, events:temp})
-        //insert into db
     }
 
 
@@ -161,7 +178,7 @@ class App extends Component {
     return (
         <div>
             {this.state.uniqueRooms.map((e) => (
-                <button style={{backgroundColor: e.color}} onClick={() => this.handleRoomClick(this.search(e.title, this.state.uniqueRooms))}>
+                <button key={e.id} style={{backgroundColor: e.color}} onClick={() => this.handleRoomClick(this.search(e.title, this.state.uniqueRooms))}>
                     {e.title + ': '}{this.state.buttonToggle[this.search(e.title, this.state.uniqueRooms)] ? 'ON' : 'OFF'}
                 </button>
             ))}

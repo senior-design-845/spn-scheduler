@@ -18,13 +18,14 @@ class Reservations extends Component {
             showRecurring: false,
             showEndDate: false,
             showCustom: false,
+            showVerify: [false,false,false,false,false,false],
             startDate: null,        //Selected start date
             endDate: null,
             startTime: null,        //Selected start time
             endTime: null,          //Selected end time
             selectedRoom: 'Select Room',
             selectedRecurring: 'Recurring',
-            customOption: '',
+            customOption: 'Days',
             dailyHoursLeft: 0,           //Hours of reservation time left for the user pulled from db
             weeklyHoursLeft: 0,
             semesterStart: null,
@@ -42,12 +43,12 @@ class Reservations extends Component {
         this.handleStartDateChange = this.handleStartDateChange.bind(this);
         this.handleStartTimeChange = this.handleStartTimeChange.bind(this);
         this.handleEndTimeChange = this.handleEndTimeChange.bind(this);
-        this.handleDropdown = this.handleDropdown.bind(this);
+        this.handleRooms = this.handleRooms.bind(this);
         this.handleRecurring = this.handleRecurring.bind(this);
         this.handleEndDateChange = this.handleEndDateChange.bind(this);
         this.handleNumber = this.handleNumber.bind(this);
         this.handleCustom = this.handleCustom.bind(this);
-        this.handleWeekdays = this.handleWeekdays.bind(this);
+        this.handleMultipleDays = this.handleMultipleDays.bind(this);
     }
 
     componentDidMount() {
@@ -62,22 +63,37 @@ class Reservations extends Component {
             })
         }).then(response => response.json())
             .then( semester =>{
-                this.setState({semesterStart: semester.semester_start, semesterEnd: semester.semester_end})
+                this.setState({semesterStart: new Date(semester.semester_start), semesterEnd: new Date(semester.semester_end)})
             })
+    }
+
+    handleRooms(selected){
+        //Room has been selected
+        let tempVerify = this.state.showVerify;
+        tempVerify[0] = true;
+
+        this.setState({selectedRoom: selected.value, showStartDate: true, showVerify: tempVerify})
     }
 
     handleStartDateChange(date){
         let tempDate = new Date(date);
+
+        //Gets the week number of the month of the selected date
         let month = tempDate.getMonth();
         let count = 0;
-
-
-        while(tempDate.getMonth() == month) {
+        while(tempDate.getMonth() === month) {
             tempDate.setDate(tempDate.getDate() - 7);
             count++;
         }
 
-        fetch('/reservations',{
+        //Start date has been selected but start and end times need to be reselected
+        let tempVerify = this.state.showVerify;
+        tempVerify[1] = true;
+        tempVerify[2] = false;
+        tempVerify[3] = false;
+
+        //
+        fetch('/hours',{
             method: 'post',
             headers: {
                 'Accept': "application/json",
@@ -95,12 +111,12 @@ class Reservations extends Component {
                     //Getting the date variables for the dayStart and dayEnd state values
                     let tempTime = String(hours.dayStart).split(/[:]/);
                     let tempDate = new Date();
-                    tempDate.setMinutes(parseInt(tempTime[1],10))
-                    tempDate.setHours(parseInt(tempTime[0], 10))
+                    tempDate.setMinutes(parseInt(tempTime[1],10));
+                    tempDate.setHours(parseInt(tempTime[0], 10));
                     let tempDate2 = new Date();
                     tempTime =  String(hours.dayEnd).split(/[:]/);
-                    tempDate2.setMinutes(parseInt(tempTime[1],10))
-                    tempDate2.setHours(parseInt(tempTime[0], 10))
+                    tempDate2.setMinutes(parseInt(tempTime[1],10));
+                    tempDate2.setHours(parseInt(tempTime[0], 10));
 
 
                     this.setState({
@@ -111,13 +127,13 @@ class Reservations extends Component {
                         dayStart: tempDate,
                         dayEnd: tempDate2,
                         showStartTime: true,
-                        showRecurring: false,
-                        showEndDate: false,
+                        showEndTime: false,
+                        showRecurring: true,
+                        endDate: this.state.endDate <= date ? null: this.state.endDate,
                         startTime: null,
                         endTime: null,
-                        endDate: null,
-                        selectedRecurring: 'Recurring',
-                        weekInMonth: count
+                        weekInMonth: count,
+                        showVerify: tempVerify
                     })
                 }
                 else{
@@ -127,57 +143,76 @@ class Reservations extends Component {
                         startDate: date,
                         startTime: null,
                         endTime: null,
-                        endDate: null,
                         showStartTime: false,
                         showEndTime: false,
-                        showRecurring: false,
-                        showEndDate: false,
-                        selectedRecurring: 'Recurring',
-                        weekInMonth: count
+                        showRecurring: true,
+                        endDate: this.state.endDate <= date ? null: this.state.endDate,
+                        weekInMonth: count,
+                        showVerify: tempVerify
                     })
                 }
             })
     }
 
     handleStartTimeChange(date){
+        //Restricts endTime based on user hours-> Math.min(this.state.dayEnd, new Date(date).setMinutes(date.getMinutes() + Math.min(this.state.dailyHoursLeft, this.state.weeklyHoursLeft)*60))
+
+        //Start time has been selected, end time needs to be chosen if empty or re-chosen if time is before new start time
+        let tempVerify = this.state.showVerify;
+        tempVerify[2] = true;
+        if(this.state.endTime <= date)
+            tempVerify[3] = false;
+
         this.setState({
             startTime: date,
             minStartTime: new Date(new Date(date).setMinutes(date.getMinutes()+30)),
-            maxEndTime: new Date(Math.min(this.state.dayEnd, new Date(date).setMinutes(date.getMinutes() + Math.min(this.state.dailyHoursLeft, this.state.weeklyHoursLeft)*60))),
+            maxEndTime: new Date(this.state.dayEnd),
             showEndTime: true,
-            endTime: null,
-            showRecurring: false,
-            showEndDate: false,
-            endDate: null,
-            selectedRecurring: 'Recurring'
+            endTime: this.state.endTime <= date ? null : this.state.endTime,
+            showVerify: tempVerify
         });
     }
     handleEndTimeChange(date){
-        this.setState({ endTime: date,
-            showRecurring: true});
-    }
-
-    handleDropdown(selected){
-        this.setState({selectedRoom: selected.value, showStartDate: true})
+        //End time has been selected
+        let tempVerify = this.state.showVerify;
+        tempVerify[3] = true;
+        this.setState({ endTime: date, showVerify: tempVerify});
     }
 
     handleRecurring(selected){
-        let days = [false,false,false,false,false,false,false]
+        //??MOVE to handleCustom and add an if statement to the reservation verification to account for the lack of buttons??
+        let days = [false,false,false,false,false,false,false];
         days[this.state.startDate.getDay()] = true;
 
+        //Removes the unique day/week text so that string.include() can be called less in other functions
+        let choice = selected.value;
+        if(choice.includes('Weekly'))
+            choice = 'Weekly';
+        else if(choice.includes('Monthly'))
+            choice = 'Monthly';
+
+        //Recurring has been selected, if it is not 'Does not repeat' then an end date needs to be chosen
+        let tempVerify = this.state.showVerify;
+        tempVerify[4] = true;
+        tempVerify[5] = selected.value === 'Does not repeat';
+
         this.setState({
-            showEndDate: selected.value != 'Does not repeat' ? true : false,
-            showCustom: selected.value === 'Custom' ? true : false,
-            selectedRecurring: selected.value,
+            showEndDate: selected.value !== 'Does not repeat',
+            showCustom: selected.value === 'Custom',
+            selectedRecurring: choice,
             endDate: null,
-            customOption: '',
+            customOption: 'Days',
             recurringNumber: 1,
-            weekdays: days
+            weekdays: days,
+            showVerify: tempVerify
         })
     }
 
     handleEndDateChange(date){
-        this.setState({endDate: date})
+        //Recurring has been selected, if it is not 'Does not repeat' then an end date needs to be chosen
+        let tempVerify = this.state.showVerify;
+        tempVerify[5] = true;
+        this.setState({endDate: date, showVerify: tempVerify})
     }
 
     handleNumber(number){
@@ -185,13 +220,13 @@ class Reservations extends Component {
     }
 
     handleCustom(selected){
-        let w = [false,false,false,false,false,false,false];
-        if(selected.value == 'Weeks')
-            w[this.state.startDate.getDay()] = true;
-        this.setState({customOption: selected.value, weekdays: w})
+        let weekdays = [false,false,false,false,false,false,false];
+        if(selected.value === 'Weeks')
+            weekdays[this.state.startDate.getDay()] = true;
+        this.setState({customOption: selected.value, weekdays: weekdays})
     }
 
-    handleWeekdays(i){
+    handleMultipleDays(i){
         let w = this.state.weekdays;
         w[i] = !this.state.weekdays[i];
         let none = true;
@@ -203,10 +238,10 @@ class Reservations extends Component {
         this.setState({weekdays: w})
     }
 
-    handleVerify(props){
+    handleVerify(uniqueRooms){
         //Get room integer
         let roomID =-1;
-        props.uniqueRooms.map(e => {
+        uniqueRooms.map(e => {
             if(e.title === this.state.selectedRoom)
                 roomID = e.id;
         })
@@ -214,25 +249,23 @@ class Reservations extends Component {
         let resDates = [];
         if(this.state.selectedRecurring === 'Does not repeat') {
             resDates = [this.state.startDate];
-            //Combine startDate and startTime, and combine startDate and endTime
-            //Send those for verification
         }
         else{
             let tempDate = new Date(this.state.startDate);
-            if(this.state.selectedRecurring.includes('Daily') || this.state.customOption.includes('Days')){
+            if(this.state.selectedRecurring=== 'Daily' || this.state.customOption==='Days'){
                 while(tempDate <= this.state.endDate){
 
                     resDates.push(new Date(tempDate));
                     tempDate.setDate(tempDate.getDate()+ this.state.recurringNumber)
                 }
             }
-            else if(this.state.selectedRecurring.includes('Weekly') || this.state.customOption.includes('Weeks')){
+            else if(this.state.selectedRecurring==='Weekly' || this.state.customOption==='Weeks'){
 
                     while (tempDate <= this.state.endDate){
                         let dayofweek = this.state.startDate.getDay();
                         for (let i = 0; i < 7; i++) {
                             if (this.state.weekdays[i]) {
-                                let check = new Date(new Date(tempDate).setDate(tempDate.getDate() + (i - dayofweek)))
+                                let check = new Date(new Date(tempDate).setDate(tempDate.getDate() + (i - dayofweek)));
                                 if (check <= this.state.endDate && check >= this.state.startDate)
                                     resDates.push(check);
                             }
@@ -240,36 +273,20 @@ class Reservations extends Component {
                         tempDate.setDate(tempDate.getDate() + (7 * this.state.recurringNumber));
                     }
             }
-            else if(this.state.selectedRecurring.includes('Monthly') || this.state.customOption.includes('Months')){
-
+            else if(this.state.selectedRecurring==='Monthly' || this.state.customOption==='Months'){
+                let month = this.state.startDate.getMonth();
                 while(tempDate <= this.state.endDate){
                     resDates.push(new Date(tempDate));
-                    while(tempDate.getMonth() === this.state.startDate.getMonth()){
+                    while(tempDate.getMonth() === month){
                         tempDate.setDate(tempDate.getDate() + 7);
                     }
                     let addNum = this.state.weekInMonth - (this.state.weekInMonth===5 ? 2 : 1);
                     tempDate.setDate(tempDate.getDate() + (7* (addNum)));
+                    month = month===12 ? 1 : month+1;
                 }
             }
-
-            //for daily
-                //while startDate <= endDate
-                    //push startDate+startTime startDate+endTime into array
-                    //add recurringNumber days to startDate
-            //for weekly
-                //while startDate <= endDate
-                    //(startDate + dayofweek offset)+startTime and endTime
-                    //push above if it is <= endDate
-                    //add recurringNumber*7 days to startDate
-            //for monthly
-                //while startDate <= endDate
-                    //tempDate = startDate
-                    //while tempDate.month() == startDate.month
-                        //add 7 days to tempDate
-                    //add 7*(weekinMonth-1 (-2 if 5)) days to tempDate
-                    //push that onto stack
         }
-        console.log('dates: '+ resDates);
+        //console.log('dates: '+ resDates);
         fetch('/verifyReservations',{
             method: 'post',
             headers: {
@@ -277,6 +294,8 @@ class Reservations extends Component {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
+                username: 1,
+                building: 1,
                 reservations: resDates,
                 startTime: this.state.startTime,
                 endTime: this.state.endTime,
@@ -291,41 +310,75 @@ class Reservations extends Component {
 
     }
 
+    recurringFlavorText(){
+        let text = {
+            dayofweek: '',
+            weekofmonth: '',
+            selectedText: this.state.selectedRecurring
+        };
+        if(this.state.startDate !== null) {
+            switch (this.state.startDate.getDay()) {
+                case 0:
+                    text.dayofweek = 'Sunday';
+                    break;
+                case 1:
+                    text.dayofweek = 'Monday';
+                    break;
+                case 2:
+                    text.dayofweek = 'Tuesday';
+                    break;
+                case 3:
+                    text.dayofweek = 'Wednesday';
+                    break;
+                case 4:
+                    text.dayofweek = 'Thursday';
+                    break;
+                case 5:
+                    text.dayofweek = 'Friday';
+                    break;
+                case 6:
+                    text.dayofweek = 'Saturday';
+            }
+
+            switch (this.state.weekInMonth) {
+                case 1:
+                    text.weekofmonth = 'first';
+                    break;
+                case 2:
+                    text.weekofmonth = 'second';
+                    break;
+                case 3:
+                    text.weekofmonth = 'third';
+                    break;
+                case 4:
+                    text.weekofmonth = 'fourth';
+                    break;
+                case 5:
+                    text.weekofmonth = 'last';
+                    break;
+            }
+
+            if (text.selectedText === 'Weekly')
+                text.selectedText = `Weekly on ${text.dayofweek}`;
+            else if (text.selectedText === 'Monthly')
+                text.selectedText = `Monthly on the ${text.weekofmonth} ${text.dayofweek}`;
+        }
+        return text;
+    }
+
     render(){
-        let uniquerooms = []
+        let uniquerooms = [];
         this.props.uniqueRooms.map(e => {
             uniquerooms.push(e.title)
         })
-        let dayofweek =''
-        let weekofmonth =''
-        if(this.state.startDate != null) {
-            switch(this.state.startDate.getDay()){
-                case 0: dayofweek = 'Sunday'; break;
-                case 1: dayofweek = 'Monday'; break;
-                case 2: dayofweek = 'Tuesday'; break;
-                case 3: dayofweek = 'Wednesday'; break;
-                case 4: dayofweek = 'Thursday'; break;
-                case 5: dayofweek = 'Friday'; break;
-                case 6: dayofweek = 'Saturday';
-            }
-
-            switch(this.state.weekInMonth){
-                case 1: weekofmonth = 'first'; break;
-                case 2: weekofmonth = 'second'; break;
-                case 3: weekofmonth = 'third'; break;
-                case 4: weekofmonth = 'fourth'; break;
-                case 5: weekofmonth = 'last'; break;
-            }
-
-        }
-
-        let recurringOptions = ['Does not repeat', `Daily`, `Weekly on ${dayofweek}`, `Monthly on the ${weekofmonth} ${dayofweek}`, 'Custom']
+        let text = this.recurringFlavorText();
+        let recurringOptions = ['Does not repeat', `Daily`, `Weekly on ${text.dayofweek}`, `Monthly on the ${text.weekofmonth} ${text.dayofweek}`, 'Custom'];
 
         return(
             <div style={{height:'450px'}}>
 
                 <div style={{width:'20%'}}>
-                    <Dropdown options={uniquerooms} onChange={this.handleDropdown} value={this.state.selectedRoom} placeholder={"Select a Room"}/>
+                    <Dropdown options={uniquerooms} onChange={this.handleRooms} value={this.state.selectedRoom} placeholder={"Select a Room"}/>
                 </div>
                 <header>Daily Hours Left: {this.state.dailyHoursLeft}</header>
                 <header>Weekly Hours Left: {this.state.weeklyHoursLeft}</header>
@@ -370,8 +423,8 @@ class Reservations extends Component {
                     />
                     <br/>
                 </div>
-                <div style={{width:'30%'}}>
-                    <Dropdown  options={recurringOptions} onChange={this.handleRecurring} value={this.state.selectedRecurring} disabled={!this.state.showRecurring}/>
+                <div style={{width:'35%'}}>
+                    <Dropdown  options={recurringOptions} onChange={this.handleRecurring} value={text.selectedText} disabled={!this.state.showRecurring}/>
                 </div>
                 {
                     this.state.showEndDate ? (
@@ -388,15 +441,15 @@ class Reservations extends Component {
                                 </div>
 
                                 {
-                                    this.state.customOption == 'Weeks' ? (
+                                    this.state.customOption === 'Weeks' ? (
                                       <div>
-                                        <button onClick={() => this.handleWeekdays(1)}> Monday: {this.state.weekdays[1] ? 'ON' : 'OFF'}</button>
-                                        <button onClick={() => this.handleWeekdays(2)}> Tuesday: {this.state.weekdays[2] ? 'ON' : 'OFF'}</button>
-                                        <button onClick={() => this.handleWeekdays(3)}> Wednesday: {this.state.weekdays[3] ? 'ON' : 'OFF'}</button>
-                                        <button onClick={() => this.handleWeekdays(4)}> Thursday: {this.state.weekdays[4] ? 'ON' : 'OFF'}</button>
-                                        <button onClick={() => this.handleWeekdays(5)}> Friday: {this.state.weekdays[5] ? 'ON' : 'OFF'}</button>
-                                        <button onClick={() => this.handleWeekdays(6)}> Saturday: {this.state.weekdays[6] ? 'ON' : 'OFF'}</button>
-                                        <button onClick={() => this.handleWeekdays(0)}> Sunday: {this.state.weekdays[0] ? 'ON' : 'OFF'}</button>
+                                        <button onClick={() => this.handleMultipleDays(1)}> Monday: {this.state.weekdays[1] ? 'ON' : 'OFF'}</button>
+                                        <button onClick={() => this.handleMultipleDays(2)}> Tuesday: {this.state.weekdays[2] ? 'ON' : 'OFF'}</button>
+                                        <button onClick={() => this.handleMultipleDays(3)}> Wednesday: {this.state.weekdays[3] ? 'ON' : 'OFF'}</button>
+                                        <button onClick={() => this.handleMultipleDays(4)}> Thursday: {this.state.weekdays[4] ? 'ON' : 'OFF'}</button>
+                                        <button onClick={() => this.handleMultipleDays(5)}> Friday: {this.state.weekdays[5] ? 'ON' : 'OFF'}</button>
+                                        <button onClick={() => this.handleMultipleDays(6)}> Saturday: {this.state.weekdays[6] ? 'ON' : 'OFF'}</button>
+                                        <button onClick={() => this.handleMultipleDays(0)}> Sunday: {this.state.weekdays[0] ? 'ON' : 'OFF'}</button>
                                       </div>
                                     ): (null)
                                 }
@@ -429,7 +482,7 @@ class Reservations extends Component {
                 }
                 <br/><br/>
                 <div>
-                    <button onClick={() => this.handleVerify(this.props)}>Verify</button>
+                    <button disabled={!this.state.showVerify.every(check => {return check})} onClick={() => this.handleVerify(this.props.uniqueRooms)}>Verify</button>
                 </div>
             </div>
         );

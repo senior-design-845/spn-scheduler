@@ -36,7 +36,7 @@ app.get('/calendar', function (req, res) {
     });
 });
 
-app.post('/reservations', function(req, res) {
+app.post('/hours', function(req, res) {
     console.log('Format: ' +dateFormat(req.body.startDate, "yyyy-mm-dd hh:MM:ss"));
     connection.query(`call availableHours( ${req.body.username}, '${req.body.room}',${req.body.building}, '${dateFormat(req.body.startDate, "yyyy-mm-dd hh:MM:ss")}' )`, function(error, results, fields){
        if(error) throw error;
@@ -57,14 +57,20 @@ app.post('/verifyReservations', async function(req, res) {
     let startdate, starttime, endtime;
 
     const promises = req.body.reservations.map(async r =>{
-       startdate = moment(r).format('YYYY-MM-DD');
-       starttime = moment(req.body.startTime).format('HH:mm:ss');
-       endtime = moment(req.body.endTime).format('HH:mm:ss');
+        startdate = moment(r).format('YYYY-MM-DD');
+        starttime = moment(req.body.startTime).format('HH:mm:ss');
+        endtime = moment(req.body.endTime).format('HH:mm:ss');
 
        return new Promise(function(resolve,reject) {
-           connection.query(`call verifyReservation('${startdate + ' ' + starttime}', '${startdate + ' ' + endtime}', ${req.body.roomID})`, function (error, results, fields) {
+           connection.query(`call verifyReservation(${req.body.username},${req.body.building},'${startdate + ' ' + starttime}', '${startdate + ' ' + endtime}', ${req.body.roomID})`, function (error, results, fields) {
                if (error) throw error;
-               //console log
+
+               //Since this is asynchronous to the map assignment, reassign to get correct values
+               startdate = moment(r).format('YYYY-MM-DD');
+               starttime = moment(req.body.startTime).format('HH:mm:ss');
+               endtime = moment(req.body.endTime).format('HH:mm:ss');
+               console.log("THIS: " + startdate);
+
                resolve ({
                    id: req.body.roomID,
                    title: 'NEW RESERVATION',
