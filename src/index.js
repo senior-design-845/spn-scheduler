@@ -5,8 +5,9 @@ import './index.css';
 import App from './App.js'
 
 import * as serviceWorker from './serviceWorker';
+import EditReservations from "./EditReservations";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<EditReservations />, document.getElementById('root'));
 //Testing BigCalendar
 //ReactDOM.render(<createCalendar />, document.getElementById('root'));
 

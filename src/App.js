@@ -3,6 +3,7 @@ import BigCalendar from 'react-big-calendar'
 import moment from 'moment'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import Reservations from './Reservations.js'
+
 BigCalendar.momentLocalizer(moment);
 
 class App extends Component {
@@ -35,7 +36,6 @@ class App extends Component {
                 let uniquerooms = [];
                 let temp = [];
                 let buttons = [];
-
                 reservations.map(record => {
                     let roomid = this.search(record.room_name, uniquerooms);
                     if( roomid === -1 ) {
@@ -44,6 +44,7 @@ class App extends Component {
                             id: record.roomID,
                             title: record.room_name,
                             color: colors[i]
+
                         });
 
                         if (i === 16)
@@ -52,6 +53,9 @@ class App extends Component {
 
                         buttons.push(true);
 
+                        if (i === 16)
+                            i= 0
+                        else i++
                         temp.push([{
                             'id': uniquerooms.length-1,
                             'title': record.title,
@@ -68,6 +72,7 @@ class App extends Component {
 
                         });
                     }
+
                 });
 
                 //Pull all the events from roomEvents' arrays and add them to events as default calendar view
