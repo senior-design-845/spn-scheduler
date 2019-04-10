@@ -3,11 +3,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App.js'
+import { BrowserRouter as Router, Route, Link} from "react-router-dom";
 
 import * as serviceWorker from './serviceWorker';
 import EditReservations from "./EditReservations";
 
-ReactDOM.render(<EditReservations />, document.getElementById('root'));
+ReactDOM.render(
+    <Router>
+        <Route exact path="/calendar" component={App}/>
+        <Route path="/myreservations" component={EditReservations}/>
+    </Router>, document.getElementById('root'));
 //Testing BigCalendar
 //ReactDOM.render(<createCalendar />, document.getElementById('root'));
 

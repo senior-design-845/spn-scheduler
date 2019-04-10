@@ -1,6 +1,3 @@
-body {
-    background: #43a047;
-}
 .page-title {
     background: rgba(255, 156, 47, 0.88);
     color: white;
@@ -36,4 +33,7 @@ body {
 }
 .dd-edit-item {
     float: left;
+}
+#routing-table {
+    float: right;
 }

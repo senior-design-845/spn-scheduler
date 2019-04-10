@@ -3,6 +3,7 @@ import './EditReservations.css'
 import moment from 'moment'
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import {Link} from "react-router-dom";
 
 class EditReservations extends Component {
     constructor(props) {
@@ -70,6 +71,12 @@ class EditReservations extends Component {
     render() {
         return(
             <div>
+                <style>
+                    {document.body.style = 'background: #43a047;'}
+                </style>
+                <div id = 'routing-table'>
+                    <Link id="link" to="/calendar">Calendar</Link>
+                </div>
                 <div className = 'page-title'>My Reservations</div>
                 <div className = 'event-list-wrapper'>
                     {this.createItems(this.state.events)}

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import './App.css';
 import BigCalendar from 'react-big-calendar'
 import moment from 'moment'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import Reservations from './Reservations.js'
+import { BrowserRouter as Router, Route, Link} from "react-router-dom";
 
 BigCalendar.momentLocalizer(moment);
 
@@ -183,6 +185,9 @@ class App extends Component {
     render() {
     return (
         <div>
+            <style>
+                {document.body.style = 'background: white;'}
+            </style>
             {this.state.uniqueRooms.map((e) => (
                 <button key={e.id} style={{backgroundColor: e.color}} onClick={() => this.handleRoomClick(this.search(e.title, this.state.uniqueRooms))}>
                     {e.title + ': '}{this.state.buttonToggle[this.search(e.title, this.state.uniqueRooms)] ? 'ON' : 'OFF'}
@@ -191,6 +196,9 @@ class App extends Component {
             <button onClick={() => this.handleAllClick()}>
                 Toggle All Rooms: {this.state.allToggle ? 'ON' : 'OFF'}
             </button>
+            <div id = 'routing-table'>
+                <Link to="/myreservations">MyReservations</Link>
+            </div>
             <br/><br/>
             <div style={{height: 700}}>
                 <BigCalendar
