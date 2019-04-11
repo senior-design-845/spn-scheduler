@@ -98,7 +98,6 @@ app.post('/verifyReservations', async function(req, res) {
                startdate = moment(r).format('YYYY-MM-DD');
                starttime = moment(req.body.startTime).format('HH:mm:ss');
                endtime = moment(req.body.endTime).format('HH:mm:ss');
-               console.log("THIS: " + startdate);
 
                resolve ({
                    id: req.body.roomID,

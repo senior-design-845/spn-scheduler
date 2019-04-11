@@ -18,7 +18,7 @@ class App extends Component {
             roomEvents: [],
             buttonToggle: [],
             allToggle: true,
-
+            verificationResults: []
         };
 
         this.handleRoomClick = this.handleRoomClick.bind(this);
@@ -27,9 +27,9 @@ class App extends Component {
     }
 
     componentDidMount(){
-        //var colors = [ '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#9a6324', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075' ]
-        var colors = [ '#ce93d8', '#8e24aa', '#ab47bc', '#64b5f6', '#2196f3', '#1976d2', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#9a6324', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075' ]
-        var i = 0;
+        let colors = [ '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#9a6324', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075' ]
+        //var colors = [ '#ce93d8', '#8e24aa', '#ab47bc', '#64b5f6', '#2196f3', '#1976d2', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#9a6324', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075' ]
+        let i = 0;
 
         //Get the room reservation data from the server
         fetch('/calendar')
@@ -56,9 +56,6 @@ class App extends Component {
 
                         buttons.push(true);
 
-                        if (i === 16)
-                            i= 0
-                        else i++
                         temp.push([{
                             'id': uniquerooms.length-1,
                             'title': record.title,
@@ -128,6 +125,7 @@ class App extends Component {
         let check = false;
         let newReservations = this.state.roomEvents;
         let string;
+        let allstrings = [];
         events.map(v => {
             string = 'Start: ' + v.start;
             if(v.valid.conflict === 1 || v.valid.dailyOver === 1 || v.valid.weeklyOver === 1) {
@@ -147,11 +145,11 @@ class App extends Component {
                     title: v.title,
                     start: new Date(v.start),
                     end: new Date(v.end)
-                })
+                });
                 check = true;
             }
-            console.log(string);
-        })
+            allstrings.push(string);
+        });
 
         if(check) {
             let temp = [];
@@ -160,9 +158,17 @@ class App extends Component {
                     temp = temp.concat(newReservations[i]);
                 }
             }
-            this.setState({roomEvents: newReservations, events: temp})
-            //insert into db
+            this.setState({
+                roomEvents: newReservations,
+                events: temp,
+                verificationResults: allstrings
+            });
         }
+        else{
+            this.setState({verificationResults: allstrings});
+        }
+
+        //insert into db
     }
 
 
@@ -217,6 +223,11 @@ class App extends Component {
                 />
             </div>
             <Reservations uniqueRooms={this.state.uniqueRooms} onEventUpdate={this.addReservations}/>
+            {
+                this.state.verificationResults.map(s => {
+                    return <p>{s}</p>
+                })
+            }
         </div>
     );
   }
