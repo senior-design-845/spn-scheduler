@@ -5,6 +5,23 @@ import "./Reservations.css";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import NumericInput from 'react-numeric-input';
+import Modal from 'react-modal'
+import moment from 'moment'
+
+const customStyles = {
+    overlay: {
+      backgroundColor: 'papayawhip'
+    },
+    content : {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)'
+    }
+};
+Modal.setAppElement(document.getElementById('root'));
 
 class Reservations extends Component {
     constructor(props){
@@ -18,7 +35,7 @@ class Reservations extends Component {
             showRecurring: false,
             showEndDate: false,
             showCustom: false,
-            showVerify: [false,false,false,false,false,false],
+            showVerify: [false,false,false,false,false,false,false,false],
             startDate: null,        //Selected start date
             endDate: null,
             startTime: null,        //Selected start time
@@ -37,7 +54,9 @@ class Reservations extends Component {
             maxEndTime: null,        //Min of dayEnd and ( chosen StartTime + hoursLeft)
             recurringNumber: 1,
             weekdays: [false,false,false,false,false,false,false],
-            weekInMonth: 0
+            weekInMonth: 0,
+            modalIsOpen: false,
+            verificationResults: []
         }
 
         this.handleStartDateChange = this.handleStartDateChange.bind(this);
@@ -49,6 +68,10 @@ class Reservations extends Component {
         this.handleNumber = this.handleNumber.bind(this);
         this.handleCustom = this.handleCustom.bind(this);
         this.handleMultipleDays = this.handleMultipleDays.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+
     }
 
     componentDidMount() {
@@ -314,10 +337,68 @@ class Reservations extends Component {
         }).then(response => response.json())
             .then(valid => {
 
-                this.props.onEventUpdate(valid);
+                let check = false;
+                let newReservations = [];
+                let string;
+                let allstrings = [];
+                valid.map(v => {
+                    string = v.start + ' to ' + v.end;
+                    if(v.valid.conflict === 1 || v.valid.dailyOver === 1 || v.valid.weeklyOver === 1) {
+                        string += ' -> Rejected';
+                        if (v.valid.conflict === 1) {
+                            string += ' -> Schedule conflict';
+                        }
+                        if (v.valid.dailyOver === 1) {
+                            string += ' -> Over daily hours'
+                        }
+                        if (v.valid.weeklyOver === 1) {
+                            string += ' -> Over weekly hours'
+                        }
+                    }
+                    else{
+                        string += ' -> Accepted';
+                        newReservations.push({
+                            id: this.searchIndex(v.id, this.props.uniqueRooms),
+                            title: v.title,
+                            start: new Date(v.start),
+                            end: new Date(v.end)
+                        });
+                        check = true;
+                    }
+                    allstrings.push(string);
+                });
+
+                this.setState({verificationResults: allstrings, modalIsOpen: true, showSubmit: check});
+                //insert into db
 
             })
 
+    }
+
+    handleChange(event){
+        let tempVerify = this.state.showVerify;
+        if(event.target.name === "tempTitle"){
+            if(event.target.value.length === 0)
+                tempVerify[6] = false;
+            else
+                tempVerify[6] = true;
+        }
+        else{
+            if(event.target.value.length === 0)
+                tempVerify[7] = false;
+            else
+                tempVerify[7] = true;
+        }
+
+        this.setState({[event.target.name]: event.target.value, showVerify: tempVerify});
+    }
+
+    searchIndex(id, array){
+        for(let i=0; i<array.length;i++){
+            if(array[i].id === id)
+                return i;
+        }
+        return -1;
     }
 
     recurringFlavorText(){
@@ -376,6 +457,17 @@ class Reservations extends Component {
         return text;
     }
 
+    closeModal(){
+        this.setState({modalIsOpen: false});
+    }
+    afterOpenModal(){
+        //this.subtitle.style.color = '#f00';
+    }
+
+    handleSubmit(){
+        this.setState({modalIsOpen: false});
+    }
+
     render(){
         let uniquerooms = [];
         this.props.uniqueRooms.map(e => {
@@ -401,7 +493,7 @@ class Reservations extends Component {
                         minDate={this.state.semesterStart}
                         maxDate={this.state.semesterEnd}
                         disabled={!this.state.showStartDate}
-                        placeholderText="Please choose a room option"
+                        placeholderText="Choose Start Date"
                     />
                     <br/>
                     <DatePicker
@@ -415,7 +507,7 @@ class Reservations extends Component {
                         dateFormat="h:mm aa"
                         timeCaption="Start"
                         disabled={!this.state.showStartTime}
-                        placeholderText="Please choose a Start date"
+                        placeholderText="Choose Start Time"
                     />
                     <br/><br/>
                     <DatePicker
@@ -429,7 +521,7 @@ class Reservations extends Component {
                         dateFormat="h:mm aa"
                         timeCaption="End"
                         disabled={!this.state.showEndTime}
-                        placeholderText="Please choose a Start time"
+                        placeholderText="Choose End Time"
                     />
                     <br/>
                 </div>
@@ -490,8 +582,36 @@ class Reservations extends Component {
                     ) : (null)
                 }
                 <br/><br/>
+                <label className = 'dd-edit-item'>
+                    Title:
+                    <input name = 'tempTitle' type="text" maxLength="255" value={this.state.tempTitle} onChange={this.handleChange} />
+                </label>
+                <label className = 'dd-edit-item'>
+                    Description:
+                    <input name = 'tempDescription' type="text" maxLength="255" value={this.state.tempDescription} onChange={this.handleChange} />
+                </label>
+                <br/><br/>
                 <div>
                     <button disabled={!this.state.showVerify.every(check => {return check})} onClick={() => this.handleVerify(this.props.uniqueRooms)}>Verify</button>
+                </div>
+                <div>
+                    <Modal
+                        isOpen={this.state.modalIsOpen}
+                        onAfterOpen={this.afterOpenModal}
+                        onRequestClose={this.closeModal}
+                        style={customStyles}
+                        contentLabel="Example Modal"
+                    >
+                        {
+                            this.state.verificationResults.map(s => {
+                                return <p>{s}</p>
+                            })
+                        }
+                        <button onClick={this.closeModal}>Close</button>
+                        {
+                            this.state.showSubmit ? <button onClick={this.handleSubmit}>Submit</button> : null
+                        }
+                    </Modal>
                 </div>
             </div>
         );
