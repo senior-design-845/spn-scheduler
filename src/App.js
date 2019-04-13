@@ -139,7 +139,7 @@ class App extends Component {
                 </button>
             ))}
             <button onClick={() => this.handleAllClick()}>
-                Toggle All Rooms: {this.state.allToggle ? 'ON' : 'OFF'}
+                Toggle All Rooms: {this.state.allToggle ? 'ALL' : 'NONE'}
             </button>
             <div id = 'routing-table'>
                 <Link to="/myreservations">MyReservations</Link>
@@ -155,7 +155,7 @@ class App extends Component {
                     startAccessor = 'start'
                     endAccessor = 'end'
                     eventPropGetter={(event) => ({
-                        style: {
+                        style:{
                             backgroundColor: this.state.uniqueRooms[event.id].color
                         }
                     })}
