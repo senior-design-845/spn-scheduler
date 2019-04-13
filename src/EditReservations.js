@@ -10,17 +10,23 @@ class EditReservations extends Component {
         super(props);
 
         this.state = {
-            userID : 478,
+            userID : 897,
+            userClass : 3,
             buildingID : 1,
             orderBy: 1,
             events : []
         }
+
+        this.createItem = this.createItem.bind(this);
+        this.createItems = this.createItems.bind(this);
+        this.getReservations = this.getReservations.bind(this);
     }
 
     // This is the creation of the list items
     createItem(item) {
+        let userClass = this.state.userClass;
         return(
-            <EventDropdown event={item} />
+            <EventDropdown event={item} userClass={this.state.userClass} userID={this.state.userID}/>
         )
     }
 
@@ -125,12 +131,17 @@ class EventDropdown extends Component {
             room_name: this.props.event.room_name,
             roomID: this.props.event.roomID,
             recordID: this.props.event.recordID,
+            buildingID: this.props.event.buildingID,
             tempDate: dateObjectStart,
             tempStartTime: dateObjectStart,
             tempEndTime: dateObjectEnd,
             tempTitle: this.props.event.title,
             tempDescription: this.props.event.event_detail,
             recurring: this.props.event.recurring_recordID,
+            userClass: this.props.userClass,
+            userID: this.props.userID,
+            minTime: new Date(dateObjectStart).setMinutes(dateObjectStart.getMinutes() + 30),
+            maxTime: new Date(dateObjectStart).setHours(dateObjectStart.getHours() + 2),
         }
     }
 
@@ -166,6 +177,8 @@ class EventDropdown extends Component {
             tempEndTime: this.state.dateObjectEnd,
             tempTitle: this.state.title,
             tempDescription: this.state.description,
+            minTime: new Date(this.state.dateObjectStart).setMinutes(this.state.dateObjectStart.getMinutes() + 30),
+            maxTime: new Date(this.state.dateObjectStart).setHours(this.state.dateObjectStart.getHours() + 2),
         }, () => {
             document.addEventListener('click', this.closeDDContent);
         });
@@ -187,9 +200,14 @@ class EventDropdown extends Component {
         return fullString;
     }
 
+    convertDateTime(rawDate) {
+        let stringDate = moment(rawDate).format('YYYY-MM-DD HH:mm:ss');
+
+        return stringDate;
+    }
+
     handleChange(event) {
         return this.setState({[event.target.name]: event.target.value});
-
     }
 
     handleDateChange(date) {
@@ -197,7 +215,12 @@ class EventDropdown extends Component {
     }
 
     handleStartTimeChange(time) {
-        this.setState({tempStartTime: time});
+        this.setState({
+            tempStartTime: time,
+            minTime: new Date(time).setMinutes(time.getMinutes() + 30),
+            maxTime: new Date(time).setHours(time.getHours() + 2),
+            tempEndTime: new Date(time).setMinutes(time.getMinutes() + 30),
+        });
     }
 
     handleEndTimeChange(time) {
@@ -220,6 +243,9 @@ class EventDropdown extends Component {
                 title: this.state.tempTitle,
                 event_detail: this.state.tempDescription,
                 recurring: this.state.recurring,
+                userID: this.state.userID,
+                buildingID: this.state.buildingID,
+                roomID: this.state.roomID,
             }),
         });
 
@@ -285,8 +311,6 @@ class EventDropdown extends Component {
                                                     onChange={this.handleStartTimeChange}
                                                     showTimeSelect
                                                     showTimeSelectOnly
-                                                    //minTime={this.state.dayStart}
-                                                    //maxTime={this.state.maxStartTime}
                                                     timeIntervals={30}
                                                     dateFormat="h:mm aa"
                                                     timeCaption="Start"
@@ -300,8 +324,8 @@ class EventDropdown extends Component {
                                                     onChange={this.handleEndTimeChange}
                                                     showTimeSelect
                                                     showTimeSelectOnly
-                                                    // minTime={this.state.tempStartTime}
-                                                    // maxTime={this.state.}
+                                                    minTime={this.state.userClass === 3 ? this.state.minTime : null}
+                                                    maxTime={this.state.userClass === 3 ? this.state.maxTime : null}
                                                     timeIntervals={30}
                                                     dateFormat="h:mm aa"
                                                     timeCaption="End"
