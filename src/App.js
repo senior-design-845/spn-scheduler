@@ -20,13 +20,11 @@ class App extends Component {
             events: [],
             roomEvents: [],
             buttonToggle: [],
-            allToggle: true,
-            verificationResults: []
+            allToggle: true
         };
 
         this.handleRoomClick = this.handleRoomClick.bind(this);
         this.handleAllClick = this.handleAllClick.bind(this);
-        this.addReservations = this.addReservations.bind(this);
     }
 
     componentDidMount(){
@@ -149,57 +147,6 @@ class App extends Component {
         })
     }
 
-    addReservations(events) {
-        let check = false;
-        let newReservations = this.state.roomEvents;
-        let string;
-        let allstrings = [];
-        events.map(v => {
-            string = 'Start: ' + v.start;
-            if(v.valid.conflict === 1 || v.valid.dailyOver === 1 || v.valid.weeklyOver === 1) {
-                if (v.valid.conflict === 1) {
-                    string += ' -> Schedule conflict';
-                }
-                if (v.valid.dailyOver === 1) {
-                    string += ' -> Over daily hours'
-                }
-                if (v.valid.weeklyOver === 1) {
-                    string += ' -> Over weekly hours'
-                }
-            }
-            else{
-                newReservations[this.searchIndex(v.id, this.state.uniqueRooms)].push({
-                    id: this.searchIndex(v.id, this.state.uniqueRooms),
-                    title: v.title,
-                    start: new Date(v.start),
-                    end: new Date(v.end)
-                });
-                check = true;
-            }
-            allstrings.push(string);
-        });
-
-        if(check) {
-            let temp = [];
-            for (let i = 0; i < this.state.buttonToggle.length; i++) {
-                if (this.state.buttonToggle[i]) {
-                    temp = temp.concat(newReservations[i]);
-                }
-            }
-            this.setState({
-                roomEvents: newReservations,
-                events: temp,
-                verificationResults: allstrings
-            });
-        }
-        else{
-            this.setState({verificationResults: allstrings});
-        }
-
-        //insert into db
-    }
-
-
     search(nameKey, myArray){
         for(let i=0; i<myArray.length; i++){
             if(myArray[i].title === nameKey)
@@ -207,14 +154,6 @@ class App extends Component {
         }
         return -1;
     }
-    searchIndex(id, array){
-        for(let i=0; i<array.length;i++){
-            if(array[i].id === id)
-                return i;
-        }
-        return -1;
-    }
-
 
     render() {
     return (
@@ -228,7 +167,7 @@ class App extends Component {
                 </button>
             ))}
             <button onClick={() => this.handleAllClick()}>
-                Toggle All Rooms: {this.state.allToggle ? 'ON' : 'OFF'}
+                Toggle All Rooms: {this.state.allToggle ? 'ALL' : 'NONE'}
             </button>
             <div id = 'routing-table'>
                 <Link to="/myreservations">MyReservations</Link>
@@ -244,18 +183,13 @@ class App extends Component {
                     startAccessor = 'start'
                     endAccessor = 'end'
                     eventPropGetter={(event) => ({
-                        style: {
+                        style:{
                             backgroundColor: this.state.uniqueRooms[event.id].color
                         }
                     })}
                 />
             </div>
-            <Reservations uniqueRooms={this.state.uniqueRooms} onEventUpdate={this.addReservations}/>
-            {
-                this.state.verificationResults.map(s => {
-                    return <p>{s}</p>
-                })
-            }
+            <Reservations uniqueRooms={this.state.uniqueRooms}/>
         </div>
     );
   }

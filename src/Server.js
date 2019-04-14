@@ -57,8 +57,11 @@ app.post('/editReservation', function (req, res) {
     let title = req.body.title;
     let event_detail = req.body.event_detail;
     let recurring = req.body.recurring;
+    let userID = req.body.userID;
+    let buildingID = req.body.buildingID;
+    let roomID = req.body.roomID;
 
-    connection.query(`call editReservation(${recordID},"${start_datetime}","${end_datetime}","${title}","${event_detail}",${recurring})`, function(error, results, fields){
+    connection.query(`call editReservation(${recordID},"${start_datetime}","${end_datetime}","${title}","${event_detail}")`, function(error, results, fields){
         if(error) throw error;
         console.log('Connected');
         res.send(results[0]);
@@ -66,10 +69,8 @@ app.post('/editReservation', function (req, res) {
 });
 
 app.post('/hours', function(req, res) {
-    console.log('Format: ' +dateFormat(req.body.startDate, "yyyy-mm-dd hh:MM:ss"));
     connection.query(`call availableHours( ${req.body.username}, '${req.body.room}',${req.body.building}, '${dateFormat(req.body.startDate, "yyyy-mm-dd hh:MM:ss")}' )`, function(error, results, fields){
        if(error) throw error;
-       console.log(results[0][0]);
        res.send(results[0][0]);
     });
 });
@@ -77,7 +78,6 @@ app.post('/hours', function(req, res) {
 app.post('/semester', function(req, res) {
     connection.query(`call getSemester(${req.body.building})`, function(error, results, fields){
         if(error) throw error;
-        console.log(results[0][0]);
         res.send(results[0][0]);
     });
 });
@@ -111,9 +111,6 @@ app.post('/verifyReservations', async function(req, res) {
 
    });
     let hold = await(Promise.all(promises));
-    console.log(hold);
-    //console.log(await Promise.all(promises));
-    //console.log(accepted);
     res.send(hold);
 });
 
