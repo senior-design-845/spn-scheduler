@@ -10,7 +10,7 @@ class EditReservations extends Component {
         super(props);
 
         this.state = {
-            userID : 18,
+            userID : 1,
             userClass : 3,
             buildingID : 1,
             orderBy: 1,

@@ -123,6 +123,7 @@ app.post('/availableRooms', function(req, res){
 
     connection.query(`call availableRooms(${req.body.username},${req.body.building},'${startdate + ' ' + starttime}', '${startdate + ' ' + endtime}')`, function(error, results, fields){
         if (error) throw error;
+        console.log(results[0]);
         res.send(results[0]);
     });
 });
@@ -156,7 +157,7 @@ app.post('/insertReservations', async function(req, res){
     else{
         let start = moment(req.body.reservations[0].start).format('YYYY-MM-DD HH:mm:ss');
         let end = moment(req.body.reservations[0].end).format('YYYY-MM-DD HH:mm:ss');
-        console.log(req.body.title + ' ' + req.body.description);
+
         connection.query(`call insertReservation(${req.body.username},${req.body.room},${req.body.building},'${start}','${end}','${req.body.title}','${req.body.description}', null)`,function(error,results,fields) {
             if(error) throw error;
             res.send("Finished single");

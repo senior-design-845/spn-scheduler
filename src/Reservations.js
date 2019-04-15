@@ -6,6 +6,7 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import NumericInput from 'react-numeric-input';
 import Modal from 'react-modal'
+import moment from 'moment'
 
 const customStyles = {
     overlay: {
@@ -127,12 +128,21 @@ class Reservations extends Component {
             if(this.state.startDate !== null)       //Handles changing from AAR to an actual room and already having chosen start date
                 recurring = true;
 
+            tempVerify[1] = false;
+            tempVerify[2] = false;
+            tempVerify[3] = false;
+
             this.setState({
                 selectedRoom: selected.value,
                 showStartDate: true,
                 showVerify: tempVerify,
                 showRecurring: recurring,
-                showAvailableRooms: false
+                showAvailableRooms: false,
+                startDate: null,
+                startTime: null,
+                endTime: null,
+                showStartTime: false,
+                showEndTime: false
             })
         }
     }
@@ -173,18 +183,19 @@ class Reservations extends Component {
         }).then(response => response.json())
             .then( hours => {
                     let tempDate = null, tempDate2 = null;
-                    if(hours.dayStart === null || hours.dayEnd === null) {
+                    if(hours.dayStart !== null && hours.dayEnd !== null) {
                         //Getting the date variables for the dayStart and dayEnd state values
                         let tempTime = String(hours.dayStart).split(/[:]/);
-                        let tempDate = new Date();
+                        tempDate = new Date();
                         tempDate.setMinutes(parseInt(tempTime[1], 10));
                         tempDate.setHours(parseInt(tempTime[0], 10));
-                        let tempDate2 = new Date();
+                        tempDate2 = new Date();
                         tempTime = String(hours.dayEnd).split(/[:]/);
                         tempDate2.setMinutes(parseInt(tempTime[1], 10));
                         tempDate2.setHours(parseInt(tempTime[0], 10));
                     }
 
+                    console.log(tempDate2 + ' ' + tempDate + ' ' + hours.dayStart + ' ' + hours.dayEnd);
                     this.setState({
                         dailyHoursLeft: hours.dailyHours,
                         weeklyHoursLeft: hours.weeklyHours,
@@ -538,11 +549,20 @@ class Reservations extends Component {
     }
 
     handleAvailable(selected){
+        let startdate = moment(this.state.startDate).format('YYYY-MM-DD');
+        let starttime = moment(this.state.startTime).format('HH:mm:ss');
+        let endtime = moment(this.state.endTime).format('HH:mm:ss');
+
+        let reservation = [{
+            start: startdate + ' ' + starttime,
+            end: startdate + ' ' + endtime
+        }];
         this.setState({
             selectedRoom: selected.value,
             showSubmit: true,
             showRecurring: true,
-            showAvailableRooms: false
+            showAvailableRooms: false,
+            validReservations: reservation
         })
     }
 
