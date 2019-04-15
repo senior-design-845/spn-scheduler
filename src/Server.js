@@ -38,7 +38,13 @@ app.get('/calendar', function (req, res) {
     });
 });
 
-app.get('/email', function (req,res){
+app.post('/email', function (req,res){
+    let emailMessage = `${req.body.room} was successfully reserved!\nEvent Title: ${req.body.title}\nEvent Description: ${req.body.description}\n\nTimes:\n`;
+    req.body.reservations.map(r => {
+        emailMessage += `Start: ${moment(r.start).format('YYYY-MM-DD HH:mm:ss')}\n`;
+        emailMessage += `End: ${moment(r.end).format('YYYY-MM-DD HH:mm:ss')}\n\n`;
+    });
+
 
     ///////////////////////////////////////////////////////////////////////
     var nodemailer = require('nodemailer');
@@ -56,9 +62,9 @@ app.get('/email', function (req,res){
     // send mail with defined transport object
     const mailOptions = {
         from: 'utdroomreservation@gmail.com',
-        to: '97-soccer@sbcglobal.net',
+        to: 'jcc160330@utdallas.edu',
         subject: 'Sending Email using Node.js[nodemailer]',
-        text: 'That was easy!'
+        text: emailMessage
     };
 
     transporter.sendMail(mailOptions, function (err, info) {
@@ -69,7 +75,7 @@ app.get('/email', function (req,res){
             console.log(info);
     });
 
-    res.send(null);
+    res.send("Email sent");
     ////////////////////////////////////////////////////////////////
 
 });

@@ -533,6 +533,22 @@ class Reservations extends Component {
             .then(valid => {
                 this.setState({modalIsOpen: false});
                 console.log(valid);
+
+                fetch ('/email', {
+                    method: 'post',
+                    headers: {
+                        'Accept': "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: 1,
+                        building: 1,
+                        room: this.state.selectedRoom,
+                        title: this.state.tempTitle,
+                        description: this.state.tempDescription,
+                        reservations: this.state.validReservations
+                    })
+                }).then(res=>res.text());
                 window.location.reload();
             })
 

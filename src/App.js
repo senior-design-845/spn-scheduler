@@ -84,8 +84,6 @@ class App extends Component {
                 this.setState({reservations: reservations, events: totaltemp, roomEvents: temp, uniqueRooms: uniquerooms, buttonToggle: buttons})
             });
 
-        //fetch ('/email').then(res=>res.text());
-
     }
 
     handleRoomClick(i){
