@@ -38,6 +38,44 @@ app.get('/calendar', function (req, res) {
     });
 });
 
+app.get('/email', function (req,res){
+
+    ///////////////////////////////////////////////////////////////////////
+    var nodemailer = require('nodemailer');
+    var smtpTransport = require('nodemailer-smtp-transport');
+
+    var transporter = nodemailer.createTransport(smtpTransport({
+        service: 'gmail',
+            host: 'smtp.gmail.com',
+            auth: {
+                user: 'utdroomreservation@gmail.com',
+                pass: 'goteam845'
+            }
+    }));
+
+    // send mail with defined transport object
+    const mailOptions = {
+        from: 'utdroomreservation@gmail.com',
+        to: '97-soccer@sbcglobal.net',
+        subject: 'Sending Email using Node.js[nodemailer]',
+        text: 'That was easy!'
+    };
+
+    transporter.sendMail(mailOptions, function (err, info) {
+        console.log("yo");
+        if(err)
+            console.log(err)
+        else
+            console.log(info);
+    });
+
+    res.send(null);
+    ////////////////////////////////////////////////////////////////
+
+});
+
+
+
 app.post('/userReservations', function (req, res) {
     let uid = req.body.uid;
     let bid = req.body.bid;

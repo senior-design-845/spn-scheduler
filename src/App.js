@@ -84,29 +84,7 @@ class App extends Component {
                 this.setState({reservations: reservations, events: totaltemp, roomEvents: temp, uniqueRooms: uniquerooms, buttonToggle: buttons})
             });
 
-
-        ///////////////////////////////////////////////////////////////////////
-        var nodemailer = require('nodemailer');
-        var smtpTransport = require('nodemailer-smtp-transport');
-
-        var transporter = nodemailer.createTransport(smtpTransport({
-            service: 'gmail',
-            host: 'smtp.gmail.com',
-            auth: {
-                user: 'utdroomreservation@gmail.com',
-                pass: 'goteam845'
-            }
-        }));
-
-        // send mail with defined transport object
-         let mailOptions = {
-            from: 'utdroomreservation@gmail.com',
-            to: 'mdf150230@utdallas.edu',
-            subject: 'Sending Email using Node.js[nodemailer]',
-            text: 'That was easy!'
-        };
-
-        ///////////////////////////////////////////////////////////////////////
+        fetch ('/email').then(res=>res.text());
 
     }
 
