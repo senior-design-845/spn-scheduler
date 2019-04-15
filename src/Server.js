@@ -88,6 +88,17 @@ app.post('/userReservations', function (req, res) {
     });
 });
 
+app.post('/userAllReservations', function (req, res) {
+    let bid = req.body.bid;
+    let orderBy = req.body.orderBy;
+
+    connection.query(`call userAllReservations(${bid},${orderBy})`, function(error, results, fields){
+        if(error) throw error;
+        console.log('Connected');
+        res.send(results[0]);
+    });
+});
+
 app.post('/editReservation', function (req, res) {
     let recordID = req.body.recordID;
     let start_datetime = req.body.start_datetime;

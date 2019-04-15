@@ -37,3 +37,7 @@
 #routing-table {
     float: right;
 }
+#reservation-buttons {
+    float: right;
+    cursor: pointer;
+}

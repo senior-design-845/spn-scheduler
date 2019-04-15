@@ -11,15 +11,17 @@ class EditReservations extends Component {
 
         this.state = {
             userID : 1,
-            userClass : 3,
+            userClass : 1,
             buildingID : 1,
             orderBy: 1,
-            events : []
+            events : [],
         };
 
         this.createItem = this.createItem.bind(this);
         this.createItems = this.createItems.bind(this);
         this.getReservations = this.getReservations.bind(this);
+        this.handleAllRes = this.handleAllRes.bind(this);
+        this.handleMyRes = this.handleMyRes.bind(this);
     }
 
     // This is the creation of the list items
@@ -75,7 +77,45 @@ class EditReservations extends Component {
             });
     }
 
-    componentDidMount(){
+    handleAllRes() {
+        fetch('/userAllReservations', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                bid: this.state.buildingID,
+                orderBy: this.state.orderBy,
+            }),
+        })
+            .then(response => response.json())
+            .then(reservations => {
+                let events = [];
+
+                reservations.map(record => {
+                    events.push({
+                        roomID: record.roomID,
+                        start_datetime: record.start_datetime,
+                        end_datetime: record.end_datetime,
+                        title: record.title,
+                        event_detail: record.event_detail,
+                        recordID: record.recordID,
+                        recurring_recordID: record.recurring_recordID,
+                        room_name: record.room_name,
+                    });
+                    return null;
+                });
+
+                this.setState({events: events});
+            });
+    }
+
+    handleMyRes() {
+        this.getReservations();
+    }
+
+    componentDidMount() {
         this.getReservations();
     }
 
@@ -89,6 +129,14 @@ class EditReservations extends Component {
                     <Link id="link" to="/calendar">Calendar</Link>
                 </div>
                 <div className = 'page-title'>My Reservations</div>
+                {
+                    this.state.userClass === 1 ? (
+                        <div id = 'reservation-buttons'>
+                            <button onClick={this.handleAllRes}>All Reservations</button>
+                            <button onClick={this.handleMyRes}>My Reservations</button>
+                        </div>
+                    ) : null
+                }
                 <div className = 'event-list-wrapper'>
                     {this.createItems(this.state.events)}
                 </div>
