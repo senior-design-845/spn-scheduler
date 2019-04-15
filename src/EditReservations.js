@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
 import './EditReservations.css'
 import moment from 'moment'
 import DatePicker from 'react-datepicker';
@@ -15,6 +16,7 @@ class EditReservations extends Component {
             buildingID : 1,
             orderBy: 1,
             events : [],
+            rerender: false,
         };
 
         this.createItem = this.createItem.bind(this);
@@ -26,7 +28,6 @@ class EditReservations extends Component {
 
     // This is the creation of the list items
     createItem(item) {
-        let userClass = this.state.userClass;
         return(
             <EventDropdown
                 event={item}
@@ -75,9 +76,12 @@ class EditReservations extends Component {
 
                 this.setState({events: events});
             });
+
     }
 
     handleAllRes() {
+        this.setState({events: []});
+
         fetch('/userAllReservations', {
             method: 'POST',
             headers: {
@@ -112,6 +116,8 @@ class EditReservations extends Component {
     }
 
     handleMyRes() {
+        this.setState({events: []});
+
         this.getReservations();
     }
 
@@ -137,7 +143,7 @@ class EditReservations extends Component {
                         </div>
                     ) : null
                 }
-                <div className = 'event-list-wrapper'>
+                <div ref = 'events' className = 'event-list-wrapper'>
                     {this.createItems(this.state.events)}
                 </div>
             </div>
@@ -351,10 +357,10 @@ class EventDropdown extends Component {
                 if (conflict > 0) {
                     this.setState({dateConflict: true});
                 }
-                else if (dailyOver > 0) {
+                else if (dailyOver > 0 && this.state.userClass !== 1) {
                     this.setState({dailyConflict: true})
                 }
-                else if (weeklyOver > 0) {
+                else if (weeklyOver > 0 && this.state.userClass !== 1) {
                     this.setState({weeklyConflict: true})
                 }
                 else {
