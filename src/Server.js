@@ -134,7 +134,7 @@ app.post('/availableRooms', function(req, res){
 
     connection.query(`call availableRooms(${req.body.username},${req.body.building},'${startdate + ' ' + starttime}', '${startdate + ' ' + endtime}')`, function(error, results, fields){
         if (error) throw error;
-        console.log(results[0]);
+
         res.send(results[0]);
     });
 });
@@ -178,7 +178,6 @@ app.post('/insertReservations', async function(req, res){
 
 app.post('/verifyReservations', async function(req, res) {
     let startdate, starttime, endtime;
-
     const promises = req.body.reservations.map(async r =>{
         startdate = moment(r).format('YYYY-MM-DD');
         starttime = moment(req.body.startTime).format('HH:mm:ss');
@@ -206,6 +205,7 @@ app.post('/verifyReservations', async function(req, res) {
 
    });
     let hold = await(Promise.all(promises));
+
     res.send(hold);
 });
 

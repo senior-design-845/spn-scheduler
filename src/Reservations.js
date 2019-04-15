@@ -36,8 +36,9 @@ class Reservations extends Component {
             showRecurring: false,
             showEndDate: false,
             showCustom: false,
-            showVerify: [false,false,false,false,false,false,false,false],
-            showAvailableRooms: false,
+            showVerify: [false,false,false,false,false,false,false,false,false],
+            showGetRooms: false,
+            showAvailableOptions: false,
             startDate: null,        //Selected start date
             endDate: null,
             startTime: null,        //Selected start time
@@ -76,6 +77,7 @@ class Reservations extends Component {
         this.closeModal = this.closeModal.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleAvailable = this.handleAvailable.bind(this);
+        this.handleGetRooms = this.handleGetRooms.bind(this);
     }
 
     componentDidMount() {
@@ -107,6 +109,8 @@ class Reservations extends Component {
                 //Sets the weekday value
                 days[this.state.startDate.getDay()] = true;
             }
+            //Will need to select from available rooms
+            tempVerify[8] = false;
 
             this.setState({
                 selectedRoom: selected.value,
@@ -120,7 +124,8 @@ class Reservations extends Component {
                 customOption: 'Days',
                 recurringNumber: 1,
                 weekdays: days,
-                showAvailableRooms: true
+                showGetRooms: true,
+                showAvailableOptions: false
             });
         }
         else{
@@ -131,13 +136,14 @@ class Reservations extends Component {
             tempVerify[1] = false;
             tempVerify[2] = false;
             tempVerify[3] = false;
+            tempVerify[8] = true;
 
             this.setState({
                 selectedRoom: selected.value,
                 showStartDate: true,
                 showVerify: tempVerify,
                 showRecurring: recurring,
-                showAvailableRooms: false,
+                showGetRooms: false,
                 startDate: null,
                 startTime: null,
                 endTime: null,
@@ -211,7 +217,9 @@ class Reservations extends Component {
                         endTime: null,
                         weekInMonth: count,
                         showVerify: tempVerify,
-                        weekdays: days
+                        weekdays: days,
+                        showGetRooms: this.state.selectedRoom === "Any Available Room",
+                        showAvailableOptions: false
                     })
             });
     }
@@ -240,7 +248,9 @@ class Reservations extends Component {
             maxEndTime: endtime,
             showEndTime: true,
             endTime: end,
-            showVerify: tempVerify
+            showVerify: tempVerify,
+            showGetRooms: this.state.selectedRoom === "Any Available Room",
+            showAvailableOptions: false
         });
 
     }
@@ -248,7 +258,12 @@ class Reservations extends Component {
         //End time has been selected
         let tempVerify = this.state.showVerify;
         tempVerify[3] = true;
-        this.setState({ endTime: date, showVerify: tempVerify});
+        this.setState({
+            endTime: date,
+            showVerify: tempVerify,
+            showGetRooms: this.state.selectedRoom === "Any Available Room",
+            showAvailableOptions: false
+        });
     }
 
     handleRecurring(selected){
@@ -276,7 +291,8 @@ class Reservations extends Component {
             customOption: selected.value === 'Custom' ? 'Days':'',
             recurringNumber: 1,
             showVerify: tempVerify,
-            weekdays: days
+            weekdays: days,
+            showGetRooms: this.state.selectedRoom === "Any Available Room"
         })
     }
 
@@ -310,130 +326,104 @@ class Reservations extends Component {
     }
 
     handleVerify(uniqueRooms){
-        if(this.state.selectedRoom !== 'Any Available Room') {
-            //Get room integer
-            let roomID = -1;
-            uniqueRooms.map(e => {
-                if (e.title === this.state.selectedRoom)
-                    roomID = e.id;
-            });
+        //Get room integer
+        let roomID = -1;
+        uniqueRooms.map(e => {
+            if (e.title === this.state.selectedRoom)
+                roomID = e.id;
+        });
 
-            let resDates = [];
-            if (this.state.selectedRecurring === 'Does not repeat') {
-                resDates = [this.state.startDate];
-            } else {
-                let tempDate = new Date(this.state.startDate);
+        let resDates = [];
+        if (this.state.selectedRecurring === 'Does not repeat') {
+            resDates = [this.state.startDate];
+        } else {
+            let tempDate = new Date(this.state.startDate);
 
-                if (this.state.selectedRecurring === 'Daily' || this.state.customOption === 'Days') {
-                    while (tempDate <= this.state.endDate) {
+            if (this.state.selectedRecurring === 'Daily' || this.state.customOption === 'Days') {
+                while (tempDate <= this.state.endDate) {
 
-                        resDates.push(new Date(tempDate));
-                        tempDate.setDate(tempDate.getDate() + this.state.recurringNumber)
-                    }
-                } else if (this.state.selectedRecurring === 'Weekly' || this.state.customOption === 'Weeks') {
-                    while (tempDate <= this.state.endDate) {
-                        let dayofweek = this.state.startDate.getDay();
-                        for (let i = 0; i < 7; i++) {
-                            if (this.state.weekdays[i]) {
-                                let check = new Date(new Date(tempDate).setDate(tempDate.getDate() + (i - dayofweek)));
-                                if (check <= this.state.endDate && check >= this.state.startDate)
-                                    resDates.push(check);
-                            }
+                    resDates.push(new Date(tempDate));
+                    tempDate.setDate(tempDate.getDate() + this.state.recurringNumber)
+                }
+            } else if (this.state.selectedRecurring === 'Weekly' || this.state.customOption === 'Weeks') {
+                while (tempDate <= this.state.endDate) {
+                    let dayofweek = this.state.startDate.getDay();
+                    for (let i = 0; i < 7; i++) {
+                        if (this.state.weekdays[i]) {
+                            let check = new Date(new Date(tempDate).setDate(tempDate.getDate() + (i - dayofweek)));
+                            if (check <= this.state.endDate && check >= this.state.startDate)
+                                resDates.push(check);
                         }
-                        tempDate.setDate(tempDate.getDate() + (7 * this.state.recurringNumber));
                     }
-                } else if (this.state.selectedRecurring === 'Monthly' || this.state.customOption === 'Months') {
-                    let month = this.state.startDate.getMonth();
-                    while (tempDate <= this.state.endDate) {
-                        resDates.push(new Date(tempDate));
-                        while (tempDate.getMonth() === month) {
-                            tempDate.setDate(tempDate.getDate() + 7);
-                        }
-                        let addNum = this.state.weekInMonth - (this.state.weekInMonth === 5 ? 2 : 1);
-                        tempDate.setDate(tempDate.getDate() + (7 * (addNum)));
-                        month = month === 12 ? 1 : month + 1;
+                    tempDate.setDate(tempDate.getDate() + (7 * this.state.recurringNumber));
+                }
+            } else if (this.state.selectedRecurring === 'Monthly' || this.state.customOption === 'Months') {
+                let month = this.state.startDate.getMonth();
+                while (tempDate <= this.state.endDate) {
+                    resDates.push(new Date(tempDate));
+                    while (tempDate.getMonth() === month) {
+                        tempDate.setDate(tempDate.getDate() + 7);
                     }
+                    let addNum = this.state.weekInMonth - (this.state.weekInMonth === 5 ? 2 : 1);
+                    tempDate.setDate(tempDate.getDate() + (7 * (addNum)));
+                    month = month === 12 ? 1 : month + 1;
                 }
             }
+        }
 
-            fetch('/verifyReservations', {
-                method: 'post',
-                headers: {
-                    'Accept': "application/json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    username: 1,
-                    building: 1,
-                    title: this.state.tempTitle,
-                    description: this.state.tempDescription,
-                    reservations: resDates,
-                    startTime: this.state.startTime,
-                    endTime: this.state.endTime,
-                    roomID: roomID
-                })
-            }).then(response => response.json())
-                .then(valid => {
-                    let check = false;
-                    let newReservations = [];
-                    let string;
-                    let allstrings = [];
-                    valid.map(v => {
-                        string = v.start + ' to ' + v.end;
-                        if (v.valid.conflict === 1 || v.valid.dailyOver === 1 || v.valid.weeklyOver === 1) {
-                            string += ' -> Rejected';
-                            if (v.valid.conflict === 1) {
-                                string += ' -> Schedule conflict';
-                            }
-                            if (v.valid.dailyOver === 1) {
-                                string += ' -> Over daily hours'
-                            }
-                            if (v.valid.weeklyOver === 1) {
-                                string += ' -> Over weekly hours'
-                            }
-                        } else {
-                            string += ' -> Accepted';
-                            newReservations.push({
-                                start: new Date(v.start),
-                                end: new Date(v.end)
-                            });
-                            check = true;
+        fetch('/verifyReservations', {
+            method: 'post',
+            headers: {
+                'Accept': "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: 1,
+                building: 1,
+                title: this.state.tempTitle,
+                description: this.state.tempDescription,
+                reservations: resDates,
+                startTime: this.state.startTime,
+                endTime: this.state.endTime,
+                roomID: roomID
+            })
+        }).then(response => response.json())
+            .then(valid => {
+                let check = false;
+                let newReservations = [];
+                let string;
+                let allstrings = [];
+                valid.map(v => {
+                    string = v.start + ' to ' + v.end;
+                    if (v.valid.conflict === 1 || v.valid.dailyOver === 1 || v.valid.weeklyOver === 1) {
+                        string += ' -> Rejected';
+                        if (v.valid.conflict === 1) {
+                            string += ' -> Schedule conflict';
                         }
-                        allstrings.push(string);
-                    });
+                        if (v.valid.dailyOver === 1) {
+                            string += ' -> Over daily hours'
+                        }
+                        if (v.valid.weeklyOver === 1) {
+                            string += ' -> Over weekly hours'
+                        }
+                    } else {
+                        string += ' -> Accepted';
+                        newReservations.push({
+                            start: new Date(v.start),
+                            end: new Date(v.end)
+                        });
+                        check = true;
+                    }
+                    allstrings.push(string);
+                });
 
-                    this.setState({
-                        verificationResults: allstrings,
-                        modalIsOpen: true,
-                        showSubmit: check,
-                        validReservations: newReservations
-                    });
-                })
-        }
-        else{
-            fetch('/availableRooms', {
-                method: 'post',
-                headers: {
-                    'Accept': "application/json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    username: 1,
-                    building: 1,
-                    startDate: this.state.startDate,
-                    startTime: this.state.startTime,
-                    endTime: this.state.endTime,
-                })
-            }).then(response => response.json())
-                .then(valid => {
-                    let rooms = [];
-                    valid.map( r => {
-                      rooms.push(r.room_name)
-                    });
-
-                    this.setState({availableRoomOptions: rooms, showSubmit: false, modalIsOpen:true})
-                })
-        }
+                this.setState({
+                    verificationResults: allstrings,
+                    modalIsOpen: true,
+                    showSubmit: check,
+                    validReservations: newReservations
+                });
+            })
     }
 
     handleChange(event){
@@ -547,8 +537,36 @@ class Reservations extends Component {
             })
 
     }
+    handleGetRooms(){
+        fetch('/availableRooms', {
+            method: 'post',
+            headers: {
+                'Accept': "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: 1,
+                building: 1,
+                startDate: this.state.startDate,
+                startTime: this.state.startTime,
+                endTime: this.state.endTime,
+            })
+        }).then(response => response.json())
+            .then(valid => {
+                let rooms = [];
+                valid.map( r => {
+                    rooms.push(r.room_name)
+                });
 
+                this.setState({
+                    availableRoomOptions: rooms,
+                    showAvailableOptions: true})
+            })
+    }
     handleAvailable(selected){
+        let tempVerify = this.state.showVerify;
+        tempVerify[8] = true;
+
         let startdate = moment(this.state.startDate).format('YYYY-MM-DD');
         let starttime = moment(this.state.startTime).format('HH:mm:ss');
         let endtime = moment(this.state.endTime).format('HH:mm:ss');
@@ -559,10 +577,9 @@ class Reservations extends Component {
         }];
         this.setState({
             selectedRoom: selected.value,
-            showSubmit: true,
             showRecurring: true,
-            showAvailableRooms: false,
-            validReservations: reservation
+            validReservations: reservation,
+            showVerify: tempVerify
         })
     }
 
@@ -691,6 +708,22 @@ class Reservations extends Component {
                 </label>
                 <br/><br/>
                 <div>
+                    {
+                     this.state.showGetRooms ? (
+                         <div>
+                             <button disabled={!this.state.showVerify.every((check,index) => {if(index !== 8)return check; else return true;})} onClick={this.handleGetRooms}>Get Available Rooms</button>
+                             {
+                                 this.state.availableRoomOptions.length !== 0 ? (
+                                     this.state.showAvailableOptions ? (
+                                         <Dropdown options={this.state.availableRoomOptions} onChange={this.handleAvailable} value={this.state.selectedRoom}/>
+                                     ) : null
+                                 ) : (
+                                     <p>No Rooms Available</p>
+                                 )
+                             }
+                         </div>
+                     ) : null
+                    }
                     <button disabled={!this.state.showVerify.every(check => {return check})} onClick={() => this.handleVerify(this.props.uniqueRooms)}>Verify</button>
                 </div>
                 <div>
@@ -702,19 +735,9 @@ class Reservations extends Component {
                         contentLabel="Reservation Modal"
                     >
                         {
-                            this.state.showAvailableRooms ? (
-                                this.state.availableRoomOptions.length !== 0 ? (
-                                    <div>
-                                        <Dropdown options={this.state.availableRoomOptions} onChange={this.handleAvailable} value={this.state.selectedRoom}/>
-                                    </div>
-                                ) : (
-                                    <p>No Rooms Available</p>
-                                )
-                            ) : (
-                                this.state.verificationResults.map(s => {
-                                    return <p>{s}</p>
-                                })
-                            )
+                            this.state.verificationResults.map(s => {
+                                return <p>{s}</p>
+                            })
                         }
                         <button onClick={this.closeModal}>Close</button>
                         {
