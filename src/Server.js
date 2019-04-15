@@ -56,10 +56,6 @@ app.post('/editReservation', function (req, res) {
     let end_datetime = req.body.end_datetime;
     let title = req.body.title;
     let event_detail = req.body.event_detail;
-    let recurring = req.body.recurring;
-    let userID = req.body.userID;
-    let buildingID = req.body.buildingID;
-    let roomID = req.body.roomID;
 
     connection.query(`call editReservation(${recordID},"${start_datetime}","${end_datetime}","${title}","${event_detail}")`, function(error, results, fields){
         if(error) throw error;
@@ -70,8 +66,8 @@ app.post('/editReservation', function (req, res) {
 
 app.post('/hours', function(req, res) {
     connection.query(`call availableHours( ${req.body.username}, '${req.body.room}',${req.body.building}, '${dateFormat(req.body.startDate, "yyyy-mm-dd hh:MM:ss")}' )`, function(error, results, fields){
-       if(error) throw error;
-       res.send(results[0][0]);
+        if(error) throw error;
+        res.send(results[0][0]);
     });
 });
 
@@ -112,6 +108,47 @@ app.post('/verifyReservations', async function(req, res) {
    });
     let hold = await(Promise.all(promises));
     res.send(hold);
+});
+
+app.post('/verifyEditReservations', async function(req, res) {
+    let startdate, starttime, endtime;
+
+    const promises = req.body.reservations.map(async r =>{
+        startdate = moment(r).format('YYYY-MM-DD');
+        starttime = moment(req.body.startTime).format('HH:mm:ss');
+        endtime = moment(req.body.endTime).format('HH:mm:ss');
+
+        return new Promise(function(resolve,reject) {
+            connection.query(`call verifyEditReservation(${req.body.username},${req.body.building},'${startdate + ' ' + starttime}', '${startdate + ' ' + endtime}', ${req.body.roomID}, ${req.body.recordID})`, function (error, results, fields) {
+                if (error) throw error;
+
+                //Since this is asynchronous to the map assignment, reassign to get correct values
+                startdate = moment(r).format('YYYY-MM-DD');
+                starttime = moment(req.body.startTime).format('HH:mm:ss');
+                endtime = moment(req.body.endTime).format('HH:mm:ss');
+
+                resolve ({
+                    id: req.body.roomID,
+                    title: 'NEW RESERVATION',
+                    start: startdate + ' ' + starttime,
+                    end: startdate + ' ' + endtime,
+                    valid: results[0][0]
+                });
+            });
+        })
+
+    });
+    let hold = await(Promise.all(promises));
+    res.send(hold);
+});
+
+app.post('/removeEvent', function(req, res) {
+    let recordID = req.body.recordID;
+
+    connection.query(`call removeEvent(${recordID})`, function(error, results, fields){
+        if(error) throw error;
+        res.send(results[0]);
+    });
 });
 
 app.listen(5000, () => {
