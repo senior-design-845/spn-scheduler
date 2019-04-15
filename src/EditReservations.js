@@ -10,12 +10,12 @@ class EditReservations extends Component {
         super(props);
 
         this.state = {
-            userID : 897,
+            userID : 18,
             userClass : 3,
             buildingID : 1,
             orderBy: 1,
             events : []
-        }
+        };
 
         this.createItem = this.createItem.bind(this);
         this.createItems = this.createItems.bind(this);
@@ -26,7 +26,12 @@ class EditReservations extends Component {
     createItem(item) {
         let userClass = this.state.userClass;
         return(
-            <EventDropdown event={item} userClass={this.state.userClass} userID={this.state.userID}/>
+            <EventDropdown
+                event={item}
+                userClass={this.state.userClass}
+                userID={this.state.userID}
+                buildingID={this.state.buildingID}
+            />
         )
     }
 
@@ -101,8 +106,8 @@ class EventDropdown extends Component {
         let rawDateStart = String(currentEvent.start_datetime);
         let rawDateEnd = String(currentEvent.end_datetime);
 
-        let dateObjectStart = this.convertDate(rawDateStart);
-        let dateObjectEnd = this.convertDate(rawDateEnd);
+        let dateObjectStart = this.convertUTCDate(rawDateStart);
+        let dateObjectEnd = this.convertUTCDate(rawDateEnd);
 
         moment.locale('en');
         let startDate = moment(dateObjectStart).format('LL');
@@ -118,6 +123,8 @@ class EventDropdown extends Component {
         this.handleStartTimeChange = this.handleStartTimeChange.bind(this);
         this.handleEndTimeChange = this.handleEndTimeChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleDeleteClick = this.handleDeleteClick.bind(this);
+        this.handleDeleteConfirm = this.handleDeleteConfirm.bind(this);
 
         this.state = {
             eventObject: this.props.event,
@@ -131,7 +138,7 @@ class EventDropdown extends Component {
             room_name: this.props.event.room_name,
             roomID: this.props.event.roomID,
             recordID: this.props.event.recordID,
-            buildingID: this.props.event.buildingID,
+            buildingID: this.props.buildingID,
             tempDate: dateObjectStart,
             tempStartTime: dateObjectStart,
             tempEndTime: dateObjectEnd,
@@ -142,6 +149,11 @@ class EventDropdown extends Component {
             userID: this.props.userID,
             minTime: new Date(dateObjectStart).setMinutes(dateObjectStart.getMinutes() + 30),
             maxTime: new Date(dateObjectStart).setHours(dateObjectStart.getHours() + 2),
+            dateConflict: false,
+            weeklyConflict: false,
+            dailyConflict: false,
+            invalidSub: false,
+            deleteClick: false,
         }
     }
 
@@ -179,12 +191,16 @@ class EventDropdown extends Component {
             tempDescription: this.state.description,
             minTime: new Date(this.state.dateObjectStart).setMinutes(this.state.dateObjectStart.getMinutes() + 30),
             maxTime: new Date(this.state.dateObjectStart).setHours(this.state.dateObjectStart.getHours() + 2),
+            dateConflict: false,
+            dailyConflict: false,
+            weeklyConflict: false,
+            deleteClick: false,
         }, () => {
             document.addEventListener('click', this.closeDDContent);
         });
     }
 
-    convertDate(rawDate) {
+    convertUTCDate(rawDate) {
         let rawDateSplit = rawDate.split(/[- :T]/);
         let t = rawDateSplit.map(item => parseInt(item, 10));
 
@@ -200,7 +216,7 @@ class EventDropdown extends Component {
         return fullString;
     }
 
-    convertDateTime(rawDate) {
+    convertDate(rawDate) {
         let stringDate = moment(rawDate).format('YYYY-MM-DD HH:mm:ss');
 
         return stringDate;
@@ -219,7 +235,7 @@ class EventDropdown extends Component {
             tempStartTime: time,
             minTime: new Date(time).setMinutes(time.getMinutes() + 30),
             maxTime: new Date(time).setHours(time.getHours() + 2),
-            tempEndTime: new Date(time).setMinutes(time.getMinutes() + 30),
+            tempEndTime: new Date(new Date(time).setMinutes(time.getMinutes() + 30)),
         });
     }
 
@@ -227,10 +243,15 @@ class EventDropdown extends Component {
         this.setState({tempEndTime: time});
     }
 
-    handleSubmit(event) {
+    handleDeleteClick(event) {
+        event.preventDefault();
+        this.setState({deleteClick: true});
+    }
+
+    handleDeleteConfirm(event) {
         event.preventDefault();
 
-        fetch('/editReservation', {
+        fetch('/removeEvent', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -238,18 +259,77 @@ class EventDropdown extends Component {
             },
             body: JSON.stringify({
                 recordID: this.state.recordID,
-                start_datetime: this.convertDateTime(this.state.tempDate, this.state.tempStartTime),
-                end_datetime: this.convertDateTime(this.state.tempDate, this.state.tempEndTime),
-                title: this.state.tempTitle,
-                event_detail: this.state.tempDescription,
-                recurring: this.state.recurring,
-                userID: this.state.userID,
-                buildingID: this.state.buildingID,
-                roomID: this.state.roomID,
             }),
-        });
+        })
+            .then(() => {
+                window.location.reload();
+            });
+    }
 
-        window.location.reload();
+    handleSubmit(event) {
+        event.preventDefault();
+
+        let eventArray = [];
+        eventArray[0] = this.state.tempDate;
+
+        fetch('/verifyEditReservations', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                recordID: this.state.recordID,
+                startTime: this.state.tempStartTime,
+                endTime: this.state.tempEndTime,
+                username: this.state.userID,
+                building: this.state.buildingID,
+                roomID: this.state.roomID,
+                reservations: eventArray,
+            }),
+        })
+            .then(response => response.json())
+            .then(record => {
+                this.setState({
+                    dateConflict: false,
+                    dailyConflict: false,
+                    weeklyConflict: false,
+                })
+
+                let conflict = record[0].valid.conflict;
+                let dailyOver = record[0].valid.dailyOver;
+                let weeklyOver = record[0].valid.weeklyOver;
+
+                if (conflict > 0) {
+                    this.setState({dateConflict: true});
+                }
+                else if (dailyOver > 0) {
+                    this.setState({dailyConflict: true})
+                }
+                else if (weeklyOver > 0) {
+                    this.setState({weeklyConflict: true})
+                }
+                else {
+                    fetch('/editReservation', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            recordID: this.state.recordID,
+                            start_datetime: this.convertDateTime(this.state.tempDate, this.state.tempStartTime),
+                            end_datetime: this.convertDateTime(this.state.tempDate, this.state.tempEndTime),
+                            title: this.state.tempTitle,
+                            event_detail: this.state.tempDescription,
+                        }),
+                    })
+                        .then(response => {
+                            window.location.reload();
+                        })
+                }
+            });
+
     }
 
     render() {
@@ -332,7 +412,42 @@ class EventDropdown extends Component {
                                                 />
                                             </label>
                                             <input type="submit" value="Submit" />
+                                            {
+                                                !this.state.deleteClick ? (
+                                                    <button onClick={this.handleDeleteClick}>Delete</button>
+                                                ) : (
+                                                    <button onClick={this.handleDeleteConfirm} style={{'color':'white', 'background':'red'}}>CONFIRM DELETE</button>
+                                                )
+                                            }
                                         </form>
+                                        {
+                                            this.state.dateConflict ? (
+                                                <div id='date-conflict-error' style={{'color':'red'}}>
+                                                    Date conflicts with another event
+                                                </div>
+                                            ) : null
+                                        }
+                                        {
+                                            this.state.weeklyConflict ? (
+                                                <div id = 'weekly-hour-error' style={{'color':'red'}}>
+                                                    Your weekly hour limit has been reached
+                                                </div>
+                                            ) : null
+                                        }
+                                        {
+                                            this.state.dailyConflict ? (
+                                                <div id = 'daily-hour-error' style={{'color':'red'}}>
+                                                    Your daily hour limit has been reached
+                                                </div>
+                                            ) : null
+                                        }
+                                        {
+                                            this.state.invalidSub ? (
+                                                <div id = 'invalid-submission-error' style={{'color':'red'}}>
+                                                    Invalid submission
+                                                </div>
+                                            ) : null
+                                        }
                                         <button className = 'dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
                                     </div>
                                 )

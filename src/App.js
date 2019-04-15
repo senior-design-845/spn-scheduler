@@ -9,6 +9,9 @@ import { BrowserRouter as Router, Route, Link} from "react-router-dom";
 BigCalendar.momentLocalizer(moment);
 
 class App extends Component {
+
+
+
     constructor(props) {
         super(props);
         this.state = {
@@ -80,6 +83,9 @@ class App extends Component {
                 }
                 this.setState({reservations: reservations, events: totaltemp, roomEvents: temp, uniqueRooms: uniquerooms, buttonToggle: buttons})
             });
+
+        fetch ('/email').then(res=>res.text());
+
     }
 
     handleRoomClick(i){
