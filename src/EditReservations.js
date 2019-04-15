@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
 import './EditReservations.css'
 import moment from 'moment'
 import DatePicker from 'react-datepicker';
@@ -133,6 +132,8 @@ class EditReservations extends Component {
                 </style>
                 <div id = 'routing-table'>
                     <Link id="link" to="/calendar">Calendar</Link>
+                    <br/>
+                    <Link id="link" to="/admin">Admin</Link>
                 </div>
                 <div className = 'page-title'>My Reservations</div>
                 {

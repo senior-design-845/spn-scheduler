@@ -146,7 +146,9 @@ class App extends Component {
                 Toggle All Rooms: {this.state.allToggle ? 'ALL' : 'NONE'}
             </button>
             <div id = 'routing-table'>
-                <Link to="/myreservations">MyReservations</Link>
+                <Link to="/myreservations">My Reservations</Link>
+                <br/>
+                <Link to="/admin">Admin</Link>
             </div>
             <br/><br/>
             <div style={{height: 700}}>

@@ -1,0 +1,11 @@
+.page-title {
+    background: rgba(255, 156, 47, 0.88);
+    color: white;
+    margin-bottom: 2px;
+    font-size: 50px;
+    width: 100%;
+}
+.input-data {
+    background: whitesmoke;
+    margin-top: 15px;
+}

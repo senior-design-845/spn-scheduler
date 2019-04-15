@@ -2,9 +2,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App.js'
+import App from './App.js';
+import Admin from './Admin.js';
 import {BrowserRouter as Router, Route, Link, Redirect} from "react-router-dom";
-
 import * as serviceWorker from './serviceWorker';
 import EditReservations from "./EditReservations";
 
@@ -15,6 +15,7 @@ ReactDOM.render(
         )}/>
         <Route exact path="/calendar" component={App}/>
         <Route path="/myreservations" component={EditReservations}/>
+        <Route path="/admin" component={Admin}/>
     </Router>, document.getElementById('root'));
 //Testing BigCalendar
 //ReactDOM.render(<createCalendar />, document.getElementById('root'));
