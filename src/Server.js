@@ -38,6 +38,16 @@ app.get('/calendar', function (req, res) {
     });
 });
 
+app.post('/login', function(req, res) {
+    let nid = req.body.netid;
+
+    connection.query(`call netidVerification("${nid}")`, function(error, results, fields){
+        if(error) throw error;
+        console.log('Connected');
+        res.send(results[0][0]);
+    });
+});
+
 app.post('/email', function (req,res){
     let emailMessage = `${req.body.room} was successfully reserved!\nEvent Title: ${req.body.title}\nEvent Description: ${req.body.description}\n\nTimes:\n`;
     req.body.reservations.map(r => {
