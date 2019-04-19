@@ -94,11 +94,34 @@ app.post('/userReservations', function (req, res) {
     });
 });
 
+app.post('/userPastReservations', function (req, res) {
+    let uid = req.body.uid;
+    let bid = req.body.bid;
+    let orderBy = req.body.orderBy;
+
+    connection.query(`call userPastReservations(${uid},${bid},${orderBy})`, function(error, results, fields){
+        if(error) throw error;
+        console.log('Connected');
+        res.send(results[0]);
+    });
+});
+
 app.post('/userAllReservations', function (req, res) {
     let bid = req.body.bid;
     let orderBy = req.body.orderBy;
 
     connection.query(`call userAllReservations(${bid},${orderBy})`, function(error, results, fields){
+        if(error) throw error;
+        console.log('Connected');
+        res.send(results[0]);
+    });
+});
+
+app.post('/userAllPastReservations', function (req, res) {
+    let bid = req.body.bid;
+    let orderBy = req.body.orderBy;
+
+    connection.query(`call userAllPastReservations(${bid},${orderBy})`, function(error, results, fields){
         if(error) throw error;
         console.log('Connected');
         res.send(results[0]);

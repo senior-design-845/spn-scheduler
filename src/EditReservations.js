@@ -15,7 +15,8 @@ class EditReservations extends Component {
             buildingID : 1,
             orderBy: 1,
             events : [],
-            rerender: false,
+            allReservations: false,
+            showPastRes : false,
         };
 
         this.createItem = this.createItem.bind(this);
@@ -23,6 +24,8 @@ class EditReservations extends Component {
         this.getReservations = this.getReservations.bind(this);
         this.handleAllRes = this.handleAllRes.bind(this);
         this.handleMyRes = this.handleMyRes.bind(this);
+        this.handlePastRes = this.handlePastRes.bind(this);
+        this.handleHidePast = this.handleHidePast.bind(this);
     }
 
     // This is the creation of the list items
@@ -43,7 +46,16 @@ class EditReservations extends Component {
 
     getReservations() {
         //Get the room reservation data from the server
-        fetch('/userReservations', {
+
+        let procCall = '';
+        if (this.state.showPastRes) {
+            procCall = '/userPastReservations';
+        }
+        else {
+            procCall = '/userReservations'
+        }
+
+        fetch(procCall, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -79,9 +91,17 @@ class EditReservations extends Component {
     }
 
     handleAllRes() {
-        this.setState({events: []});
+        this.setState({events : [], allReservations: true});
 
-        fetch('/userAllReservations', {
+        let procCall = '';
+        if (this.state.showPastRes) {
+            procCall = '/userAllPastReservations';
+        }
+        else {
+            procCall = '/userAllReservations'
+        }
+
+        fetch(procCall, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -115,9 +135,31 @@ class EditReservations extends Component {
     }
 
     handleMyRes() {
-        this.setState({events: []});
+        this.setState({events : [], allReservations : false, showPastRest : false});
 
         this.getReservations();
+    }
+
+    handlePastRes() {
+        this.setState({showPastRes : true, events : []});
+
+        if (this.state.allReservations) {
+            this.handleAllRes();
+        }
+        else {
+            this.getReservations();
+        }
+    }
+
+    handleHidePast() {
+        this.setState({showPastRes : false, events : []});
+
+        if (this.state.allReservations) {
+            this.handleAllRes();
+        }
+        else {
+            this.getReservations();
+        }
     }
 
     componentDidMount() {
@@ -141,6 +183,14 @@ class EditReservations extends Component {
                         <div id = 'reservation-buttons'>
                             <button onClick={this.handleAllRes}>All Reservations</button>
                             <button onClick={this.handleMyRes}>My Reservations</button>
+                            <br/>
+                            {
+                                !this.state.showPastRes ? (
+                                    <button onClick={this.handlePastRes}>Show Previous</button>
+                                ) : (
+                                    <button onClick={this.handleHidePast}>Hide Previous</button>
+                                )
+                            }
                         </div>
                     ) : null
                 }
