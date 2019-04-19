@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "aws-amplify": "^1.1.26",
     "body-parser": "^1.18.3",
     "bootstrap": "^4.3.1",
     "color-scheme": "^1.0.1",
@@ -15,6 +16,7 @@
     "nodemailer-smtp-transport": "^2.7.4",
     "react": "^16.8.4",
     "react-big-calendar": "^0.19.2",
+    "react-bootstrap": "^1.0.0-beta.8",
     "react-datepicker": "^2.2.0",
     "react-dom": "^16.8.4",
     "react-dropdown": "^1.6.4",
@@ -31,6 +33,7 @@
     "eject": "react-scripts eject"
   },
   "proxy": "http://localhost:5000/",
+  "secure": false,
   "eslintConfig": {
     "extends": "react-app"
   },

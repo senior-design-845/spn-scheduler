@@ -149,6 +149,8 @@ class App extends Component {
                 <Link to="/myreservations">My Reservations</Link>
                 <br/>
                 <Link to="/admin">Admin</Link>
+                <br/>
+                <Link to="/login">Login</Link>
             </div>
             <br/><br/>
             <div style={{height: 700}}>
