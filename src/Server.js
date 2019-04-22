@@ -90,7 +90,23 @@ app.post('/email', function (req,res){
 
 });
 
+app.post('/adminTables', function(req, res) {
+    let table = req.body.table;
+    switch(table){
+        case 'Users': table = 'getUsers'; break;
+        case 'User Classifications': table = 'getUserClass'; break;
+        case 'Classifications': table = 'getClassifications'; break;
+        case 'Room Classifications': table = 'getRoomClass'; break;
+        case 'Rooms': table = 'getRooms'; break;
+        case 'Building Configurations': table = 'getBuildingConfigurations'; break;
+    }
 
+    connection.query(`call ${table}()`, function(error,results,fields){
+       if(error) throw error;
+       console.log(results[0]);
+       res.send(results[0]);
+    });
+});
 
 app.post('/userReservations', function (req, res) {
     let uid = req.body.uid;
