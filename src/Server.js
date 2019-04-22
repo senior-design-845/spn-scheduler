@@ -154,6 +154,18 @@ app.post('/userAllPastReservations', function (req, res) {
     });
 });
 
+app.post('/searchReservations', function (req, res) {
+    let searchTerm = req.body.searchTerm;
+    let bid = req.body.bid;
+    let orderBy = req.body.orderBy;
+
+    connection.query(`call searchReservations('%${searchTerm}%',${bid},${orderBy})`, function(error, results, fields){
+        if(error) throw error;
+        console.log('Connected');
+        res.send(results[0]);
+    });
+});
+
 app.post('/editReservation', function (req, res) {
     let recordID = req.body.recordID;
     let start_datetime = req.body.start_datetime;
