@@ -252,8 +252,8 @@ class EventDropdown extends Component {
             recurring: this.props.event.recurring_recordID,
             userClass: this.props.userClass,
             userID: this.props.userID,
-            minTime: new Date(dateObjectStart).setMinutes(dateObjectStart.getMinutes() + 30),
-            maxTime: new Date(dateObjectStart).setHours(dateObjectStart.getHours() + 2),
+            minTime: new Date(new Date(dateObjectStart).setMinutes(dateObjectStart.getMinutes() + 30)),
+            maxTime: new Date(new Date(dateObjectStart).setHours(dateObjectStart.getHours() + 2)),
             dateConflict: false,
             weeklyConflict: false,
             dailyConflict: false,
@@ -272,6 +272,14 @@ class EventDropdown extends Component {
     }
 
     closeDDContent(event){
+        if(this.dropdownMenu === null){
+            {
+                this.setState({showDDContent: false}, () => {
+                    document.removeEventListener('click', this.closeDDContent);
+                });
+            }
+        }
+        else
         if(!this.dropdownMenu.contains(event.target)){
             this.setState({showDDContent: false}, () => {
                 document.removeEventListener('click', this.closeDDContent);
@@ -294,8 +302,8 @@ class EventDropdown extends Component {
             tempEndTime: this.state.dateObjectEnd,
             tempTitle: this.state.title,
             tempDescription: this.state.description,
-            minTime: new Date(this.state.dateObjectStart).setMinutes(this.state.dateObjectStart.getMinutes() + 30),
-            maxTime: new Date(this.state.dateObjectStart).setHours(this.state.dateObjectStart.getHours() + 2),
+            minTime: new Date(new Date(this.state.dateObjectStart).setMinutes(this.state.dateObjectStart.getMinutes() + 30)),
+            maxTime: new Date(new Date(this.state.dateObjectStart).setHours(this.state.dateObjectStart.getHours() + 2)),
             dateConflict: false,
             dailyConflict: false,
             weeklyConflict: false,
@@ -338,8 +346,8 @@ class EventDropdown extends Component {
     handleStartTimeChange(time) {
         this.setState({
             tempStartTime: time,
-            minTime: new Date(time).setMinutes(time.getMinutes() + 30),
-            maxTime: new Date(time).setHours(time.getHours() + 2),
+            minTime: new Date(new Date(time).setMinutes(time.getMinutes() + 30)),
+            maxTime: new Date(new Date(time).setHours(time.getHours() + 2)),
             tempEndTime: new Date(new Date(time).setMinutes(time.getMinutes() + 30)),
         });
     }
