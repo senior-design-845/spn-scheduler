@@ -4,14 +4,16 @@ import Button from "react-bootstrap";
 import Dropdown from 'react-dropdown';
 import Bootstrap from "react-bootstrap";
 import "./Login.css"
-import Auth from "aws-amplify";
 
 
 class Login extends Component {
     constructor(props){
         super(props);
         this.state = {
-            netid:''
+            netid:'',
+            userid: 0,
+            building_name:'',
+            buildingID:0
         }
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -40,13 +42,42 @@ class Login extends Component {
             })
         }).then(response => response.json())
             .then(text => {
+                this.setState({
+                    userid: text.userID
+                })
 
-                console.log(text)
-            })
+                let uid = text.userID;
+
+                //console.log(text.userID)
+
+                fetch('/getBuildings', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userID: uid
+                    })
+                }).then(response => response.json())
+                    .then(record => {
+                        this.setState({
+                            building_name: record.building_name,
+                            buildingID: record.buildingID
+                        })
+
+                        console.log(record.building_name)
+                       console.log(record.buildingID)
+                        console.log(this.state.building_name)
+
+                    });
+            });
 
     }
 
     render(){
+        //let options = this.state.building_name
+      //  let optionItems = options.map(());
         return(
             <div className="Login">
             <Form onSubmit={this.handleSubmit}>
@@ -67,6 +98,7 @@ class Login extends Component {
                     Login
                 </button>
             </Form>
+
             </div>
         );
     }
