@@ -48,6 +48,17 @@ app.post('/login', function(req, res) {
     });
 });
 
+app.post('/getBuildings', function(req, res) {
+    let uid = req.body.userID;
+    console.log(uid);
+
+    connection.query(`call userBuildings(${uid})`, function(error, results, fields){
+        if(error) throw error;
+        console.log('Connected');
+        res.send(results[0][0]);
+    });
+});
+
 app.post('/email', function (req,res){
     let emailMessage = `${req.body.room} was successfully reserved!\nEvent Title: ${req.body.title}\nEvent Description: ${req.body.description}\n\nTimes:\n`;
     req.body.reservations.map(r => {
@@ -154,6 +165,224 @@ app.post('/editReservation', function (req, res) {
         if(error) throw error;
         console.log('Connected');
         res.send(results[0]);
+    });
+});
+
+app.post('/addRoom', function(req, res) {
+    let wdstart = moment(req.body.wdstart).format('HH:mm:ss');
+    let wdend = moment(req.body.wdend).format('HH:mm:ss');
+    let westart = moment(req.body.westart).format('HH:mm:ss');
+    let weend = moment(req.body.weend).format('HH:mm:ss');
+
+    connection.query(`call insertRoom(${req.body.building}, '${req.body.room}', '${wdstart}', '${wdend}', '${westart}', '${weend}')`, function(error,results,fields){
+        if(error) {
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        console.log(results);
+        res.send('Accepted')
+    });
+});
+app.post('/updateRoom', function(req, res) {
+    let wdstart = moment(req.body.wdstart).format('HH:mm:ss');
+    let wdend = moment(req.body.wdend).format('HH:mm:ss');
+    let westart = moment(req.body.westart).format('HH:mm:ss');
+    let weend = moment(req.body.weend).format('HH:mm:ss');
+    connection.query(`call editRoom(${req.body.roomID}, ${req.body.building}, '${req.body.room}','${wdstart}', '${wdend}', '${westart}', '${weend}')`, function(error,results,fields){
+        if(error) {
+            console.log(error)
+            res.send('Error');
+            return;
+        }
+        res.send('Accepted')
+    });
+});
+
+app.post('/deleteRoom', function(req, res) {
+   connection.query(`call removeRoom(${req.body.roomID},${req.body.inactive})`, function(error,results,fields){
+
+       if(error){
+          console.log(error);
+          res.send('Error');
+          return;
+      }
+      res.send('Accepted');
+   });
+});
+
+app.post('/addUser', function(req, res) {
+    connection.query(`call insertUser('${req.body.netID}', '${req.body.firstName}', '${req.body.lastName}', '${req.body.email}', '${req.body.course}', '${req.body.teamNumber}')`, function(error,results,fields){
+        if(error) {
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        console.log(results);
+        res.send('Accepted')
+    });
+});
+app.post('/updateUser', function(req, res) {
+
+    connection.query(`call editUser(${req.body.userID},'${req.body.netID}', '${req.body.firstName}', '${req.body.lastName}', '${req.body.email}', '${req.body.course}', '${req.body.teamNumber}')`, function(error,results,fields){
+        if(error) {
+            console.log(error)
+            res.send('Error');
+            return;
+        }
+        res.send('Accepted')
+    });
+});
+
+app.post('/deleteUser', function(req, res) {
+    connection.query(`call removeUser(${req.body.userID},${req.body.inactive})`, function(error,results,fields){
+
+        if(error){
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        res.send('Accepted');
+    });
+});
+
+app.post('/addBuilding', function(req, res) {
+    let start = moment(req.body.semesterStart).format('YYYY-MM-DD');
+    let end = moment(req.body.semesterEnd).format('YYYY-MM-DD');
+
+    connection.query(`call insertBuilding('${req.body.buildingName}', '${start}', '${end}', '${req.body.dailyLimit}', '${req.body.weeklyLimit}')`, function(error,results,fields){
+        if(error) {
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        console.log(results);
+        res.send('Accepted')
+    });
+});
+app.post('/updateBuilding', function(req, res) {
+    let start = moment(req.body.semesterStart).format('YYYY-MM-DD');
+    let end = moment(req.body.semesterEnd).format('YYYY-MM-DD');
+    connection.query(`call editBuilding(${req.body.buildingID},'${req.body.buildingName}', '${start}', '${end}', '${req.body.dailyLimit}', '${req.body.weeklyLimit}')`, function(error,results,fields){
+        if(error) {
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        res.send('Accepted')
+    });
+});
+
+app.post('/deleteBuilding', function(req, res) {
+    connection.query(`call removeBuilding(${req.body.buildingID},${req.body.inactive})`, function(error,results,fields){
+        if(error){
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        res.send('Accepted');
+    });
+});
+
+app.post('/addUserClass', function(req, res) {
+    connection.query(`call insertUserClass(${req.body.classID},${req.body.userID})`, function(error,results,fields){
+        if(error) {
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        console.log(results);
+        res.send('Accepted')
+    });
+});
+app.post('/updateUserClass', function(req, res) {
+
+    connection.query(`call editUserClass(${req.body.oldclassID},${req.body.newclassID},${req.body.userID})`, function(error,results,fields){
+        if(error) {
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        res.send('Accepted')
+    });
+});
+
+app.post('/deleteUserClass', function(req, res) {
+    connection.query(`call removeUserClass(${req.body.classID},${req.body.userID},${req.body.inactive})`, function(error,results,fields){
+        if(error){
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        res.send('Accepted');
+    });
+});
+
+app.post('/addClass', function(req, res) {
+    connection.query(`call insertClass('${req.body.detail}')`, function(error,results,fields){
+        if(error) {
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        console.log(results);
+        res.send('Accepted')
+    });
+});
+app.post('/updateClass', function(req, res) {
+
+    connection.query(`call editClass(${req.body.classID},'${req.body.detail}')`, function(error,results,fields){
+        if(error) {
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        res.send('Accepted')
+    });
+});
+
+app.post('/deleteClass', function(req, res) {
+    connection.query(`call removeClass(${req.body.classID},${req.body.inactive})`, function(error,results,fields){
+        if(error){
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        res.send('Accepted');
+    });
+});
+
+app.post('/addRoomClass', function(req, res) {
+    connection.query(`call insertRoomClass(${req.body.roomID}, ${req.body.classID}, ${req.body.buildingID})`, function(error,results,fields){
+        if(error) {
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        console.log(results);
+        res.send('Accepted')
+    });
+});
+app.post('/updateRoomClass', function(req, res) {
+
+    connection.query(`call editRoomClass(${req.body.roomID}, ${req.body.oldclassID}, ${req.body.newclassID})`, function(error,results,fields){
+        if(error) {
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        res.send('Accepted')
+    });
+});
+
+app.post('/deleteRoomClass', function(req, res) {
+    connection.query(`call removeRoomClass(${req.body.roomID}, ${req.body.classID}, ${req.body.inactive})`, function(error,results,fields){
+        if(error){
+            console.log(error);
+            res.send('Error');
+            return;
+        }
+        res.send('Accepted');
     });
 });
 

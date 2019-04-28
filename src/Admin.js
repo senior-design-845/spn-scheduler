@@ -293,48 +293,53 @@ class RoomDropdown extends Component {
         this.setState({deleteClick: true});
     }
 
-    handleDeleteConfirm(event) {
+    handleDeleteConfirm(event){
         event.preventDefault();
-        //invert deleted
 
-        /*fetch('/removeEvent', {
+        fetch('/deleteRoom', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recordID: this.state.recordID,
+                roomID: this.state.roomID,
+                inactive: !this.state.inactive
             }),
         })
-            .then(() => {
-                window.location.reload();
-            });*/
+            .then(response => response.text())
+            .then(result => {
+                //Invalid
+                //window.location.reload();
+            });
     }
 
     handleSubmit(event) {
         event.preventDefault();
         console.log(this.state);
-        /*let eventArray = [];
-        eventArray[0] = this.state.tempDate;
 
-        fetch('/verifyEditReservations', {
+        let input = this.props.add ? '/addRoom' : '/updateRoom';
+
+        fetch(input, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recordID: this.state.recordID,
-                startTime: this.state.tempStartTime,
-                endTime: this.state.tempEndTime,
-                username: this.state.userID,
-                building: this.state.buildingID,
                 roomID: this.state.roomID,
-                reservations: eventArray,
+                building: this.state.buildingID,
+                room: this.state.tempRoomName,
+                wdstart: this.state.tempWeekdayStart,
+                wdend: this.state.tempWeekdayEnd,
+                westart: this.state.tempWeekendStart,
+                weend: this.state.tempWeekendEnd
             }),
-        })*/
-
+        }).then(response => response.text())
+            .then(result => {
+               //Check if invalid
+               window.location.reload();
+            });
     }
 
     render() {
@@ -654,47 +659,53 @@ class UserDropdown extends Component {
         this.setState({deleteClick: true});
     }
 
-    handleDeleteConfirm(event) {
+    handleDeleteConfirm(event){
         event.preventDefault();
 
-        /*fetch('/removeEvent', {
+        fetch('/deleteUser', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recordID: this.state.recordID,
+                userID: this.state.userID,
+                inactive: !this.state.inactive
             }),
         })
-            .then(() => {
-                window.location.reload();
-            });*/
+            .then(response => response.text())
+            .then(result => {
+                //Invalid
+                //window.location.reload();
+            });
     }
 
     handleSubmit(event) {
         event.preventDefault();
         console.log(this.state);
-        /*let eventArray = [];
-        eventArray[0] = this.state.tempDate;
 
-        fetch('/verifyEditReservations', {
+        let input = this.props.add ? '/addUser' : '/updateUser';
+
+        fetch(input, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recordID: this.state.recordID,
-                startTime: this.state.tempStartTime,
-                endTime: this.state.tempEndTime,
-                username: this.state.userID,
-                building: this.state.buildingID,
-                roomID: this.state.roomID,
-                reservations: eventArray,
+                userID: this.state.userID,
+                netID: this.state.tempNetID,
+                firstName: this.state.tempFirst,
+                lastName: this.state.tempLast,
+                email: this.state.tempEmail,
+                course: this.state.tempCourse,
+                teamNumber: this.state.tempTeam
             }),
-        })*/
-
+        }).then(response => response.text())
+            .then(result => {
+                //Check if invalid
+                window.location.reload();
+            });
     }
 
     render() {
@@ -944,47 +955,52 @@ class BuildingDropdown extends Component {
         this.setState({deleteClick: true});
     }
 
-    handleDeleteConfirm(event) {
+    handleDeleteConfirm(event){
         event.preventDefault();
 
-        /*fetch('/removeEvent', {
+        fetch('/deleteBuilding', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recordID: this.state.recordID,
+                buildingID: this.state.buildingID,
+                inactive: !this.state.inactive
             }),
         })
-            .then(() => {
-                window.location.reload();
-            });*/
+            .then(response => response.text())
+            .then(result => {
+                //Invalid
+                //window.location.reload();
+            });
     }
 
     handleSubmit(event) {
         event.preventDefault();
         console.log(this.state);
-        /*let eventArray = [];
-        eventArray[0] = this.state.tempDate;
 
-        fetch('/verifyEditReservations', {
+        let input = this.props.add ? '/addBuilding' : '/updateBuilding';
+
+        fetch(input, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recordID: this.state.recordID,
-                startTime: this.state.tempStartTime,
-                endTime: this.state.tempEndTime,
-                username: this.state.userID,
-                building: this.state.buildingID,
-                roomID: this.state.roomID,
-                reservations: eventArray,
+                buildingID: this.state.buildingID,
+                semesterStart: this.state.tempSemesterStart,
+                semesterEnd: this.state.tempSemesterEnd,
+                buildingName: this.state.tempBuildingName,
+                dailyLimit: this.state.tempDailyLimit,
+                weeklyLimit: this.state.tempWeeklyLimit
             }),
-        })*/
-
+        }).then(response => response.text())
+            .then(result => {
+                console.log(result)
+                //window.location.reload();
+            });
     }
 
     render() {
@@ -1226,47 +1242,50 @@ class UserClassDropdown extends Component {
         this.setState({deleteClick: true});
     }
 
-    handleDeleteConfirm(event) {
+    handleDeleteConfirm(event){
         event.preventDefault();
 
-        /*fetch('/removeEvent', {
+        fetch('/deleteUserClass', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recordID: this.state.recordID,
+                classID: this.state.classID,
+                userID: this.state.userID,
+                inactive: !this.state.inactive
             }),
         })
-            .then(() => {
-                window.location.reload();
-            });*/
+            .then(response => response.text())
+            .then(result => {
+                //Invalid
+                //window.location.reload();
+            });
     }
 
     handleSubmit(event) {
         event.preventDefault();
         console.log(this.state);
-        /*let eventArray = [];
-        eventArray[0] = this.state.tempDate;
 
-        fetch('/verifyEditReservations', {
+        let input = this.props.add ? '/addUserClass' : '/updateUserClass';
+
+        fetch(input, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recordID: this.state.recordID,
-                startTime: this.state.tempStartTime,
-                endTime: this.state.tempEndTime,
-                username: this.state.userID,
-                building: this.state.buildingID,
-                roomID: this.state.roomID,
-                reservations: eventArray,
+                oldclassID: this.state.classID,
+                newclassID: this.state.tempClassID,
+                userID: this.state.userID
             }),
-        })*/
-
+        }).then(response => response.text())
+            .then(result => {
+                console.log(result)
+                //window.location.reload();
+            });
     }
 
     render() {
@@ -1285,7 +1304,7 @@ class UserClassDropdown extends Component {
                                     <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
                                         <label className = 'dd-edit-item'>
                                             User ID:
-                                            <input name = 'tempUserID' type="number" min={1} value={this.state.userID} onChange={this.handleChange} />
+                                            <input name = 'userID' type="number" min={1} value={this.state.userID} onChange={this.handleChange} />
                                         </label>
                                         <label className = 'dd-edit-item'>
                                             Class ID:
@@ -1443,47 +1462,48 @@ class ClassDropdown extends Component {
         this.setState({deleteClick: true});
     }
 
-    handleDeleteConfirm(event) {
+    handleDeleteConfirm(event){
         event.preventDefault();
 
-        /*fetch('/removeEvent', {
+        fetch('/deleteClass', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recordID: this.state.recordID,
+                classID: this.state.classID,
+                inactive: !this.state.inactive
             }),
         })
-            .then(() => {
-                window.location.reload();
-            });*/
+            .then(response => response.text())
+            .then(result => {
+                //Invalid
+                //window.location.reload();
+            });
     }
 
     handleSubmit(event) {
         event.preventDefault();
         console.log(this.state);
-        /*let eventArray = [];
-        eventArray[0] = this.state.tempDate;
 
-        fetch('/verifyEditReservations', {
+        let input = this.props.add ? '/addClass' : '/updateClass';
+
+        fetch(input, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recordID: this.state.recordID,
-                startTime: this.state.tempStartTime,
-                endTime: this.state.tempEndTime,
-                username: this.state.userID,
-                building: this.state.buildingID,
-                roomID: this.state.roomID,
-                reservations: eventArray,
+                classID: this.state.classID,
+                detail: this.state.tempClassDetail
             }),
-        })*/
-
+        }).then(response => response.text())
+            .then(result => {
+                console.log(result)
+                //window.location.reload();
+            });
     }
 
     render() {
@@ -1655,47 +1675,51 @@ class RoomClassDropdown extends Component {
         this.setState({deleteClick: true});
     }
 
-    handleDeleteConfirm(event) {
+    handleDeleteConfirm(event){
         event.preventDefault();
 
-        /*fetch('/removeEvent', {
+        fetch('/deleteRoomClass', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recordID: this.state.recordID,
+                roomID: this.state.roomID,
+                classID: this.state.classID,
+                inactive: !this.state.inactive
             }),
         })
-            .then(() => {
-                window.location.reload();
-            });*/
+            .then(response => response.text())
+            .then(result => {
+                //Invalid
+                //window.location.reload();
+            });
     }
 
     handleSubmit(event) {
         event.preventDefault();
         console.log(this.state);
-        /*let eventArray = [];
-        eventArray[0] = this.state.tempDate;
 
-        fetch('/verifyEditReservations', {
+        let input = this.props.add ? '/addRoomClass' : '/updateRoomClass';
+
+        fetch(input, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recordID: this.state.recordID,
-                startTime: this.state.tempStartTime,
-                endTime: this.state.tempEndTime,
-                username: this.state.userID,
-                building: this.state.buildingID,
                 roomID: this.state.roomID,
-                reservations: eventArray,
+                oldclassID: this.state.classID,
+                newclassID: this.state.tempClassID,
+                buildingID: this.state.buildingID
             }),
-        })*/
-
+        }).then(response => response.text())
+            .then(result => {
+                console.log(result)
+                //window.location.reload();
+            });
     }
 
     render() {
