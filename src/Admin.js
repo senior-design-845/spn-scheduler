@@ -179,7 +179,7 @@ class Admin extends Component {
         return(
             <div>
                 <style>
-                    {document.body.style = 'background: #43a047;'}
+                    {document.body.style = 'background: #008542;'}
                 </style>
                 <div id = 'routing-table'>
                     <Link id="link" to={{

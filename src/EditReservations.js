@@ -4,6 +4,7 @@ import moment from 'moment'
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import {Link} from "react-router-dom";
+import Dropdown from 'react-dropdown';
 
 class EditReservations extends Component {
     constructor(props) {
@@ -17,6 +18,7 @@ class EditReservations extends Component {
             events : [],
             allReservations: false,
             showPastRes : false,
+            filter: 'Date',
         };
 
         this.createItem = this.createItem.bind(this);
@@ -28,10 +30,12 @@ class EditReservations extends Component {
         this.handleHidePast = this.handleHidePast.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleFilter = this.handleFilter.bind(this);
     }
 
     // This is the creation of the list items
     createItem(item) {
+        console.log(this.state.userClass, ' ', this.state.userID);
         return(
             <EventDropdown
                 event={item}
@@ -39,6 +43,7 @@ class EditReservations extends Component {
                 userID={this.state.userID}
                 buildingID={this.state.buildingID}
                 showPastRes={this.state.showPastRes}
+                orderBy={this.state.orderBy}
             />
         )
     }
@@ -47,9 +52,17 @@ class EditReservations extends Component {
         return(items.map(this.createItem));
     }
 
-    getReservations() {
+    getReservations(orderBy) {
         //Get the room reservation data from the server
         this.setState({events : []});
+
+        let filter = 0;
+        if (!Number.isInteger(orderBy)) {
+            filter = this.state.orderBy;
+        }
+        else {
+            filter = orderBy;
+        }
 
         fetch('/userReservations', {
             method: 'POST',
@@ -60,7 +73,7 @@ class EditReservations extends Component {
             body: JSON.stringify({
                 uid: this.state.userID,
                 bid: this.state.buildingID,
-                orderBy: this.state.orderBy,
+                orderBy: filter,
             }),
         })
             .then(response => response.json())
@@ -92,8 +105,18 @@ class EditReservations extends Component {
 
     }
 
-    handleAllRes() {
+    handleAllRes(orderBy) {
         this.setState({events : [], allReservations: true});
+
+        console.log(orderBy);
+        let filter = 0;
+        if (!Number.isInteger(orderBy)) {
+            filter = this.state.orderBy;
+        }
+        else {
+            filter = orderBy;
+        }
+        console.log(filter);
 
         fetch('/userAllReservations', {
             method: 'POST',
@@ -103,7 +126,7 @@ class EditReservations extends Component {
             },
             body: JSON.stringify({
                 bid: this.state.buildingID,
-                orderBy: this.state.orderBy,
+                orderBy: filter,
             }),
         })
             .then(response => response.json())
@@ -152,10 +175,48 @@ class EditReservations extends Component {
         return this.setState({[event.target.name]: event.target.value});
     }
 
+    handleFilter(option) {
+        let orderBy = 0
+        switch (option.value) {
+            case 'Date':
+                this.setState({filter: 'Date', orderBy: 1});
+                orderBy = 1;
+                break;
+            case 'Room':
+                this.setState({filter: 'Room', orderBy: 2});
+                orderBy = 2;
+                break;
+            case 'Name':
+                this.setState({filter: 'Name', orderBy: 3});
+                orderBy = 3;
+                break;
+            case 'Course':
+                this.setState({filter: 'Course', orderBy: 4});
+                orderBy = 4;
+                break;
+            case 'Project #':
+                this.setState({filter: 'Project #', orderBy: 5});
+                orderBy = 5;
+                break;
+            case 'NetID':
+                this.setState({filter: 'NetID', orderBy: 6});
+                orderBy = 6;
+                break;
+        }
+        //['Date', 'Room', 'Name', 'Course', 'Project #', 'NetID']
+
+        if (this.state.allReservations) {
+            this.handleAllRes(orderBy);
+        }
+        else {
+            this.getReservations(orderBy);
+        }
+    }
+
     handleSearch(term) {
         term.preventDefault();
 
-        if (this.state.searchTerm == null) {
+        if (this.state.searchTerm == null || !(this.state.searchTerm).match("^[A-z0-9]+$")) {
             return;
         }
 
@@ -187,6 +248,12 @@ class EditReservations extends Component {
                         recordID: record.recordID,
                         recurring_recordID: record.recurring_recordID,
                         room_name: record.room_name,
+                        last_name: record.last_name,
+                        first_name: record.first_name,
+                        course: record.course,
+                        email: record.email,
+                        team_num: record.team_num,
+                        netID: record.netID,
                     });
                     return null;
                 });
@@ -200,10 +267,12 @@ class EditReservations extends Component {
     }
 
     render() {
+        let filterOptions = ['Date', 'Room', 'Name', 'Course', 'Project #', 'NetID'];
+
         return(
             <div>
                 <style>
-                    {document.body.style = 'background: #43a047;'}
+                    {document.body.style = 'background: #008542;'}
                 </style>
                 <div id = 'routing-table'>
                     <Link id="link" to={{
@@ -220,7 +289,7 @@ class EditReservations extends Component {
                         ) : (null)
                     }
                 </div>
-                <div className = 'page-title'>My Reservations</div>
+                <div className = 'page-title-strip'>My Reservations</div>
                 <div id = 'reservation-buttons'>
                     {
                         this.state.userClass === 1 ? (
@@ -242,13 +311,18 @@ class EditReservations extends Component {
                 <div>
                     {
                         this.state.userClass === 1 ? (
-                            <form id = 'search-box' onSubmit={this.handleSearch}>
-                                <label>
-                                    Search:
-                                    <input name='searchTerm' onChange={this.handleChange} type="text" />
-                                </label>
-                                <input type="submit" value="Search" />
-                            </form>
+                            <div>
+                                <form id = 'search-box' onSubmit={this.handleSearch}>
+                                    <label>
+                                        Search:
+                                        <input name='searchTerm' onChange={this.handleChange} type="text" />
+                                    </label>
+                                    <input type="submit" value="Search" />
+                                </form>
+                                <div id='dropdown-filter'>
+                                    Sort: <Dropdown options={filterOptions} onChange={this.handleFilter} value={this.state.filter} placeholder={"Date"}/>
+                                </div>
+                            </div>
                         ) : (null)
                     }
                 </div>
@@ -278,7 +352,7 @@ class EventDropdown extends Component {
         let endTime = moment(dateObjectEnd).format('LT');
 
         let previous = false;
-        let background = '#ffa726';
+        let background = '#00a1de';
         if (dateObjectStart < (new Date())) {previous = true; background = 'grey';}
 
         this.showDDContent = this.showDDContent.bind(this);
@@ -315,7 +389,7 @@ class EventDropdown extends Component {
             userClass: this.props.userClass,
             userID: this.props.userID,
             minTime: new Date(new Date(dateObjectStart).setMinutes(dateObjectStart.getMinutes() + 30)),
-            maxTime: new Date(new Date(dateObjectStart).setHours(dateObjectStart.getHours() + 2)),
+            maxTime: new Date(1, 1, 1, 23, 59, 59),
             dateConflict: false,
             weeklyConflict: false,
             dailyConflict: false,
@@ -340,6 +414,7 @@ class EventDropdown extends Component {
             userID : nextProps.userID,
             buildingID : nextProps.buildingID,
             showPastRes : nextProps.showPastRes,
+            orderBy: nextProps.orderBy,
         });
     }
 
@@ -384,7 +459,7 @@ class EventDropdown extends Component {
             tempTitle: this.state.title,
             tempDescription: this.state.description,
             minTime: new Date(new Date(this.state.dateObjectStart).setMinutes(this.state.dateObjectStart.getMinutes() + 30)),
-            maxTime: new Date(new Date(this.state.dateObjectStart).setHours(this.state.dateObjectStart.getHours() + 2)),
+            maxTime: new Date('23:59:59'),
             dateConflict: false,
             dailyConflict: false,
             weeklyConflict: false,
@@ -425,10 +500,12 @@ class EventDropdown extends Component {
     }
 
     handleStartTimeChange(time) {
+        console.log(new Date(new Date(time).setMinutes(time.getMinutes() + 30)));
+
         this.setState({
             tempStartTime: time,
-            minTime: new Date(new Date(time).setMinutes(time.getMinutes() + 30)),
-            maxTime: new Date(new Date(time).setHours(time.getHours() + 2)),
+            minTime: (new Date(new Date(time).setMinutes(time.getMinutes() + 30))),
+            //maxTime: (new Date(new Date(time).setHours(time.getHours() + 2))),
             tempEndTime: new Date(new Date(time).setMinutes(time.getMinutes() + 30)),
         });
     }
@@ -535,22 +612,28 @@ class EventDropdown extends Component {
                     <div>
                         <div className = 'dd-list-header' onClick={this.showDDContent}>
                             <div className = 'event-item'>
-                                Room: {this.state.room_name}
+                                <div>Room:</div>
+                                <div>{this.state.room_name}</div>
                             </div>
                             <div className = 'event-item'>
-                                Date: {this.state.startDate}
+                                <div>Date:</div>
+                                <div>{this.state.startDate}</div>
                             </div>
                             <div className = 'event-item'>
-                                Time: {this.state.startTime} - {this.state.endTime}
+                                <div>Time:</div>
+                                <div>{this.state.startTime} - {this.state.endTime}</div>
                             </div>
                             <div className = 'event-item'>
-                                Title: {this.state.title}
+                                <div>Title:</div>
+                                <div>{this.state.title}</div>
                             </div>
                             <div className = 'event-item'>
-                                Project #: {this.state.team_num}
+                                <div>Project #:</div>
+                                <div>{this.state.team_num}</div>
                             </div>
                             <div className = 'event-item'>
-                                Name: {this.state.last_name}, {this.state.first_name}
+                                <div>Name:</div>
+                                <div>{this.state.last_name}, {this.state.first_name}</div>
                             </div>
                         </div>
                         {
@@ -559,6 +642,15 @@ class EventDropdown extends Component {
 
                                     <div className = 'dd-list-items'>
                                         Description: {this.state.description}
+                                    </div>
+                                    <div className = 'dd-list-items'>
+                                        NetID: {this.state.netID}
+                                    </div>
+                                    <div className = 'dd-list-items'>
+                                        Course: {this.state.course}
+                                    </div>
+                                    <div className = 'dd-list-items'>
+                                        Email: {this.state.email}
                                     </div>
                                     {
                                         !this.state.previous ? (
@@ -608,8 +700,8 @@ class EventDropdown extends Component {
                                                                 onChange={this.handleEndTimeChange}
                                                                 showTimeSelect
                                                                 showTimeSelectOnly
-                                                                minTime={this.state.userClass === 3 ? this.state.minTime : null}
-                                                                maxTime={this.state.userClass === 3 ? this.state.maxTime : null}
+                                                                minTime={this.state.minTime}
+                                                                maxTime={this.state.maxTime}
                                                                 timeIntervals={30}
                                                                 dateFormat="h:mm aa"
                                                                 timeCaption="End"

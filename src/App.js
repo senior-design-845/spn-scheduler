@@ -144,7 +144,7 @@ class App extends Component {
     return (
         <div>
             <style>
-                {document.body.style = 'background: white;'}
+                {document.body.style = 'background: #62d2ff;'}
             </style>
             {this.state.uniqueRooms.map((e) => (
                 <button key={e.id} style={{backgroundColor: e.color}} onClick={() => this.handleRoomClick(this.search(e.title, this.state.uniqueRooms))}>
@@ -172,6 +172,7 @@ class App extends Component {
             <br/><br/>
             <div style={{height: 700}}>
                 <BigCalendar
+                    style={{background: 'white'}}
                     events={this.state.events}
                     step={30}
                     defaultView='week'

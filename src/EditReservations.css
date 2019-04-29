@@ -1,5 +1,5 @@
-.page-title {
-    background: rgba(255, 156, 47, 0.88);
+.page-title-strip {
+    background: #0073ac;
     color: white;
     margin-bottom: 2px;
     font-size: 50px;
@@ -8,14 +8,22 @@
 .event-list-wrapper {
     width: 70%;
 }
+.event-item {
+    margin: 3px;
+    text-align: left;
+    display: inline-grid;
+}
 .dd-list-container {
     border-radius: 4px;
     margin: 10px;
-    text-align: center;
+    text-align: left;
 }
 .dd-list-header {
     cursor: pointer;
     color: white;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 0.7fr 1fr 1.4fr 1fr 0.7fr 1fr;
 }
 .dd-edit-button {
     cursor: pointer
@@ -24,14 +32,20 @@
     list-style-type: none;
 }
 .dd-list-content {
-    background: #ffd95b;
+    background: #4ab66e;
     text-align: left;
 }
 .dd-form-content {
     background: whitesmoke;
 }
 .dd-edit-item {
-    float: left;
+    text-align: left;
+    display: grid;
+}
+#dropdown-filter {
+    display: inline-block;
+    width: 20%;
+    color: white;
 }
 #routing-table {
     float: right;

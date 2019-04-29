@@ -13,7 +13,7 @@ body {
     background: #B7B1A9;
 }
 .page-title {
-    background: rgba(255, 156, 47, 0.88);
+    background: #0073ac;
     color: white;
     margin-bottom: 2px;
     font-size: 50px;
@@ -23,7 +23,7 @@ body {
     width: 70%;
 }
 .dd-list-container {
-    background: #ffa726;
+    background: #00a1de;
     border-radius: 4px;
     margin: 10px;
     text-align: center;
