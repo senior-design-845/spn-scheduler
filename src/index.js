@@ -12,7 +12,7 @@ import Login from "./Login";
 ReactDOM.render(
     <Router>
         <Route exact path="/" render={() => (
-            <Redirect to="/calendar"/>
+            <Redirect to="/login"/>
         )}/>
         <Route exact path="/calendar" component={App}/>
         <Route path="/myreservations" component={EditReservations}/>

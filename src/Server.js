@@ -23,16 +23,16 @@ connection.connect(function(err){
         console.log(err);
 });
 
-app.get('/', function(req, res) {
+/*app.get('/', function(req, res) {
        connection.query('call calendarDisplay(1,1)', function(err, data) {
            (err)? res.send(err) : res.json({schedule :data});
        });
-});
+});*/
 
-app.get('/calendar', function (req, res) {
+app.post('/calendar', function (req, res) {
 
-    connection.query('call calendarDisplay(1,1)', function(error, results, fields){
-        if(error) throw error;
+    connection.query(`call calendarDisplay(${req.body.userID},${req.body.buildingID})`, function(error, results, fields){
+        if(error) res.send(error);
         console.log('Connected');
         res.send(results[0]);
     });
@@ -42,20 +42,19 @@ app.post('/login', function(req, res) {
     let nid = req.body.netid;
 
     connection.query(`call netidVerification("${nid}")`, function(error, results, fields){
-        if(error) throw error;
+        if(error) res.send(error);
         console.log('Connected');
-        res.send(results[0][0]);
+        res.send(results[0]);
     });
 });
 
 app.post('/getBuildings', function(req, res) {
     let uid = req.body.userID;
-    console.log(uid);
 
     connection.query(`call userBuildings(${uid})`, function(error, results, fields){
-        if(error) throw error;
+        if(error) res.send(error);
         console.log('Connected');
-        res.send(results[0][0]);
+        res.send(results[0]);
     });
 });
 
@@ -66,8 +65,15 @@ app.post('/email', function (req,res){
         emailMessage += `End: ${moment(r.end).format('YYYY-MM-DD HH:mm:ss')}\n\n`;
     });
 
+    emailMessage += "\u2022Please by sure the room is tidy and clean when you leave.\n";
+    emailMessage += "\t\u2022 Trash in trash cans\n";
+    emailMessage += "\t\u2022 Chairs pushed in\n";
+    emailMessage += "\t\u2022 Projectors/monitors turned off\n";
+    emailMessage += "\t\u2022 Whiteboards erased\n";
+    emailMessage += "\u2022Finish your meeting on time";
+    emailMessage += "\n\nIf you have any questions email utdesign@utdallas.edu";
 
-    ///////////////////////////////////////////////////////////////////////
+
     var nodemailer = require('nodemailer');
     var smtpTransport = require('nodemailer-smtp-transport');
 
@@ -83,21 +89,20 @@ app.post('/email', function (req,res){
     // send mail with defined transport object
     const mailOptions = {
         from: 'utdroomreservation@gmail.com',
-        to: 'jcc160330@utdallas.edu',
-        subject: 'Sending Email using Node.js[nodemailer]',
+        to: req.body.email,
+        subject: 'Room Confirmation',
         text: emailMessage
     };
 
     transporter.sendMail(mailOptions, function (err, info) {
-        console.log("yo");
         if(err)
-            console.log(err)
+            console.log(err);
         else
             console.log(info);
     });
 
     res.send("Email sent");
-    ////////////////////////////////////////////////////////////////
+
 
 });
 
@@ -113,8 +118,8 @@ app.post('/adminTables', function(req, res) {
     }
 
     connection.query(`call ${table}()`, function(error,results,fields){
-       if(error) throw error;
-       console.log(results[0]);
+       if(error) res.send(error);
+
        res.send(results[0]);
     });
 });
@@ -125,7 +130,7 @@ app.post('/userReservations', function (req, res) {
     let orderBy = req.body.orderBy;
 
     connection.query(`call userReservations(${uid},${bid},${orderBy})`, function(error, results, fields){
-        if(error) throw error;
+        if(error) res.send(error);
         console.log('Connected');
         res.send(results[0]);
     });
@@ -136,7 +141,7 @@ app.post('/userAllReservations', function (req, res) {
     let orderBy = req.body.orderBy;
 
     connection.query(`call userAllReservations(${bid},${orderBy})`, function(error, results, fields){
-        if(error) throw error;
+        if(error) res.send(error);
         console.log('Connected');
         res.send(results[0]);
     });
@@ -148,7 +153,7 @@ app.post('/searchReservations', function (req, res) {
     let orderBy = req.body.orderBy;
 
     connection.query(`call searchReservations('%${searchTerm}%',${bid},${orderBy})`, function(error, results, fields){
-        if(error) throw error;
+        if(error) res.send(error);
         console.log('Connected');
         res.send(results[0]);
     });
@@ -162,7 +167,7 @@ app.post('/editReservation', function (req, res) {
     let event_detail = req.body.event_detail;
 
     connection.query(`call editReservation(${recordID},"${start_datetime}","${end_datetime}","${title}","${event_detail}")`, function(error, results, fields){
-        if(error) throw error;
+        if(error) res.send(error);
         console.log('Connected');
         res.send(results[0]);
     });
@@ -180,7 +185,7 @@ app.post('/addRoom', function(req, res) {
             res.send('Error');
             return;
         }
-        console.log(results);
+
         res.send('Accepted')
     });
 });
@@ -218,7 +223,7 @@ app.post('/addUser', function(req, res) {
             res.send('Error');
             return;
         }
-        console.log(results);
+
         res.send('Accepted')
     });
 });
@@ -256,7 +261,7 @@ app.post('/addBuilding', function(req, res) {
             res.send('Error');
             return;
         }
-        console.log(results);
+
         res.send('Accepted')
     });
 });
@@ -291,7 +296,7 @@ app.post('/addUserClass', function(req, res) {
             res.send('Error');
             return;
         }
-        console.log(results);
+
         res.send('Accepted')
     });
 });
@@ -325,7 +330,7 @@ app.post('/addClass', function(req, res) {
             res.send('Error');
             return;
         }
-        console.log(results);
+
         res.send('Accepted')
     });
 });
@@ -359,7 +364,7 @@ app.post('/addRoomClass', function(req, res) {
             res.send('Error');
             return;
         }
-        console.log(results);
+
         res.send('Accepted')
     });
 });
@@ -388,14 +393,14 @@ app.post('/deleteRoomClass', function(req, res) {
 
 app.post('/hours', function(req, res) {
     connection.query(`call availableHours( ${req.body.username}, '${req.body.room}',${req.body.building}, '${dateFormat(req.body.startDate, "yyyy-mm-dd hh:MM:ss")}' )`, function(error, results, fields){
-        if(error) throw error;
+        if(error) res.send(error);
         res.send(results[0][0]);
     });
 });
 
 app.post('/semester', function(req, res) {
     connection.query(`call getSemester(${req.body.building})`, function(error, results, fields){
-        if(error) throw error;
+        if(error) res.send(error);
         res.send(results[0][0]);
     });
 });
@@ -406,7 +411,7 @@ app.post('/availableRooms', function(req, res){
     let endtime = moment(req.body.endTime).format('HH:mm:ss');
 
     connection.query(`call availableRooms(${req.body.username},${req.body.building},'${startdate + ' ' + starttime}', '${startdate + ' ' + endtime}')`, function(error, results, fields){
-        if (error) throw error;
+        if (error) res.send(error);
 
         res.send(results[0]);
     });
@@ -420,7 +425,7 @@ app.post('/insertReservations', async function(req, res){
         let end = moment(firstEvent.end).format('YYYY-MM-DD HH:mm:ss');
 
         connection.query(`call firstRecurring(${req.body.username},${req.body.room},${req.body.building},'${start}','${end}','${req.body.title}','${req.body.description}')`,async function(error,results,fields) {
-            if (error) throw error;
+            if (error) res.send(error);
 
             const promises = events.map(async r => {
                 start = moment(r.start).format('YYYY-MM-DD HH:mm:ss');
@@ -428,7 +433,7 @@ app.post('/insertReservations', async function(req, res){
 
                 return new Promise(function (resolve, reject) {
                     connection.query(`call insertReservation(${req.body.username},${req.body.room},${req.body.building},'${start}','${end}','${req.body.title}','${req.body.description}', ${results[0][0].recordID})`, function (error, results, fields) {
-                        if (error) throw error;
+                        if (error) res.send(error);
                         resolve("Done");
                     });
                 });
@@ -443,7 +448,7 @@ app.post('/insertReservations', async function(req, res){
         let end = moment(req.body.reservations[0].end).format('YYYY-MM-DD HH:mm:ss');
 
         connection.query(`call insertReservation(${req.body.username},${req.body.room},${req.body.building},'${start}','${end}','${req.body.title}','${req.body.description}', null)`,function(error,results,fields) {
-            if(error) throw error;
+            if(error) res.send(error);
             res.send("Finished single");
         })
     }
@@ -458,7 +463,7 @@ app.post('/verifyReservations', async function(req, res) {
 
        return new Promise(function(resolve,reject) {
            connection.query(`call verifyReservation(${req.body.username},${req.body.building},'${startdate + ' ' + starttime}', '${startdate + ' ' + endtime}', ${req.body.roomID})`, function (error, results, fields) {
-               if (error) throw error;
+               if (error) res.send(error);
 
                //Since this is asynchronous to the map assignment, reassign to get correct values
                startdate = moment(r).format('YYYY-MM-DD');
@@ -492,7 +497,7 @@ app.post('/verifyEditReservations', async function(req, res) {
 
         return new Promise(function(resolve,reject) {
             connection.query(`call verifyEditReservation(${req.body.username},${req.body.building},'${startdate + ' ' + starttime}', '${startdate + ' ' + endtime}', ${req.body.roomID}, ${req.body.recordID})`, function (error, results, fields) {
-                if (error) throw error;
+                if (error) res.send(error);
 
                 //Since this is asynchronous to the map assignment, reassign to get correct values
                 startdate = moment(r).format('YYYY-MM-DD');
@@ -518,8 +523,17 @@ app.post('/removeEvent', function(req, res) {
     let recordID = req.body.recordID;
 
     connection.query(`call removeEvent(${recordID})`, function(error, results, fields){
-        if(error) throw error;
+        if(error) res.send(error);
         res.send(results[0]);
+    });
+});
+
+app.get('/deleteStudents', function(req, res){
+    connection.query('call removeStudents()', function(error, results, fields){
+       if(error) {
+           res.send("Error");
+       }
+       res.send("Finished");
     });
 });
 

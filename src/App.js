@@ -20,7 +20,7 @@ class App extends Component {
             events: [],
             roomEvents: [],
             buttonToggle: [],
-            allToggle: true
+            allToggle: true,
         };
 
         this.handleRoomClick = this.handleRoomClick.bind(this);
@@ -33,8 +33,17 @@ class App extends Component {
         let i = 0;
 
         //Get the room reservation data from the server
-        fetch('/calendar')
-            .then(response => response.json())
+        fetch('/calendar',{
+            method: 'post',
+            headers: {
+                'Accept': "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                userID: this.props.location.state.userID,
+                buildingID: this.props.location.state.buildingID
+            })
+        }).then(response => response.json())
             .then(reservations => {
                 //Parse through the data and update the state
                 let uniquerooms = [];
@@ -59,7 +68,7 @@ class App extends Component {
 
                         temp.push([{
                             'id': uniquerooms.length-1,
-                            'title': record.title,
+                            'title': `\n${record.last_name}\nProject: ${record.team_num}\nTitle: ${record.title}`,
                             'start': new Date( Date.parse(record.start_datetime) ),
                             'end': new Date (Date.parse(record.end_datetime) )
                         }])
@@ -67,7 +76,7 @@ class App extends Component {
                     else {
                         temp[roomid].push({
                             'id': roomid,
-                            'title': record.title,
+                            'title': `\n${record.last_name}\nProject: ${record.team_num}\nTitle: ${record.title}`,
                             'start': new Date(Date.parse(record.start_datetime)),
                             'end': new Date(Date.parse(record.end_datetime))
 
@@ -146,11 +155,20 @@ class App extends Component {
                 Toggle All Rooms: {this.state.allToggle ? 'ALL' : 'NONE'}
             </button>
             <div id = 'routing-table'>
-                <Link to="/myreservations">My Reservations</Link>
+                <Link id="link" to={{
+                    pathname: '/myreservations',
+                    state: this.props.location.state
+                }}>My Reservations</Link>
                 <br/>
-                <Link to="/admin">Admin</Link>
                 <br/>
-                <Link to="/login">Login</Link>
+                {
+                    this.props.location.classID === 1 ? (
+                        <Link id="link" to={{
+                            pathname: '/admin',
+                            state: this.props.location.state
+                        }}>Admin</Link>
+                    ) : (null)
+                }
             </div>
             <br/><br/>
             <div style={{height: 700}}>
@@ -169,7 +187,7 @@ class App extends Component {
                     })}
                 />
             </div>
-            <Reservations uniqueRooms={this.state.uniqueRooms}/>
+            <Reservations uniqueRooms={this.state.uniqueRooms} userInfo={this.props.location.state}/>
         </div>
     );
   }

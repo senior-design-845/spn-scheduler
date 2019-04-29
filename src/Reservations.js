@@ -13,10 +13,10 @@ const customStyles = {
       backgroundColor: 'papayawhip'
     },
     content : {
+        position: 'fixed',
         top: '50%',
         left: '50%',
         right: 'auto',
-        bottom: 'auto',
         marginRight: '-50%',
         transform: 'translate(-50%, -50%)',
         overflow: 'scroll'
@@ -81,6 +81,7 @@ class Reservations extends Component {
     }
 
     componentDidMount() {
+
         fetch('/semester',{
             method: 'post',
             headers: {
@@ -88,7 +89,7 @@ class Reservations extends Component {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                building: 1
+                building: this.props.userInfo.buildingID
             })
         }).then(response => response.json())
             .then( semester =>{
@@ -185,9 +186,9 @@ class Reservations extends Component {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: 1,
+                username: this.props.userInfo.userID,
                 room: this.state.selectedRoom,
-                building: 1,
+                building: this.props.userInfo.buildingID,
                 startDate: date
             })
         }).then(response => response.json())
@@ -205,7 +206,7 @@ class Reservations extends Component {
                         tempDate2.setHours(parseInt(tempTime[0], 10));
                     }
 
-                    console.log(tempDate2 + ' ' + tempDate + ' ' + hours.dayStart + ' ' + hours.dayEnd);
+
                     this.setState({
                         dailyHoursLeft: hours.dailyHours,
                         weeklyHoursLeft: hours.weeklyHours,
@@ -382,8 +383,8 @@ class Reservations extends Component {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: 1,
-                building: 1,
+                username: this.props.userInfo.userID,
+                building: this.props.userInfo.buildingID,
                 title: this.state.tempTitle,
                 description: this.state.tempDescription,
                 reservations: resDates,
@@ -400,7 +401,7 @@ class Reservations extends Component {
                 valid.map(v => {
                     string = v.start + ' to ' + v.end;
                     if (v.valid.conflict === 1 || v.valid.dailyOver === 1 || v.valid.weeklyOver === 1) {
-                        string += ' -> Rejected';
+                        string += ' -> Unavailable';
                         if (v.valid.conflict === 1) {
                             string += ' -> Schedule conflict';
                         }
@@ -411,7 +412,7 @@ class Reservations extends Component {
                             string += ' -> Over weekly hours'
                         }
                     } else {
-                        string += ' -> Accepted';
+                        string += ' -> Available';
                         newReservations.push({
                             start: new Date(v.start),
                             end: new Date(v.end)
@@ -526,8 +527,8 @@ class Reservations extends Component {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: 1,
-                building: 1,
+                username: this.props.userInfo.userID,
+                building: this.props.userInfo.buildingID,
                 room: roomID,
                 title: this.state.tempTitle,
                 description: this.state.tempDescription,
@@ -545,12 +546,13 @@ class Reservations extends Component {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        username: 1,
-                        building: 1,
+                        username: this.props.userInfo.userID,
+                        building: this.props.userInfo.buildingID,
                         room: this.state.selectedRoom,
                         title: this.state.tempTitle,
                         description: this.state.tempDescription,
-                        reservations: this.state.validReservations
+                        reservations: this.state.validReservations,
+                        email: this.props.userInfo.email
                     })
                 }).then(res=>res.text());
                 window.location.reload();
@@ -565,8 +567,8 @@ class Reservations extends Component {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: 1,
-                building: 1,
+                username: this.props.userInfo.userID,
+                building: this.props.userInfo.buildingID,
                 startDate: this.state.startDate,
                 startTime: this.state.startTime,
                 endTime: this.state.endTime,
@@ -679,15 +681,17 @@ class Reservations extends Component {
 
                                 {
                                     this.state.customOption === 'Weeks' ? (
-                                      <div>
-                                        <button onClick={() => this.handleMultipleDays(1)}> Monday: {this.state.weekdays[1] ? 'ON' : 'OFF'}</button>
-                                        <button onClick={() => this.handleMultipleDays(2)}> Tuesday: {this.state.weekdays[2] ? 'ON' : 'OFF'}</button>
-                                        <button onClick={() => this.handleMultipleDays(3)}> Wednesday: {this.state.weekdays[3] ? 'ON' : 'OFF'}</button>
-                                        <button onClick={() => this.handleMultipleDays(4)}> Thursday: {this.state.weekdays[4] ? 'ON' : 'OFF'}</button>
-                                        <button onClick={() => this.handleMultipleDays(5)}> Friday: {this.state.weekdays[5] ? 'ON' : 'OFF'}</button>
-                                        <button onClick={() => this.handleMultipleDays(6)}> Saturday: {this.state.weekdays[6] ? 'ON' : 'OFF'}</button>
-                                        <button onClick={() => this.handleMultipleDays(0)}> Sunday: {this.state.weekdays[0] ? 'ON' : 'OFF'}</button>
-                                      </div>
+                                        this.props.userInfo.classID === 1 ? (
+                                          <div>
+                                            <button onClick={() => this.handleMultipleDays(1)}> Monday: {this.state.weekdays[1] ? 'ON' : 'OFF'}</button>
+                                            <button onClick={() => this.handleMultipleDays(2)}> Tuesday: {this.state.weekdays[2] ? 'ON' : 'OFF'}</button>
+                                            <button onClick={() => this.handleMultipleDays(3)}> Wednesday: {this.state.weekdays[3] ? 'ON' : 'OFF'}</button>
+                                            <button onClick={() => this.handleMultipleDays(4)}> Thursday: {this.state.weekdays[4] ? 'ON' : 'OFF'}</button>
+                                            <button onClick={() => this.handleMultipleDays(5)}> Friday: {this.state.weekdays[5] ? 'ON' : 'OFF'}</button>
+                                            <button onClick={() => this.handleMultipleDays(6)}> Saturday: {this.state.weekdays[6] ? 'ON' : 'OFF'}</button>
+                                            <button onClick={() => this.handleMultipleDays(0)}> Sunday: {this.state.weekdays[0] ? 'ON' : 'OFF'}</button>
+                                          </div>
+                                        ) : null
                                     ): (null)
                                 }
 

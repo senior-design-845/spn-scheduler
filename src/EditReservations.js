@@ -10,9 +10,9 @@ class EditReservations extends Component {
         super(props);
 
         this.state = {
-            userID : 1,
-            userClass : 1,
-            buildingID : 1,
+            userID : this.props.location.state.userID,
+            userClass : this.props.location.state.classID,
+            buildingID : this.props.location.state.buildingID,
             orderBy: 1,
             events : [],
             allReservations: false,
@@ -206,11 +206,18 @@ class EditReservations extends Component {
                     {document.body.style = 'background: #43a047;'}
                 </style>
                 <div id = 'routing-table'>
-                    <Link id="link" to="/calendar">Calendar</Link>
+                    <Link id="link" to={{
+                        pathname: '/calendar',
+                        state: this.props.location.state
+                    }}>Calendar</Link>
+                    <br/>
                     <br/>
                     {
                         this.state.userClass === 1 ? (
-                            <Link id="link" to="/admin">Admin</Link>
+                            <Link id="link" to={{
+                                pathname: '/admin',
+                                state: this.props.location.state
+                            }}>Admin</Link>
                         ) : (null)
                     }
                 </div>

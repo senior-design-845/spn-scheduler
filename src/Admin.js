@@ -13,10 +13,35 @@ class Admin extends Component {
             showTable: false,
             selectedTable: 'Please choose a table',
             tableData: [],
-            search: ''
-        }
+            hideInactive: true,
+            deleteClick: false
+        };
 
         this.handleTableChoice = this.handleTableChoice.bind(this);
+        this.handleInactive = this.handleInactive.bind(this);
+        this.handleDeleteClick = this.handleDeleteClick.bind(this);
+        this.handleDeleteConfirm = this.handleDeleteConfirm.bind(this);
+    }
+
+    handleInactive(){
+        this.setState(prevState => ({hideInactive: !prevState.hideInactive}));
+    }
+    handleDeleteClick(event) {
+        event.preventDefault();
+        this.setState({deleteClick: true});
+    }
+
+    handleDeleteConfirm(event){
+        event.preventDefault();
+
+    fetch('/deleteStudents')
+        .then(response => response.text())
+        .then(result => {
+            if(result === "Error")
+                alert("Invalid Submission");
+            else
+                window.location.reload();
+        });
     }
 
     handleTableChoice(selected){
@@ -31,11 +56,14 @@ class Admin extends Component {
             })
         }).then(response => response.json())
             .then(data => {
-                this.setState({
-                    showTable: true,
-                    selectedTable: selected.value,
-                    tableData: data
-                });
+                if(typeof data.errno === undefined)
+                    alert(data.errno + ': ' + data.code);
+                else
+                    this.setState({
+                        showTable: true,
+                        selectedTable: selected.value,
+                        tableData: data
+                    });
             });
     }
 
@@ -50,9 +78,10 @@ class Admin extends Component {
             )
             events.push(
                 this.state.tableData.map(row => {
-                    return <RoomDropdown
-                        data = {row}
-                        />
+                    if(!this.state.hideInactive || !row.deleted)
+                        return <RoomDropdown
+                            data = {row}
+                            />
                 })
             )
             return events;
@@ -65,10 +94,11 @@ class Admin extends Component {
                 data = {null}
                 />);
             events.push(this.state.tableData.map(row => {
-                return <UserDropdown
-                    add = {false}
-                    data = {row}
-                />
+                if(!this.state.hideInactive || !row.deleted)
+                    return <UserDropdown
+                        add = {false}
+                        data = {row}
+                    />
             }));
             return(events);
         }
@@ -80,10 +110,11 @@ class Admin extends Component {
                     data = {null}
                 />);
             events.push(this.state.tableData.map(row => {
-                return <BuildingDropdown
-                    add = {false}
-                    data = {row}
-                />
+                if(!this.state.hideInactive || !row.deleted)
+                    return <BuildingDropdown
+                        add = {false}
+                        data = {row}
+                    />
             }));
             return(events);
         }
@@ -97,9 +128,10 @@ class Admin extends Component {
             )
             events.push(
                 this.state.tableData.map(row => {
-                    return <UserClassDropdown
-                        data = {row}
-                    />
+                    if(!this.state.hideInactive || !row.deleted)
+                        return <UserClassDropdown
+                            data = {row}
+                        />
                 })
             )
             return events;
@@ -114,9 +146,10 @@ class Admin extends Component {
             )
             events.push(
                 this.state.tableData.map(row => {
-                    return <ClassDropdown
-                        data = {row}
-                    />
+                    if(!this.state.hideInactive || !row.deleted)
+                        return <ClassDropdown
+                            data = {row}
+                        />
                 })
             )
             return events;
@@ -131,9 +164,10 @@ class Admin extends Component {
             )
             events.push(
                 this.state.tableData.map(row => {
-                    return <RoomClassDropdown
-                        data = {row}
-                    />
+                    if(!this.state.hideInactive || !row.deleted)
+                        return <RoomClassDropdown
+                            data = {row}
+                        />
                 })
             )
             return events;
@@ -148,15 +182,36 @@ class Admin extends Component {
                     {document.body.style = 'background: #43a047;'}
                 </style>
                 <div id = 'routing-table'>
-                    <Link id="link" to="/calendar">Calendar</Link>
+                    <Link id="link" to={{
+                        pathname: '/calendar',
+                        state: this.props.location.state
+                    }}>Calendar</Link>
                     <br/>
-                    <Link id="link" to="/myreservations">My Reservations</Link>
+                    <Link id="link" to={{
+                        pathname: '/myreservations',
+                        state: this.props.location.state
+                    }}>My Reservations</Link>
                 </div>
                 <div className = 'page-title'>Administrator Actions</div>
                 <Dropdown options={options} onChange={this.handleTableChoice} value={this.state.selectedTable}/>
+
                 {
                     this.state.showTable ? (
-                        this.displayData()
+                        <div>
+                            <button className="float-right" onClick={this.handleInactive}>{this.state.hideInactive ? "Show All":"Hide Inactive"}</button>
+                            {
+                                this.state.selectedTable === "Users" ? (
+                                    !this.state.deleteClick ? (
+                                        <button onClick={this.handleDeleteClick}>Remove ALL Students</button>
+                                    ) : (
+                                        <button onClick={this.handleDeleteConfirm} style={{'color':'white', 'background':'red'}}>CONFIRM</button>
+                                    )
+                                ) : null
+                            }
+                            {
+                                this.displayData()
+                            }
+                        </div>
                     ) : null
                 }
             </div>
@@ -309,8 +364,10 @@ class RoomDropdown extends Component {
         })
             .then(response => response.text())
             .then(result => {
-                //Invalid
-                //window.location.reload();
+                if(result === "Error")
+                    alert("Invalid Submission");
+                else
+                    window.location.reload();
             });
     }
 
@@ -337,8 +394,10 @@ class RoomDropdown extends Component {
             }),
         }).then(response => response.text())
             .then(result => {
-               //Check if invalid
-               window.location.reload();
+                if(result === "Error")
+                    alert("Invalid Submission");
+                else
+                    window.location.reload();
             });
     }
 
@@ -675,8 +734,10 @@ class UserDropdown extends Component {
         })
             .then(response => response.text())
             .then(result => {
-                //Invalid
-                //window.location.reload();
+                if(result === "Error")
+                    alert("Invalid Submission");
+                else
+                    window.location.reload();
             });
     }
 
@@ -703,8 +764,11 @@ class UserDropdown extends Component {
             }),
         }).then(response => response.text())
             .then(result => {
-                //Check if invalid
-                window.location.reload();
+                console.log(result);
+                if(result === "Error")
+                    alert("Invalid Submission");
+                else
+                    window.location.reload();
             });
     }
 
@@ -971,8 +1035,10 @@ class BuildingDropdown extends Component {
         })
             .then(response => response.text())
             .then(result => {
-                //Invalid
-                //window.location.reload();
+                if(result === "Error")
+                    alert("Invalid Submission");
+                else
+                    window.location.reload();
             });
     }
 
@@ -998,8 +1064,10 @@ class BuildingDropdown extends Component {
             }),
         }).then(response => response.text())
             .then(result => {
-                console.log(result)
-                //window.location.reload();
+                if(result === "Error")
+                    alert("Invalid Submission");
+                else
+                    window.location.reload();
             });
     }
 
@@ -1259,8 +1327,10 @@ class UserClassDropdown extends Component {
         })
             .then(response => response.text())
             .then(result => {
-                //Invalid
-                //window.location.reload();
+                if(result === "Error")
+                    alert("Invalid Submission");
+                else
+                    window.location.reload();
             });
     }
 
@@ -1283,8 +1353,11 @@ class UserClassDropdown extends Component {
             }),
         }).then(response => response.text())
             .then(result => {
-                console.log(result)
-                //window.location.reload();
+                console.log(result);
+                if(result === "Error")
+                    alert("Invalid Submission");
+               // else
+                    //window.location.reload();
             });
     }
 
@@ -1478,8 +1551,10 @@ class ClassDropdown extends Component {
         })
             .then(response => response.text())
             .then(result => {
-                //Invalid
-                //window.location.reload();
+                if(result === "Error")
+                    alert("Invalid Submission");
+                else
+                    window.location.reload();
             });
     }
 
@@ -1501,8 +1576,10 @@ class ClassDropdown extends Component {
             }),
         }).then(response => response.text())
             .then(result => {
-                console.log(result)
-                //window.location.reload();
+                if(result === "Error")
+                    alert("Invalid Submission");
+                else
+                    window.location.reload();
             });
     }
 
@@ -1692,8 +1769,10 @@ class RoomClassDropdown extends Component {
         })
             .then(response => response.text())
             .then(result => {
-                //Invalid
-                //window.location.reload();
+                if(result === "Error")
+                    alert("Invalid Submission");
+                else
+                    window.location.reload();
             });
     }
 
@@ -1717,8 +1796,10 @@ class RoomClassDropdown extends Component {
             }),
         }).then(response => response.text())
             .then(result => {
-                console.log(result)
-                //window.location.reload();
+                if(result === "Error")
+                    alert("Invalid Submission");
+                else
+                    window.location.reload();
             });
     }
 
