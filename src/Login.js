@@ -106,47 +106,54 @@ class Login extends Component {
         //let options = this.state.building_name
       //  let optionItems = options.map(());
         return(
-            <div className="Login">
-                <Form onSubmit={this.handleLogin}>
-                    <Form.Group controlId="netid" bsSize="large">
-                        <Form.Control
-                            autoFocus
-                            type="netid"
-                            value={this.state.netid}
-                            onChange={this.handleChange}
-                        />
-                    </Form.Group>
-                    <button
-                        block
-                        bssize="large"
-                        disabled={!this.validateForm()}
-                        type="submit"
-                    >
-                        Login
-                    </button>
-                </Form>
-                {
-                    this.state.showBuildings ? (
-                        <Dropdown options={this.state.buildingNames} onChange={this.handleBuildings} value={this.state.selectedBuilding}/>
-                    ) : null
-                }
-                {
-                    this.state.showSubmit ? (
-                        <button onClick={this.handleSubmit}>Submit</button>
-                    ) : null
-                }
-                {
-                    this.state.redirect ? (
-                        <Redirect to={{
-                            pathname: '/calendar',
-                            state: {
-                                buildingID: this.state.buildingID,
-                                userID: this.state.userid,
-                                classID: this.state.classID,
-                                email: this.state.email
-                            }}}/>
-                    ) : null
-                }
+            <div>
+                <div className = 'page-title'>Login</div>
+                <div className="Login">
+                    <style>
+                        {document.body.style = 'background: #43a047;'}
+                    </style>
+
+                    <Form onSubmit={this.handleLogin}>
+                        <Form.Group controlId="netid" bsSize="large">
+                            <Form.Control
+                                autoFocus
+                                type="netid"
+                                value={this.state.netid}
+                                onChange={this.handleChange}
+                            />
+                        </Form.Group>
+                        <button
+                            block
+                            bssize="large"
+                            disabled={!this.validateForm()}
+                            type="submit"
+                        >
+                            Login
+                        </button>
+                    </Form>
+                    {
+                        this.state.showBuildings ? (
+                            <Dropdown options={this.state.buildingNames} onChange={this.handleBuildings} value={this.state.selectedBuilding}/>
+                        ) : null
+                    }
+                    {
+                        this.state.showSubmit ? (
+                            <button onClick={this.handleSubmit}>Submit</button>
+                        ) : null
+                    }
+                    {
+                        this.state.redirect ? (
+                            <Redirect to={{
+                                pathname: '/calendar',
+                                state: {
+                                    buildingID: this.state.buildingID,
+                                    userID: this.state.userid,
+                                    classID: this.state.classID,
+                                    email: this.state.email
+                                }}}/>
+                        ) : null
+                    }
+                </div>
             </div>
         );
     }

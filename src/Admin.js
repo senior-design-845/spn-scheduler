@@ -191,6 +191,8 @@ class Admin extends Component {
                         pathname: '/myreservations',
                         state: this.props.location.state
                     }}>My Reservations</Link>
+                    <br/>
+                    <Link id="link" to={'/login'}>Logout</Link>
                 </div>
                 <div className = 'page-title'>Administrator Actions</div>
                 <Dropdown options={options} onChange={this.handleTableChoice} value={this.state.selectedTable}/>

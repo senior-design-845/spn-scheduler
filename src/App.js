@@ -168,6 +168,8 @@ class App extends Component {
                         }}>Admin</Link>
                     ) : (null)
                 }
+                <br/>
+                <Link id="link" to={'/login'}>Logout</Link>
             </div>
             <br/><br/>
             <div style={{height: 700}}>

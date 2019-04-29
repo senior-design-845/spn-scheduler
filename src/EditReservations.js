@@ -219,6 +219,8 @@ class EditReservations extends Component {
                             }}>Admin</Link>
                         ) : (null)
                     }
+                    <br/>
+                    <Link id="link" to={'/login'}>Logout</Link>
                 </div>
                 <div className = 'page-title'>My Reservations</div>
                 <div id = 'reservation-buttons'>
