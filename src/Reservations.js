@@ -400,15 +400,15 @@ class Reservations extends Component {
                 let allstrings = [];
                 valid.map(v => {
                     string = v.start + ' to ' + v.end;
-                    if (v.valid.conflict === 1 || v.valid.dailyOver === 1 || v.valid.weeklyOver === 1) {
+                    if (v.valid.conflict === 1 || (v.valid.dailyOver === 1 && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3)) || (v.valid.weeklyOver === 1  && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3))) {
                         string += ' -> Unavailable';
                         if (v.valid.conflict === 1) {
                             string += ' -> Schedule conflict';
                         }
-                        if (v.valid.dailyOver === 1) {
+                        if ((v.valid.dailyOver === 1  && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3))) {
                             string += ' -> Over daily hours'
                         }
-                        if (v.valid.weeklyOver === 1) {
+                        if ((v.valid.weeklyOver === 1 && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3))) {
                             string += ' -> Over weekly hours'
                         }
                     } else {
@@ -615,87 +615,114 @@ class Reservations extends Component {
 
 
         return(
-            <div style={{height:'400px'}}>
+            <div>
+                <div className = 'page-title'>Make a Reservation</div>
+                <div style={{height:'500px', background: '#43a047'}}>
 
-                <div style={{width:'20%'}}>
-                    <Dropdown options={roomOptions} onChange={this.handleRooms} value={this.state.selectedRoom} placeholder={"Select a Room"}/>
-                </div>
-                <header>Daily Hours Left: {this.state.dailyHoursLeft}</header>
-                <header>Weekly Hours Left: {this.state.weeklyHoursLeft}</header>
-                <br/><br/>
+                    <div style={{width:'20%'}}>
+                        <header>Please choose a room:</header>
+                        <Dropdown options={roomOptions} onChange={this.handleRooms} value={this.state.selectedRoom} placeholder={"Select a Room"}/>
+                    </div>
+                    {
+                        (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3) ? (
+                            <div>
+                                <header>Daily Hours Left: {this.state.dailyHoursLeft}</header>
+                                <header>Weekly Hours Left: {this.state.weeklyHoursLeft}</header>
+                            </div>
+                        ) : null
+                    }
 
-                <div style={{display: 'flex', flexDirection: 'row'}}>
-                    <DatePicker
-                        selected={this.state.startDate}
-                        onChange={this.handleStartDateChange}
-                        minDate={this.state.semesterStart}
-                        maxDate={this.state.semesterEnd}
-                        disabled={!this.state.showStartDate}
-                        placeholderText="Choose Start Date"
-                    />
-                    <br/>
-                    <DatePicker
-                        selected={this.state.startTime}
-                        onChange={this.handleStartTimeChange}
-                        showTimeSelect
-                        showTimeSelectOnly
-                        minTime={this.state.dayStart}
-                        maxTime={this.state.maxStartTime}
-                        timeIntervals={30}
-                        dateFormat="h:mm aa"
-                        timeCaption="Start"
-                        disabled={!this.state.showStartTime}
-                        placeholderText="Choose Start Time"
-                    />
                     <br/><br/>
-                    <DatePicker
-                        selected={this.state.endTime}
-                        onChange={this.handleEndTimeChange}
-                        showTimeSelect
-                        showTimeSelectOnly
-                        minTime={this.state.minStartTime}
-                        maxTime={this.state.maxEndTime}
-                        timeIntervals={30}
-                        dateFormat="h:mm aa"
-                        timeCaption="End"
-                        disabled={!this.state.showEndTime}
-                        placeholderText="Choose End Time"
-                    />
-                    <br/>
-                </div>
-                <div style={{width:'35%'}}>
-                    <Dropdown  options={recurringOptions} onChange={this.handleRecurring} value={text.selectedText} disabled={!this.state.showRecurring}/>
-                </div>
-                {
-                    this.state.showEndDate ? (
-                        this.state.showCustom ? (
-                            <div style={{padding: '15px'}}>
-                                Repeat Every
-                                <div style={{display:'inline-block'}}>
-                                    <NumericInput min={1} max={50} value={this.state.recurringNumber} onChange={this.handleNumber}/>
+
+                    <div style={{display: 'flex', flexDirection: 'row'}}>
+                        Start Date:
+                        <DatePicker
+                            selected={this.state.startDate}
+                            onChange={this.handleStartDateChange}
+                            minDate={this.state.semesterStart}
+                            maxDate={this.state.semesterEnd}
+                            disabled={!this.state.showStartDate}
+                            placeholderText="Choose Start Date"
+                        />
+
+                        Start Time:
+                        <DatePicker
+                            selected={this.state.startTime}
+                            onChange={this.handleStartTimeChange}
+                            showTimeSelect
+                            showTimeSelectOnly
+                            minTime={this.state.dayStart}
+                            maxTime={this.state.maxStartTime}
+                            timeIntervals={30}
+                            dateFormat="h:mm aa"
+                            timeCaption="Start"
+                            disabled={!this.state.showStartTime}
+                            placeholderText="Choose Start Time"
+                        />
+
+                        End Time:
+                        <DatePicker
+                            selected={this.state.endTime}
+                            onChange={this.handleEndTimeChange}
+                            showTimeSelect
+                            showTimeSelectOnly
+                            minTime={this.state.minStartTime}
+                            maxTime={this.state.maxEndTime}
+                            timeIntervals={30}
+                            dateFormat="h:mm aa"
+                            timeCaption="End"
+                            disabled={!this.state.showEndTime}
+                            placeholderText="Choose End Time"
+                        />
+                        <br/><br/><br/>
+                    </div>
+                    <div style={{width:'35%'}}>
+                        <header>Is this a recurring event?</header>
+                        <Dropdown  options={recurringOptions} onChange={this.handleRecurring} value={text.selectedText} disabled={!this.state.showRecurring}/>
+                    </div>
+                    {
+                        this.state.showEndDate ? (
+                            this.state.showCustom ? (
+                                <div style={{padding: '15px'}}>
+                                    Repeat Every
+                                    <div style={{display:'inline-block'}}>
+                                        <NumericInput min={1} max={50} value={this.state.recurringNumber} onChange={this.handleNumber}/>
+                                    </div>
+
+                                    <div style={{display:'inline-block'}}>
+                                        <Dropdown options={['Days','Weeks','Months']} onChange={this.handleCustom} value={this.state.customOption}/>
+                                    </div>
+
+                                    {
+                                        this.state.customOption === 'Weeks' ? (
+                                            this.props.userInfo.classID === 1 || this.props.userInfo.classID === 3 ? (
+                                              <div>
+                                                <button onClick={() => this.handleMultipleDays(1)}> Monday: {this.state.weekdays[1] ? 'ON' : 'OFF'}</button>
+                                                <button onClick={() => this.handleMultipleDays(2)}> Tuesday: {this.state.weekdays[2] ? 'ON' : 'OFF'}</button>
+                                                <button onClick={() => this.handleMultipleDays(3)}> Wednesday: {this.state.weekdays[3] ? 'ON' : 'OFF'}</button>
+                                                <button onClick={() => this.handleMultipleDays(4)}> Thursday: {this.state.weekdays[4] ? 'ON' : 'OFF'}</button>
+                                                <button onClick={() => this.handleMultipleDays(5)}> Friday: {this.state.weekdays[5] ? 'ON' : 'OFF'}</button>
+                                                <button onClick={() => this.handleMultipleDays(6)}> Saturday: {this.state.weekdays[6] ? 'ON' : 'OFF'}</button>
+                                                <button onClick={() => this.handleMultipleDays(0)}> Sunday: {this.state.weekdays[0] ? 'ON' : 'OFF'}</button>
+                                              </div>
+                                            ) : null
+                                        ): (null)
+                                    }
+
+                                    <div style={{padding:'10px'}}>
+                                        End Date:
+                                        <DatePicker
+                                            selected={this.state.endDate}
+                                            onChange={this.handleEndDateChange}
+                                            minDate={this.state.startDate}
+                                            maxDate={this.state.semesterEnd}
+                                            placeholderText="End of recurrence"
+                                        />
+                                    </div>
                                 </div>
 
-                                <div style={{display:'inline-block'}}>
-                                    <Dropdown options={['Days','Weeks','Months']} onChange={this.handleCustom} value={this.state.customOption}/>
-                                </div>
-
-                                {
-                                    this.state.customOption === 'Weeks' ? (
-                                        this.props.userInfo.classID === 1 ? (
-                                          <div>
-                                            <button onClick={() => this.handleMultipleDays(1)}> Monday: {this.state.weekdays[1] ? 'ON' : 'OFF'}</button>
-                                            <button onClick={() => this.handleMultipleDays(2)}> Tuesday: {this.state.weekdays[2] ? 'ON' : 'OFF'}</button>
-                                            <button onClick={() => this.handleMultipleDays(3)}> Wednesday: {this.state.weekdays[3] ? 'ON' : 'OFF'}</button>
-                                            <button onClick={() => this.handleMultipleDays(4)}> Thursday: {this.state.weekdays[4] ? 'ON' : 'OFF'}</button>
-                                            <button onClick={() => this.handleMultipleDays(5)}> Friday: {this.state.weekdays[5] ? 'ON' : 'OFF'}</button>
-                                            <button onClick={() => this.handleMultipleDays(6)}> Saturday: {this.state.weekdays[6] ? 'ON' : 'OFF'}</button>
-                                            <button onClick={() => this.handleMultipleDays(0)}> Sunday: {this.state.weekdays[0] ? 'ON' : 'OFF'}</button>
-                                          </div>
-                                        ) : null
-                                    ): (null)
-                                }
-
-                                <div style={{padding:'10px'}}>
+                            ) : (
+                                <div style={{padding: '10px'}}>
                                     End Date:
                                     <DatePicker
                                         selected={this.state.endDate}
@@ -705,69 +732,57 @@ class Reservations extends Component {
                                         placeholderText="End of recurrence"
                                     />
                                 </div>
-                            </div>
-
-                        ) : (
-                            <div style={{padding: '10px'}}>
-                                End Date:
-                                <DatePicker
-                                    selected={this.state.endDate}
-                                    onChange={this.handleEndDateChange}
-                                    minDate={this.state.startDate}
-                                    maxDate={this.state.semesterEnd}
-                                    placeholderText="End of recurrence"
-                                />
-                            </div>
-                        )
-                    ) : (null)
-                }
-                <br/><br/>
-                <label class = 'float-right'>
-                    Title:
-                    <input name = 'tempTitle' type="text" maxLength="255" value={this.state.tempTitle} onChange={this.handleChange} />
-                </label>
-                <label class = 'float-right'>
-                    Description:
-                    <input name = 'tempDescription' type="text" maxLength="255" value={this.state.tempDescription} onChange={this.handleChange} />
-                </label>
-                <br/><br/>
-                <div>
-                    {
-                     this.state.showGetRooms ? (
-                         <div>
-                             <button disabled={!this.state.showVerify.every((check,index) => {if(index !== 8)return check; else return true;})} onClick={this.handleGetRooms}>Get Available Rooms</button>
-                             {
-                                 this.state.availableRoomOptions.length !== 0 ? (
-                                     this.state.showAvailableOptions ? (
-                                         <Dropdown options={this.state.availableRoomOptions} onChange={this.handleAvailable} value={this.state.selectedRoom}/>
-                                     ) : null
-                                 ) : (
-                                     <p>No Rooms Available</p>
-                                 )
-                             }
-                         </div>
-                     ) : null
+                            )
+                        ) : (null)
                     }
-                    <button disabled={!this.state.showVerify.every(check => {return check})} onClick={() => this.handleVerify(this.props.uniqueRooms)}>Verify</button>
-                </div>
-                <div>
-                    <Modal
-                        isOpen={this.state.modalIsOpen}
-                        onAfterOpen={this.afterOpenModal}
-                        onRequestClose={this.closeModal}
-                        style={customStyles}
-                        contentLabel="Reservation Modal"
-                    >
+                    <br/><br/>
+                    <label class = 'float-right'>
+                        Title:
+                        <input name = 'tempTitle' type="text" maxLength="255" value={this.state.tempTitle} onChange={this.handleChange} />
+                    </label>
+                    <label class = 'float-right'>
+                        Description:
+                        <input name = 'tempDescription' type="text" maxLength="255" value={this.state.tempDescription} onChange={this.handleChange} />
+                    </label>
+                    <br/><br/>
+                    <div>
                         {
-                            this.state.verificationResults.map(s => {
-                                return <p>{s}</p>
-                            })
+                         this.state.showGetRooms ? (
+                             <div>
+                                 <button disabled={!this.state.showVerify.every((check,index) => {if(index !== 8)return check; else return true;})} onClick={this.handleGetRooms}>Get Available Rooms</button>
+                                 {
+                                     this.state.availableRoomOptions.length !== 0 ? (
+                                         this.state.showAvailableOptions ? (
+                                             <Dropdown options={this.state.availableRoomOptions} onChange={this.handleAvailable} value={this.state.selectedRoom}/>
+                                         ) : null
+                                     ) : (
+                                         <p>No Rooms Available</p>
+                                     )
+                                 }
+                             </div>
+                         ) : null
                         }
-                        <button onClick={this.closeModal}>Close</button>
-                        {
-                            this.state.showSubmit ? <button className="float-right" onClick={this.handleSubmit}>Submit</button> : null
-                        }
-                    </Modal>
+                        <button disabled={!this.state.showVerify.every(check => {return check})} onClick={() => this.handleVerify(this.props.uniqueRooms)}>Verify</button>
+                    </div>
+                    <div>
+                        <Modal
+                            isOpen={this.state.modalIsOpen}
+                            onAfterOpen={this.afterOpenModal}
+                            onRequestClose={this.closeModal}
+                            style={customStyles}
+                            contentLabel="Reservation Modal"
+                        >
+                            {
+                                this.state.verificationResults.map(s => {
+                                    return <p>{s}</p>
+                                })
+                            }
+                            <button onClick={this.closeModal}>Close</button>
+                            {
+                                this.state.showSubmit ? <button className="float-right" onClick={this.handleSubmit}>Submit</button> : null
+                            }
+                        </Modal>
+                    </div>
                 </div>
             </div>
         );
