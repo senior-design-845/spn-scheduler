@@ -12,8 +12,10 @@ class Login extends Component {
         this.state = {
             netid:'',
             userid: 0,
+            classID: 0,
             building_name:'',
-            buildingID:0
+            buildingID:0,
+            buildings:[]
         }
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -29,6 +31,7 @@ class Login extends Component {
     }
 
     handleSubmit = event => {
+        let buildings = [];
         event.preventDefault();
 
         fetch('/login', {
@@ -43,12 +46,13 @@ class Login extends Component {
         }).then(response => response.json())
             .then(text => {
                 this.setState({
-                    userid: text.userID
+                    userid: text.userID,
+                    classID: text.classID
                 })
 
                 let uid = text.userID;
 
-                //console.log(text.userID)
+                console.log(text)
 
                 fetch('/getBuildings', {
                     method: 'POST',
@@ -58,17 +62,16 @@ class Login extends Component {
                     },
                     body: JSON.stringify({
                         userID: uid
+
                     })
                 }).then(response => response.json())
                     .then(record => {
                         this.setState({
                             building_name: record.building_name,
-                            buildingID: record.buildingID
+                            buildingID: record.buildingID,
                         })
 
-                        console.log(record.building_name)
-                       console.log(record.buildingID)
-                        console.log(this.state.building_name)
+                       console.log(record)
 
                     });
             });
@@ -76,8 +79,11 @@ class Login extends Component {
     }
 
     render(){
-        //let options = this.state.building_name
-      //  let optionItems = options.map(());
+       /* let buildings = this.props.state.buildings;
+        let buildingOptions = buildings.map((buildings) => {
+            buildingOptions.push(buildings.building_name)
+        });*/
+
         return(
             <div className="Login">
             <Form onSubmit={this.handleSubmit}>
@@ -98,7 +104,6 @@ class Login extends Component {
                     Login
                 </button>
             </Form>
-
             </div>
         );
     }
