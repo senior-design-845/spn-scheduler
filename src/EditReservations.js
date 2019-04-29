@@ -211,7 +211,6 @@ class EditReservations extends Component {
                         state: this.props.location.state
                     }}>Calendar</Link>
                     <br/>
-                    <br/>
                     {
                         this.state.userClass === 1 ? (
                             <Link id="link" to={{

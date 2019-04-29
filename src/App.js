@@ -84,7 +84,7 @@ class App extends Component {
                     }
 
                 });
-                console.log(uniquerooms);
+
                 //Pull all the events from roomEvents' arrays and add them to events as default calendar view
                 let totaltemp = temp[0];
                 for(let i=1; i<temp.length; i++){
@@ -160,9 +160,8 @@ class App extends Component {
                     state: this.props.location.state
                 }}>My Reservations</Link>
                 <br/>
-                <br/>
                 {
-                    this.props.location.classID === 1 ? (
+                    this.props.location.state.classID === 1 ? (
                         <Link id="link" to={{
                             pathname: '/admin',
                             state: this.props.location.state

@@ -64,6 +64,7 @@ class Login extends Component {
                 if(text.length === 0)
                     alert("Invalid Username");
                 else {
+                    console.log(text[0]);
                     this.setState({
                         userid: text[0].userID,
                         classID: text[0].classID,
@@ -141,6 +142,7 @@ class Login extends Component {
                             state: {
                                 buildingID: this.state.buildingID,
                                 userID: this.state.userid,
+                                classID: this.state.classID,
                                 email: this.state.email
                             }}}/>
                     ) : null
