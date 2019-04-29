@@ -40,3 +40,6 @@
     float: right;
     cursor: pointer;
 }
+#search-box {
+    color: white;
+}
