@@ -5,6 +5,7 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import {Link} from "react-router-dom";
 import Dropdown from 'react-dropdown';
+import {Sticky, StickyContainer} from 'react-sticky';
 
 class EditReservations extends Component {
     constructor(props) {
@@ -328,9 +329,45 @@ class EditReservations extends Component {
                         ) : (null)
                     }
                 </div>
-                <div ref = 'events' className = 'event-list-wrapper'>
-                    {this.createItems(this.state.events)}
-                </div>
+                <StickyContainer>
+                    <Sticky>
+                        {({
+                              style
+                          }) => (
+                            <header style={style}>
+                                {
+                                    <div className = 'event-list-wrapper'>
+                                        <div id='sticky-header'>
+                                            <div className = 'header-item'>
+                                                <div>Room:</div>
+                                            </div>
+                                            <div className = 'header-item'>
+                                                <div>Date:</div>
+                                            </div>
+                                            <div className = 'header-item'>
+                                                <div>Time:</div>
+                                            </div>
+                                            <div className = 'header-item'>
+                                                <div>Title:</div>
+                                            </div>
+                                            <div className = 'header-item'>
+                                                <div>Project #:</div>
+                                            </div>
+                                            <div className = 'header-item'>
+                                                <div>Name:</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </header>
+                        )}
+                    </Sticky>
+                    {
+                        <div ref = 'events' className = 'event-list-wrapper'>
+                            {this.createItems(this.state.events)}
+                        </div>
+                    }
+                </StickyContainer>
             </div>
         );
     }
@@ -614,27 +651,21 @@ class EventDropdown extends Component {
                     <div>
                         <div className = 'dd-list-header' onClick={this.showDDContent}>
                             <div className = 'event-item'>
-                                <div>Room:</div>
                                 <div>{this.state.room_name}</div>
                             </div>
                             <div className = 'event-item'>
-                                <div>Date:</div>
                                 <div>{this.state.startDate}</div>
                             </div>
                             <div className = 'event-item'>
-                                <div>Time:</div>
                                 <div>{this.state.startTime} - {this.state.endTime}</div>
                             </div>
                             <div className = 'event-item'>
-                                <div>Title:</div>
                                 <div>{this.state.title}</div>
                             </div>
                             <div className = 'event-item'>
-                                <div>Project #:</div>
                                 <div>{this.state.team_num}</div>
                             </div>
                             <div className = 'event-item'>
-                                <div>Name:</div>
                                 <div>{this.state.last_name}, {this.state.first_name}</div>
                             </div>
                         </div>
