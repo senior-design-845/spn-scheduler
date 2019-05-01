@@ -179,7 +179,7 @@ app.post('/addRoom', function(req, res) {
     let westart = moment(req.body.westart).format('HH:mm:ss');
     let weend = moment(req.body.weend).format('HH:mm:ss');
 
-    connection.query(`call insertRoom(${req.body.building}, '${req.body.room}', '${wdstart}', '${wdend}', '${westart}', '${weend}')`, function(error,results,fields){
+    connection.query(`call insertRoom(${req.body.building}, '${req.body.room}', '${wdstart}', '${wdend}', '${westart}', '${weend}', ${req.body.roomClass})`, function(error,results,fields){
         if(error) {
             console.log(error);
             res.send('Error');
@@ -217,7 +217,7 @@ app.post('/deleteRoom', function(req, res) {
 });
 
 app.post('/addUser', function(req, res) {
-    connection.query(`call insertUser('${req.body.netID}', '${req.body.firstName}', '${req.body.lastName}', '${req.body.email}', '${req.body.course}', '${req.body.teamNumber}')`, function(error,results,fields){
+    connection.query(`call insertUser('${req.body.netID}', '${req.body.firstName}', '${req.body.lastName}', '${req.body.email}', '${req.body.course}', '${req.body.teamNumber}', ${req.body.userClass})`, function(error,results,fields){
         if(error) {
             console.log(error);
             res.send('Error');

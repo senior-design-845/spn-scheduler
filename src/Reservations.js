@@ -617,7 +617,7 @@ class Reservations extends Component {
         return(
             <div>
                 <div className = 'page-title'>Make a Reservation</div>
-                <div style={{height:'500px', background: '#43a047'}}>
+                <div style={{height:'500px', background: '#008542'}}>
 
                     <div style={{width:'20%'}}>
                         <header>Please choose a room:</header>

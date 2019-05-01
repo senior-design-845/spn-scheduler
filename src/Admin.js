@@ -275,6 +275,7 @@ class RoomDropdown extends Component {
             tempWeekdayEnd: this.props.data === null ? null : tempDayEnd,
             tempWeekendStart: this.props.data === null ? null : tempEndStart,
             tempWeekendEnd: this.props.data === null ? null : tempEndEnd,
+            roomClass: null,
             invalidSub: false,
             deleteClick: false,
         }
@@ -392,7 +393,8 @@ class RoomDropdown extends Component {
                 wdstart: this.state.tempWeekdayStart,
                 wdend: this.state.tempWeekdayEnd,
                 westart: this.state.tempWeekendStart,
-                weend: this.state.tempWeekendEnd
+                weend: this.state.tempWeekendEnd,
+                roomClass: this.state.roomClass
             }),
         }).then(response => response.text())
             .then(result => {
@@ -484,6 +486,10 @@ class RoomDropdown extends Component {
                                             dateFormat='HH:mm'
                                             timeCaption="End"
                                         />
+                                    </label>
+                                    <label className = 'dd-edit-item'>
+                                        Room Class:
+                                        <input name = 'roomClass' type="number" min={1} value={this.state.roomClass} onChange={this.handleChange} />
                                     </label>
                                     <input type="submit" value="Submit" />
                                 </form>
@@ -655,6 +661,7 @@ class UserDropdown extends Component {
             tempCourse: this.props.data === null ? '' : this.props.data.course,
             teamNumber: this.props.data === null ? null : this.props.data.team_num,
             tempTeam: this.props.data === null ? null : this.props.data.team_num,
+            userClass: null,
             inactive: this.props.data === null ? null : this.props.data.deleted,
             tempInactive: this.props.data === null ? null : this.props.data.deleted,
             invalidSub: false,
@@ -762,7 +769,8 @@ class UserDropdown extends Component {
                 lastName: this.state.tempLast,
                 email: this.state.tempEmail,
                 course: this.state.tempCourse,
-                teamNumber: this.state.tempTeam
+                teamNumber: this.state.tempTeam,
+                userClass: this.state.userClass
             }),
         }).then(response => response.text())
             .then(result => {
@@ -810,6 +818,10 @@ class UserDropdown extends Component {
                                         <label className = 'dd-edit-item'>
                                             Project Number:
                                             <input name = 'tempTeam' type="text" maxLength={45} value={this.state.tempTeam} onChange={this.handleChange} />
+                                        </label>
+                                        <label className = 'dd-edit-item'>
+                                            User Class:
+                                            <input name = 'userClass' type="number" min={1} value={this.state.userClass} onChange={this.handleChange} />
                                         </label>
 
                                         <input type="submit" value="Submit" />
@@ -1251,6 +1263,7 @@ class UserClassDropdown extends Component {
         this.state = {
             classID: this.props.data === null ? null : this.props.data.classID,
             tempClassID: this.props.data === null ? null : this.props.data.classID,
+            userClass: this.props.data === null ? null : this.props.data.class_detail,
             userID: this.props.data === null ? null : this.props.data.userID,
             inactive: this.props.data === null ? null : this.props.data.deleted,
             tempInactive: this.props.data === null ? null : this.props.data.deleted,
@@ -1409,7 +1422,7 @@ class UserClassDropdown extends Component {
                             User ID: {this.state.userID}
                         </div>
                         <div className = 'event-item'>
-                            Class ID: {this.state.classID}
+                            User Class: {this.state.userClass}
                         </div>
                     </div>
                     {
@@ -1426,7 +1439,7 @@ class UserClassDropdown extends Component {
                                         <div className = 'dd-form-content'>
                                             <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
                                                 <label className = 'dd-edit-item'>
-                                                    Class ID:
+                                                    User Class ID:
                                                     <input name = 'tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
                                                 </label>
 
@@ -1693,6 +1706,7 @@ class RoomClassDropdown extends Component {
         this.state = {
             classID: this.props.data === null ? null : this.props.data.classID,
             tempClassID: this.props.data === null ? null : this.props.data.classID,
+            roomClass: this.props.data === null ? null : this.props.data.class_detail,
             roomID: this.props.data === null ? null : this.props.data.roomID,
             inactive: this.props.data === null ? null : this.props.data.deleted,
             tempInactive: this.props.data === null ? null : this.props.data.deleted,
@@ -1824,7 +1838,7 @@ class RoomClassDropdown extends Component {
                                             <input name = 'roomID' type="number" min={1} value={this.state.roomID} onChange={this.handleChange} />
                                         </label>
                                         <label className = 'dd-edit-item'>
-                                            Class ID:
+                                            Room Class ID:
                                             <input name = 'tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
                                         </label>
                                         <label className = 'dd-edit-item'>
@@ -1854,7 +1868,7 @@ class RoomClassDropdown extends Component {
                                 Room ID: {this.state.roomID}
                             </div>
                             <div className = 'event-item'>
-                                Class ID: {this.state.classID}
+                                Room Class: {this.state.roomClass}
                             </div>
                         </div>
                         {
