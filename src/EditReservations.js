@@ -22,6 +22,7 @@ class EditReservations extends Component {
             filter: 'Date',
         };
 
+        // Initialization of all functions
         this.createItem = this.createItem.bind(this);
         this.createItems = this.createItems.bind(this);
         this.getReservations = this.getReservations.bind(this);
@@ -34,7 +35,7 @@ class EditReservations extends Component {
         this.handleFilter = this.handleFilter.bind(this);
     }
 
-    // This is the creation of the list items
+    // Creation of each individual list item.
     createItem(item) {
         console.log(this.state.userClass, ' ', this.state.userID);
         return(
@@ -49,14 +50,18 @@ class EditReservations extends Component {
         )
     }
 
+    // Function to create all list items based on returned criteria
     createItems(items) {
         return(items.map(this.createItem));
     }
 
+    // Function to return all reservations in the 'schedule' table based
+    // on userID, buildingID, and list order
     getReservations(orderBy) {
-        //Get the room reservation data from the server
+        // Set saved events to 'null' to re-render data
         this.setState({events : []});
 
+        // Determine how to filter received data
         let filter = 0;
         if (!Number.isInteger(orderBy)) {
             filter = this.state.orderBy;
@@ -65,6 +70,9 @@ class EditReservations extends Component {
             filter = orderBy;
         }
 
+        // Calling 'userReservations()' stored proc from server to
+        // retrieve all reservations for this user
+        // Sent info: userID, buildingID, orderBy
         fetch('/userReservations', {
             method: 'POST',
             headers: {
@@ -81,6 +89,7 @@ class EditReservations extends Component {
             .then(reservations => {
                 let events = [];
 
+                // Record all information for the reservations received from SQL proc
                 reservations.map(record => {
                     events.push({
                         roomID: record.roomID,
@@ -101,14 +110,19 @@ class EditReservations extends Component {
                     return null;
                 });
 
+                // Update new events and re-render
                 this.setState({events: events});
             });
 
     }
 
+    // Function to retrieve all active reservations in the database
+    // based on userID and buildingID
     handleAllRes(orderBy) {
+        // Set 'events' state to 'null' to re-render and remove old events
         this.setState({events : [], allReservations: true});
 
+        // Determine how to order results
         console.log(orderBy);
         let filter = 0;
         if (!Number.isInteger(orderBy)) {
@@ -119,6 +133,8 @@ class EditReservations extends Component {
         }
         console.log(filter);
 
+        // Call 'userAllReservations()' stored proc from the server
+        // Send: userID, buildingID
         fetch('/userAllReservations', {
             method: 'POST',
             headers: {
@@ -134,6 +150,7 @@ class EditReservations extends Component {
             .then(reservations => {
                 let events = [];
 
+                // Save all reservations returned by the stored procedure
                 reservations.map(record => {
                     events.push({
                         roomID: record.roomID,
@@ -154,28 +171,36 @@ class EditReservations extends Component {
                     return null;
                 });
 
+                // Update state with new events and re-render
                 this.setState({events: events});
             });
     }
 
+    // Function for 'My Reservations' button, which shows only reservations
+    // owned by the current user
     handleMyRes() {
         this.setState({allReservations : false});
 
         this.getReservations();
     }
 
+    // Function for 'Show Previous' button which shows events from the past
     handlePastRes() {
         this.setState({showPastRes : true});
     }
 
+    // Function for 'Hide Previous' button which hides past events
     handleHidePast() {
         this.setState({showPastRes : false});
     }
 
+    // Function to evaluate and save any changed info inside of a text box
     handleChange(event) {
         return this.setState({[event.target.name]: event.target.value});
     }
 
+    // Function to determine which filter the user has applied to the data
+    // 'Sort <dropdown>'
     handleFilter(option) {
         let orderBy = 0
         switch (option.value) {
@@ -206,6 +231,7 @@ class EditReservations extends Component {
         }
         //['Date', 'Room', 'Name', 'Course', 'Project #', 'NetID']
 
+        // Determine whether or not user has selected 'All Reservations'
         if (this.state.allReservations) {
             this.handleAllRes(orderBy);
         }
@@ -214,15 +240,22 @@ class EditReservations extends Component {
         }
     }
 
+    // Function to handle a submitted search
     handleSearch(term) {
+        // Prevents page from reloading
         term.preventDefault();
 
+        // Only allow letters and numbers to be submitted
         if (this.state.searchTerm == null || !(this.state.searchTerm).match("^[A-z0-9]+$")) {
             return;
         }
 
+        // Empty event state to re-render events
         this.setState({events : []});
 
+        // Server call to call 'searchReservations()' stored proc
+        // Send: searchTerm, buildingID, orderBy
+        // Return: Events matching the search term
         fetch('/searchReservations', {
             method: 'POST',
             headers: {
@@ -239,6 +272,7 @@ class EditReservations extends Component {
             .then(reservations => {
                 let events = [];
 
+                // Save information from all events returned from stored proc
                 reservations.map(record => {
                     events.push({
                         roomID: record.roomID,
@@ -259,22 +293,27 @@ class EditReservations extends Component {
                     return null;
                 });
 
+                // Update event state and re-render
                 this.setState({events: events});
             });
     }
 
+    // Function called upon page load
     componentDidMount() {
         this.getReservations();
     }
 
     render() {
+        // Possible options for 'Sort' filter
         let filterOptions = ['Date', 'Room', 'Name', 'Course', 'Project #', 'NetID'];
 
         return(
             <div>
+                {/* Set background color of page */}
                 <style>
                     {document.body.style = 'background: #008542;'}
                 </style>
+                {/* Links for routing to other pages */}
                 <div id = 'routing-table'>
                     <Link id="link" to={{
                         pathname: '/calendar',
@@ -282,6 +321,7 @@ class EditReservations extends Component {
                     }}>Calendar</Link>
                     <br/>
                     {
+                        /* Only show admin button if user is admin */
                         this.state.userClass === 1 ? (
                             <Link id="link" to={{
                                 pathname: '/admin',
@@ -292,9 +332,11 @@ class EditReservations extends Component {
                     <br/>
                     <Link id="link" to={'/login'}>Logout</Link>
                 </div>
+                {/* Strip for title at top of the page */}
                 <div className = 'page-title-strip'>My Reservations</div>
                 <div id = 'reservation-buttons'>
                     {
+                        // Show these two buttons if user is Admin
                         this.state.userClass === 1 ? (
                             <div id = 'admin-buttons'>
                                 <button onClick={this.handleAllRes}>All Reservations</button>
@@ -304,6 +346,7 @@ class EditReservations extends Component {
                         ) : null
                     }
                     {
+                        // Toggle between past and present reservation buttons
                         !this.state.showPastRes ? (
                             <button onClick={this.handlePastRes}>Show Previous</button>
                         ) : (
@@ -313,6 +356,7 @@ class EditReservations extends Component {
                 </div>
                 <div>
                     {
+                        // Show search box and sort menu if user is Admin
                         this.state.userClass === 1 ? (
                             <div>
                                 <form id = 'search-box' onSubmit={this.handleSearch}>
@@ -329,6 +373,7 @@ class EditReservations extends Component {
                         ) : (null)
                     }
                 </div>
+                {/* Container for frozen object on page */}
                 <StickyContainer>
                     <Sticky>
                         {({
@@ -336,25 +381,26 @@ class EditReservations extends Component {
                           }) => (
                             <header style={style}>
                                 {
+                                    // Top table showing event attribute titles (frozen)
                                     <div className = 'event-list-wrapper'>
                                         <div id='sticky-header'>
                                             <div className = 'header-item'>
-                                                <div>Room:</div>
+                                                <div>Room</div>
                                             </div>
                                             <div className = 'header-item'>
-                                                <div>Date:</div>
+                                                <div>Date</div>
                                             </div>
                                             <div className = 'header-item'>
-                                                <div>Time:</div>
+                                                <div>Time</div>
                                             </div>
                                             <div className = 'header-item'>
-                                                <div>Title:</div>
+                                                <div>Title</div>
                                             </div>
                                             <div className = 'header-item'>
-                                                <div>Project #:</div>
+                                                <div>Project#</div>
                                             </div>
                                             <div className = 'header-item'>
-                                                <div>Name:</div>
+                                                <div>Name</div>
                                             </div>
                                         </div>
                                     </div>
@@ -363,6 +409,7 @@ class EditReservations extends Component {
                         )}
                     </Sticky>
                     {
+                        // Originating function to create all events on page
                         <div ref = 'events' className = 'event-list-wrapper'>
                             {this.createItems(this.state.events)}
                         </div>
@@ -379,6 +426,7 @@ class EventDropdown extends Component {
 
         let currentEvent = this.props.event;
 
+        // Date formatting for different states
         let rawDateStart = String(currentEvent.start_datetime);
         let rawDateEnd = String(currentEvent.end_datetime);
 
@@ -394,6 +442,7 @@ class EventDropdown extends Component {
         let background = '#00a1de';
         if (dateObjectStart < (new Date())) {previous = true; background = 'grey';}
 
+        // Initialize all functions
         this.showDDContent = this.showDDContent.bind(this);
         this.closeDDContent = this.closeDDContent.bind(this);
         this.ddEditClick = this.ddEditClick.bind(this);
@@ -446,6 +495,8 @@ class EventDropdown extends Component {
         }
     }
 
+    // This function will be called if it's parent 'EditReservations' sends
+    // updated properties
     componentWillReceiveProps(nextProps) {
         this.setState({
             eventObject : nextProps.event,
@@ -457,6 +508,7 @@ class EventDropdown extends Component {
         });
     }
 
+    // Function to show event dropdown if event is clicked
     showDDContent(event){
         event.preventDefault();
 
@@ -466,6 +518,7 @@ class EventDropdown extends Component {
         });
     }
 
+    // Function to close event dropdown if anywhere else is clicked
     closeDDContent(event){
         if(this.dropdownMenu === null){
             {
@@ -482,12 +535,14 @@ class EventDropdown extends Component {
         }
     }
 
+    // Handler function for 'Edit' button
     ddEditClick(event) {
         this.setState({showDDContent: true, ddEditClick: true}, () => {
             document.removeEventListener('click', this.closeDDContent);
         });
     }
 
+    // Function for the 'cancel' button, returns everything to its default setting
     ddCancelClick(event) {
         this.setState({
             showDDContent: true,
@@ -508,6 +563,7 @@ class EventDropdown extends Component {
         });
     }
 
+    // Function to convert a date to a MySQL-formatted date
     convertUTCDate(rawDate) {
         let rawDateSplit = rawDate.split(/[- :T]/);
         let t = rawDateSplit.map(item => parseInt(item, 10));
@@ -515,6 +571,7 @@ class EventDropdown extends Component {
         return (new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])));
     }
 
+    // Function to return a full DateTime string based on separate date and time
     convertDateTime(rawDate, rawTime) {
         let stringDate = moment(rawDate).format('YYYY-MM-DD');
         let stringTime = moment(rawTime).format('HH:mm:ss');
@@ -524,20 +581,24 @@ class EventDropdown extends Component {
         return fullString;
     }
 
+    // Function to convert a Date() object to string format
     convertDate(rawDate) {
         let stringDate = moment(rawDate).format('YYYY-MM-DD HH:mm:ss');
 
         return stringDate;
     }
 
+    // Handles change and saves info within any text box
     handleChange(event) {
         return this.setState({[event.target.name]: event.target.value});
     }
 
+    // Handler function for change in the DatePicker
     handleDateChange(date) {
         this.setState({tempDate: date});
     }
 
+    // Handler function for change in start time
     handleStartTimeChange(time) {
         console.log(new Date(new Date(time).setMinutes(time.getMinutes() + 30)));
 
@@ -549,18 +610,23 @@ class EventDropdown extends Component {
         });
     }
 
+    // Handler function for change in end time
     handleEndTimeChange(time) {
         this.setState({tempEndTime: time});
     }
 
+    // Handler function for pressing 'delete' button
     handleDeleteClick(event) {
         event.preventDefault();
         this.setState({deleteClick: true});
     }
 
+    // Handler function for pressing 'CONFIRM DELETE' button
     handleDeleteConfirm(event) {
         event.preventDefault();
 
+        // Calls 'removeEvent()' stored proc from server based on
+        // recordID (lazy deletion)
         fetch('/removeEvent', {
             method: 'POST',
             headers: {
@@ -576,12 +642,17 @@ class EventDropdown extends Component {
             });
     }
 
+    // Handler function for submission of data editing a reservation
     handleSubmit(event) {
+        // Prevents reload of page
         event.preventDefault();
 
         let eventArray = [];
         eventArray[0] = this.state.tempDate;
 
+        // Call 'verifyEditReservations()' stored proc from the server
+        // Send: recordID, startTime, endTime, userID, buildingID, roomID, Date
+        // Returns: whether or not the edits are valid
         fetch('/verifyEditReservations', {
             method: 'POST',
             headers: {
@@ -610,6 +681,10 @@ class EventDropdown extends Component {
                 let dailyOver = record[0].valid.dailyOver;
                 let weeklyOver = record[0].valid.weeklyOver;
 
+                // Checks to determine whether:
+                // - changed event conflicts with another event
+                // - user is over daily hour limit
+                // - user is over weekly hour limit
                 if (conflict > 0) {
                     this.setState({dateConflict: true});
                 }
@@ -620,6 +695,8 @@ class EventDropdown extends Component {
                     this.setState({weeklyConflict: true})
                 }
                 else {
+                    // If event edits are valid -> make changes to event
+                    // Send: new info for event
                     fetch('/editReservation', {
                         method: 'POST',
                         headers: {
@@ -635,6 +712,7 @@ class EventDropdown extends Component {
                         }),
                     })
                         .then(response => {
+                            // Reload page so event info can be updated
                             window.location.reload();
                         })
                 }
@@ -649,6 +727,7 @@ class EventDropdown extends Component {
             {
                 !this.state.showPastRes && this.state.previous ? (null) : (
                     <div>
+                        {/* Shows information regarding the events */}
                         <div className = 'dd-list-header' onClick={this.showDDContent}>
                             <div className = 'event-item'>
                                 <div>{this.state.room_name}</div>
@@ -670,6 +749,7 @@ class EventDropdown extends Component {
                             </div>
                         </div>
                         {
+                            // All extra information displayed when an event is clicked
                             this.state.showDDContent ? (
                                 <div className = 'dd-list-content' ref={(element) => {this.dropdownMenu = element;}}>
 
@@ -690,7 +770,7 @@ class EventDropdown extends Component {
                                             !this.state.ddEditClick ? (
                                                 <button className = 'dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
                                             ) : (
-                                                // Edit form for events shown on 'edit' click
+                                                // Form that is shown when the 'Edit' button is clicked
                                                 <div className = 'dd-form-content'>
                                                     <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
                                                         <label className = 'dd-edit-item'>
@@ -742,6 +822,7 @@ class EventDropdown extends Component {
                                                         </label>
                                                         <input type="submit" value="Submit" />
                                                         {
+                                                            // Toggle between 'Delete' and 'CONFIRM DELETE'
                                                             !this.state.deleteClick ? (
                                                                 <button onClick={this.handleDeleteClick}>Delete</button>
                                                             ) : (
@@ -749,6 +830,7 @@ class EventDropdown extends Component {
                                                             )
                                                         }
                                                     </form>
+                                                    {/* Display any conflicts encountered */}
                                                     {
                                                         this.state.dateConflict ? (
                                                             <div id='date-conflict-error' style={{'color':'red'}}>
