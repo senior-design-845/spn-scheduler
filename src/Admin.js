@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 import Dropdown from 'react-dropdown';
 import moment from "moment";
 import DatePicker from "react-datepicker"
+import {Sticky, StickyContainer} from "react-sticky";
 
 
 class Admin extends Component {
@@ -71,104 +72,311 @@ class Admin extends Component {
         if(this.state.selectedTable === "Rooms") {
             let events = [];
             events.push(
-                <RoomDropdown
-                add = {true}
-                data = {null}
-                />
+                <div id='form-info'>
+                    <RoomDropdown
+                        id = 'form-id-rooms'
+                        add = {true}
+                        data = {null}
+                    />
+                </div>
             )
             events.push(
-                this.state.tableData.map(row => {
-                    if(!this.state.hideInactive || !row.deleted)
-                        return <RoomDropdown
-                            data = {row}
-                            />
-                })
+                <StickyContainer>
+                    <Sticky>
+                        {({
+                              style
+                          }) => (
+                            <header style={style}>
+                                {
+                                    // Top table showing event attribute titles (frozen)
+                                    <div className = 'event-list-wrapper'>
+                                        <div id='sticky-header'>
+                                            <div className = 'header-item'>
+                                                <div>Building</div>
+                                            </div>
+                                            <div className = 'header-item'>
+                                                <div>Room</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </header>
+                        )}
+                    </Sticky>
+                    {
+                        // Originating function to create all events on page
+                        <div ref = 'events' className = 'event-list-wrapper'>
+                            {
+                                this.state.tableData.map(row => {
+                                    if(!this.state.hideInactive || !row.deleted)
+                                        return <RoomDropdown
+                                            data = {row}
+                                        />
+                                })
+                            }
+                        </div>
+                    }
+                </StickyContainer>
             )
             return events;
         }
         else if(this.state.selectedTable === "Users"){
             let events = [];
             events.push(
-                <UserDropdown
-                add = {true}
-                data = {null}
-                />);
-            events.push(this.state.tableData.map(row => {
-                if(!this.state.hideInactive || !row.deleted)
-                    return <UserDropdown
-                        add = {false}
-                        data = {row}
+                <div id='form-info'>
+                    <UserDropdown
+                        id = 'form-id-user'
+                        add = {true}
+                        data = {null}
                     />
-            }));
+                </div>
+                );
+            events.push(
+                <StickyContainer>
+                    <Sticky>
+                        {({
+                              style
+                          }) => (
+                            <header style={style}>
+                                {
+                                    // Top table showing event attribute titles (frozen)
+                                    <div className = 'event-list-wrapper'>
+                                        <div id='sticky-header'>
+                                            <div className = 'header-item'>
+                                                <div>User ID</div>
+                                            </div>
+                                            <div className = 'header-item'>
+                                                <div>First Name</div>
+                                            </div>
+                                            <div className = 'header-item'>
+                                                <div>Last Name</div>
+                                            </div>
+                                            <div className = 'header-item'>
+                                                <div>Project#</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </header>
+                        )}
+                    </Sticky>
+                    {
+                        // Originating function to create all events on page
+                        <div ref = 'events' className = 'event-list-wrapper'>
+                            {
+                                this.state.tableData.map(row => {
+                                    if(!this.state.hideInactive || !row.deleted)
+                                        return <UserDropdown
+                                            add = {false}
+                                            data = {row}
+                                        />
+                                })
+                            }
+                        </div>
+                    }
+                </StickyContainer>
+                );
             return(events);
         }
         else if(this.state.selectedTable === "Building Configurations"){
             let events = [];
             events.push(
-                <BuildingDropdown
-                    add = {true}
-                    data = {null}
-                />);
-            events.push(this.state.tableData.map(row => {
-                if(!this.state.hideInactive || !row.deleted)
-                    return <BuildingDropdown
-                        add = {false}
-                        data = {row}
+                <div id='form-info'>
+                    <BuildingDropdown
+                        id = 'form-id-building'
+                        add = {true}
+                        data = {null}
                     />
-            }));
+                </div>
+                );
+            events.push(
+                <StickyContainer>
+                    <Sticky>
+                        {({
+                              style
+                          }) => (
+                            <header style={style}>
+                                {
+                                    // Top table showing event attribute titles (frozen)
+                                    <div className = 'event-list-wrapper'>
+                                        <div id='sticky-header'>
+                                            <div className = 'header-item'>
+                                                <div>Building ID</div>
+                                            </div>
+                                            <div className = 'header-item'>
+                                                <div>Building Name</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </header>
+                        )}
+                    </Sticky>
+                    {
+                        // Originating function to create all events on page
+                        <div ref = 'events' className = 'event-list-wrapper'>
+                            {
+                                this.state.tableData.map(row => {
+                                    if(!this.state.hideInactive || !row.deleted)
+                                        return <BuildingDropdown
+                                            add = {false}
+                                            data = {row}
+                                        />
+                                })
+                            }
+                        </div>
+                    }
+                </StickyContainer>
+                );
             return(events);
         }
         else if(this.state.selectedTable === "User Classifications"){
             let events = [];
             events.push(
-                <UserClassDropdown
-                    add = {true}
-                    data = {null}
-                />
+                <div id='form-info'>
+                    <UserClassDropdown
+                        id = 'form-id-userclass'
+                        add = {true}
+                        data = {null}
+                    />
+                </div>
             )
             events.push(
-                this.state.tableData.map(row => {
-                    if(!this.state.hideInactive || !row.deleted)
-                        return <UserClassDropdown
-                            data = {row}
-                        />
-                })
+                <StickyContainer>
+                    <Sticky>
+                        {({
+                              style
+                          }) => (
+                            <header style={style}>
+                                {
+                                    // Top table showing event attribute titles (frozen)
+                                    <div className = 'event-list-wrapper'>
+                                        <div id='sticky-header'>
+                                            <div className = 'header-item'>
+                                                <div>User ID</div>
+                                            </div>
+                                            <div className = 'header-item'>
+                                                <div>Classification</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </header>
+                        )}
+                    </Sticky>
+                    {
+                        // Originating function to create all events on page
+                        <div ref = 'events' className = 'event-list-wrapper'>
+                            {
+                                this.state.tableData.map(row => {
+                                    if(!this.state.hideInactive || !row.deleted)
+                                        return <UserClassDropdown
+                                            data = {row}
+                                        />
+                                })
+                            }
+                        </div>
+                    }
+                </StickyContainer>
             )
             return events;
         }
         else if(this.state.selectedTable === "Classifications"){
             let events = [];
             events.push(
-                <ClassDropdown
-                    add = {true}
-                    data = {null}
-                />
+                <div id='form-info'>
+                    <ClassDropdown
+                        id = 'form-id-class'
+                        add = {true}
+                        data = {null}
+                    />
+                </div>
             )
             events.push(
-                this.state.tableData.map(row => {
-                    if(!this.state.hideInactive || !row.deleted)
-                        return <ClassDropdown
-                            data = {row}
-                        />
-                })
+                <StickyContainer>
+                    <Sticky>
+                        {({
+                              style
+                          }) => (
+                            <header style={style}>
+                                {
+                                    // Top table showing event attribute titles (frozen)
+                                    <div className = 'event-list-wrapper'>
+                                        <div id='sticky-header'>
+                                            <div className = 'header-item'>
+                                                <div>Class ID</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </header>
+                        )}
+                    </Sticky>
+                    {
+                        // Originating function to create all events on page
+                        <div ref = 'events' className = 'event-list-wrapper'>
+                            {
+                                this.state.tableData.map(row => {
+                                    if(!this.state.hideInactive || !row.deleted)
+                                        return <ClassDropdown
+                                            data = {row}
+                                        />
+                                })
+                            }
+                        </div>
+                    }
+                </StickyContainer>
             )
             return events;
         }
         else if(this.state.selectedTable === "Room Classifications"){
             let events = [];
             events.push(
-                <RoomClassDropdown
-                    add = {true}
-                    data = {null}
-                />
+                <div id='form-info'>
+                    <RoomClassDropdown
+                        id = 'form-id-roomclass'
+                        add = {true}
+                        data = {null}
+                    />
+                </div>
             )
             events.push(
-                this.state.tableData.map(row => {
-                    if(!this.state.hideInactive || !row.deleted)
-                        return <RoomClassDropdown
-                            data = {row}
-                        />
-                })
+                <StickyContainer>
+                    <Sticky>
+                        {({
+                              style
+                          }) => (
+                            <header style={style}>
+                                {
+                                    // Top table showing event attribute titles (frozen)
+                                    <div className = 'event-list-wrapper'>
+                                        <div id='sticky-header'>
+                                            <div className = 'header-item'>
+                                                <div>Room ID</div>
+                                            </div>
+                                            <div className = 'header-item'>
+                                                <div>Classification</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </header>
+                        )}
+                    </Sticky>
+                    {
+                        // Originating function to create all events on page
+                        <div ref = 'events' className = 'event-list-wrapper'>
+                            {
+                                this.state.tableData.map(row => {
+                                    if(!this.state.hideInactive || !row.deleted)
+                                        return <RoomClassDropdown
+                                            data = {row}
+                                        />
+                                })
+                            }
+                        </div>
+                    }
+                </StickyContainer>
             )
             return events;
         }
@@ -491,7 +699,7 @@ class RoomDropdown extends Component {
                                         Room Class:
                                         <input name = 'roomClass' type="number" min={1} value={this.state.roomClass} onChange={this.handleChange} />
                                     </label>
-                                    <input type="submit" value="Submit" />
+                                    <input id='submit-button' type="submit" value="Submit" />
                                 </form>
                                 {
                                     this.state.invalidSub ? (
@@ -510,10 +718,10 @@ class RoomDropdown extends Component {
                     <div className='dd-list-container'>
                         <div className = 'dd-list-header' onClick={this.showDDContent}>
                             <div className = 'event-item'>
-                                Building: {this.state.building_name}
+                                {this.state.building_name}
                             </div>
                             <div className = 'event-item'>
-                                Room: {this.state.room_name}
+                                {this.state.room_name}
                             </div>
                         </div>
                         {
@@ -604,7 +812,7 @@ class RoomDropdown extends Component {
                                                     />
                                                     </label>
 
-                                                    <input type="submit" value="Submit" />
+                                                    <input id='submit-button' type="submit" value="Submit" />
                                                     {
                                                         !this.state.deleteClick ? (
                                                             <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
@@ -824,7 +1032,7 @@ class UserDropdown extends Component {
                                             <input name = 'userClass' type="number" min={1} value={this.state.userClass} onChange={this.handleChange} />
                                         </label>
 
-                                        <input type="submit" value="Submit" />
+                                        <input id='submit-button' type="submit" value="Submit" />
                                     </form>
                                     {
                                         this.state.invalidSub ? (
@@ -845,16 +1053,16 @@ class UserDropdown extends Component {
             <div className='dd-list-container'>
                 <div className = 'dd-list-header' onClick={this.showDDContent}>
                     <div className = 'event-item'>
-                        User ID: {this.state.userID}
+                        {this.state.userID}
                     </div>
                     <div className = 'event-item'>
-                        First Name: {this.state.firstName}
+                        {this.state.firstName}
                     </div>
                     <div className = 'event-item'>
-                        Last Name: {this.state.lastName}
+                        {this.state.lastName}
                     </div>
                     <div className = 'event-item'>
-                        Project Number: {this.state.teamNumber}
+                        {this.state.teamNumber}
                     </div>
                 </div>
                 {
@@ -905,7 +1113,7 @@ class UserDropdown extends Component {
                                                 <input name = 'tempTeam' type="text" maxLength={45} value={this.state.tempTeam} onChange={this.handleChange} />
                                             </label>
 
-                                            <input type="submit" value="Submit" />
+                                            <input id='submit-button' type="submit" value="Submit" />
                                             {
                                                 !this.state.deleteClick ? (
                                                     <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
@@ -1132,7 +1340,7 @@ class BuildingDropdown extends Component {
                                         <input name = 'tempWeeklyLimit' type="number" min={0} max={168} value={this.state.tempWeeklyLimit} onChange={this.handleChange} />
                                     </label>
 
-                                    <input type="submit" value="Submit" />
+                                    <input id='submit-button' type="submit" value="Submit" />
                                 </form>
                                 {
                                     this.state.invalidSub ? (
@@ -1151,10 +1359,10 @@ class BuildingDropdown extends Component {
                 <div className='dd-list-container'>
                     <div className = 'dd-list-header' onClick={this.showDDContent}>
                         <div className = 'event-item'>
-                            Building ID: {this.state.buildingID}
+                            {this.state.buildingID}
                         </div>
                         <div className = 'event-item'>
-                            Building Name: {this.state.buildingName}
+                            {this.state.buildingName}
                         </div>
                     </div>
                     {
@@ -1216,7 +1424,7 @@ class BuildingDropdown extends Component {
                                                     <input name = 'tempWeeklyLimit' type="number" min={0} max={168} value={this.state.tempWeeklyLimit} onChange={this.handleChange} />
                                                 </label>
 
-                                                <input type="submit" value="Submit" />
+                                                <input id='submit-button' type="submit" value="Submit" />
                                                 {
                                                     !this.state.deleteClick ? (
                                                         <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
@@ -1399,7 +1607,7 @@ class UserClassDropdown extends Component {
                                             <input name = 'tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
                                         </label>
 
-                                        <input type="submit" value="Submit" />
+                                        <input id='submit-button' type="submit" value="Submit" />
                                     </form>
                                     {
                                         this.state.invalidSub ? (
@@ -1419,10 +1627,10 @@ class UserClassDropdown extends Component {
                 <div className='dd-list-container'>
                     <div className = 'dd-list-header' onClick={this.showDDContent}>
                         <div className = 'event-item'>
-                            User ID: {this.state.userID}
+                            {this.state.userID}
                         </div>
                         <div className = 'event-item'>
-                            User Class: {this.state.userClass}
+                            {this.state.userClass}
                         </div>
                     </div>
                     {
@@ -1443,7 +1651,7 @@ class UserClassDropdown extends Component {
                                                     <input name = 'tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
                                                 </label>
 
-                                                <input type="submit" value="Submit" />
+                                                <input id='submit-button' type="submit" value="Submit" />
                                                 {
                                                     !this.state.deleteClick ? (
                                                         <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
@@ -1617,7 +1825,7 @@ class ClassDropdown extends Component {
                                             <input name = 'tempClassDetail' type="text" max={45} value={this.state.tempClassDetail} onChange={this.handleChange} />
                                         </label>
 
-                                        <input type="submit" value="Submit" />
+                                        <input id='submit-button' type="submit" value="Submit" />
                                     </form>
                                     {
                                         this.state.invalidSub ? (
@@ -1636,7 +1844,7 @@ class ClassDropdown extends Component {
                 <div className='dd-list-container'>
                     <div className = 'dd-list-header' onClick={this.showDDContent}>
                         <div className = 'event-item'>
-                            Class ID: {this.state.classID}
+                            {this.state.classID}
                         </div>
                     </div>
                     {
@@ -1660,7 +1868,7 @@ class ClassDropdown extends Component {
                                                     <input name = 'tempClassDetail' type="text" max={45} value={this.state.tempClassDetail} onChange={this.handleChange} />
                                                 </label>
 
-                                                <input type="submit" value="Submit" />
+                                                <input id='submit-button' type="submit" value="Submit" />
                                                 {
                                                     !this.state.deleteClick ? (
                                                         <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
@@ -1846,7 +2054,7 @@ class RoomClassDropdown extends Component {
                                             <input name = 'buildingID' type="number" min={1} value={this.state.buildingID} onChange={this.handleChange} />
                                         </label>
 
-                                        <input type="submit" value="Submit" />
+                                        <input id='submit-button' type="submit" value="Submit" />
                                     </form>
                                     {
                                         this.state.invalidSub ? (
@@ -1865,10 +2073,10 @@ class RoomClassDropdown extends Component {
                     <div className='dd-list-container'>
                         <div className = 'dd-list-header' onClick={this.showDDContent}>
                             <div className = 'event-item'>
-                                Room ID: {this.state.roomID}
+                                {this.state.roomID}
                             </div>
                             <div className = 'event-item'>
-                                Room Class: {this.state.roomClass}
+                                {this.state.roomClass}
                             </div>
                         </div>
                         {
@@ -1889,7 +2097,7 @@ class RoomClassDropdown extends Component {
                                                         <input name = 'tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
                                                     </label>
 
-                                                    <input type="submit" value="Submit" />
+                                                    <input id='submit-button' type="submit" value="Submit" />
                                                     {
                                                         !this.state.deleteClick ? (
                                                             <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
