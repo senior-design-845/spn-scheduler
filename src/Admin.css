@@ -9,3 +9,9 @@
     background: whitesmoke;
     margin-top: 15px;
 }
+.dd-edit-form {
+    display: inline-block;
+}
+#submit-button {
+    width: 60px;
+}
