@@ -61,8 +61,8 @@ app.post('/getBuildings', function(req, res) {
 app.post('/email', function (req,res){
     let emailMessage = `${req.body.room} was successfully reserved!\nEvent Title: ${req.body.title}\nEvent Description: ${req.body.description}\n\nTimes:\n`;
     req.body.reservations.map(r => {
-        emailMessage += `Start: ${moment(r.start).format('YYYY-MM-DD HH:mm:ss')}\n`;
-        emailMessage += `End: ${moment(r.end).format('YYYY-MM-DD HH:mm:ss')}\n\n`;
+        emailMessage += `Start: ${moment(r.start).format('LLLL')}\n`;
+        emailMessage += `End: ${moment(r.end).format('LLLL')}\n\n`;
     });
 
     emailMessage += "\u2022Please by sure the room is tidy and clean when you leave.\n";
@@ -427,6 +427,7 @@ app.post('/insertReservations', async function(req, res){
         connection.query(`call firstRecurring(${req.body.username},${req.body.room},${req.body.building},'${start}','${end}','${req.body.title}','${req.body.description}')`,async function(error,results,fields) {
             if (error) res.send(error);
 
+            //Send the rest of the reservations to be inserted, make them a promise so that they can be waited on as .query is asynchronous
             const promises = events.map(async r => {
                 start = moment(r.start).format('YYYY-MM-DD HH:mm:ss');
                 end = moment(r.end).format('YYYY-MM-DD HH:mm:ss');

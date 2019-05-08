@@ -62,7 +62,7 @@ class Reservations extends Component {
             verificationResults: [],
             availableRoomOptions: [],
             validReservations: []
-        }
+        };
 
         this.handleStartDateChange = this.handleStartDateChange.bind(this);
         this.handleStartTimeChange = this.handleStartTimeChange.bind(this);
@@ -82,6 +82,7 @@ class Reservations extends Component {
 
     componentDidMount() {
 
+        //Get the semester start and end dates
         fetch('/semester',{
             method: 'post',
             headers: {
@@ -100,9 +101,9 @@ class Reservations extends Component {
     handleRooms(selected){
         //Room has been selected
         let tempVerify = this.state.showVerify;
-        tempVerify[0] = true;
-        tempVerify[4] = true;
-        tempVerify[5] = true;
+        tempVerify[0] = true;       //Room is selected
+        tempVerify[4] = true;       //Don't need available room options
+        tempVerify[5] = true;       //Don't need available room options
 
         if(selected.value === 'Any Available Room'){        //Do not need to choose a recurring option for any available room
             let days = [false, false, false, false, false, false, false];
@@ -134,6 +135,7 @@ class Reservations extends Component {
             });
         }
         else{
+            //Available rooms option was selected
             let recurring = this.state.showRecurring;
             if(this.state.startDate !== null)       //Handles changing from AAR to an actual room and already having chosen start date
                 recurring = true;
@@ -238,9 +240,11 @@ class Reservations extends Component {
         if(this.state.endTime <= date)
             tempVerify[3] = false;
 
+        //If endtime is before the new starttime then reset it
         let end = null;
         if(this.state.endTime !== null)
             end = this.state.endTime.getTime() <= date.getTime() ? null : this.state.endTime;
+        //If their is a specified endtime then restrict the options by that, if none is enforced then go until the end of the day
         let endtime = this.state.dayEnd;
         if(endtime === null){
             endtime = new Date();
@@ -320,6 +324,7 @@ class Reservations extends Component {
     }
 
     handleMultipleDays(){
+        //Sets the correct flags depending on which days of the week were chosen by the user for custom weekly recurring
         let w = this.state.weekdays;
         let none = true;
         for(let k=0; k<7;k++)
@@ -338,6 +343,7 @@ class Reservations extends Component {
                 roomID = e.id;
         });
 
+        //
         let resDates = [];
         if (this.state.selectedRecurring === 'Does not repeat') {
             resDates = [this.state.startDate];
@@ -346,12 +352,13 @@ class Reservations extends Component {
 
             if (this.state.selectedRecurring === 'Daily' || this.state.customOption === 'Days') {
                 while (tempDate <= this.state.endDate) {
-
+                    //Add a single date to the start reservation date until the date is beyond the given end date
                     resDates.push(new Date(tempDate));
                     tempDate.setDate(tempDate.getDate() + this.state.recurringNumber)
                 }
             } else if (this.state.selectedRecurring === 'Weekly' || this.state.customOption === 'Weeks') {
                 while (tempDate <= this.state.endDate) {
+                    //Based on the selected or default weekdays, add each of those dates to the start date then add a week and repeat until the end date is reached
                     let dayofweek = this.state.startDate.getDay();
                     for (let i = 0; i < 7; i++) {
                         if (this.state.weekdays[i]) {
@@ -365,6 +372,7 @@ class Reservations extends Component {
             } else if (this.state.selectedRecurring === 'Monthly' || this.state.customOption === 'Months') {
                 let month = this.state.startDate.getMonth();
                 while (tempDate <= this.state.endDate) {
+                    //Add weeks until into the next month, then add the set number of weeks
                     resDates.push(new Date(tempDate));
                     while (tempDate.getMonth() === month) {
                         tempDate.setDate(tempDate.getDate() + 7);
@@ -400,6 +408,7 @@ class Reservations extends Component {
                 let allstrings = [];
                 valid.map(v => {
                     string = v.start + ' to ' + v.end;
+                    //If there is a conflict or a student is over in weekly/daily hours
                     if (v.valid.conflict === 1 || (v.valid.dailyOver === 1 && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3)) || (v.valid.weeklyOver === 1  && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3))) {
                         string += ' -> Unavailable';
                         if (v.valid.conflict === 1) {
@@ -412,6 +421,7 @@ class Reservations extends Component {
                             string += ' -> Over weekly hours'
                         }
                     } else {
+                        //If the reservation is available
                         string += ' -> Available';
                         newReservations.push({
                             start: new Date(v.start),
@@ -422,6 +432,7 @@ class Reservations extends Component {
                     allstrings.push(string);
                 });
 
+                //Add all the valid reservations to the state along with the result string
                 this.setState({
                     verificationResults: allstrings,
                     modalIsOpen: true,
@@ -432,6 +443,7 @@ class Reservations extends Component {
     }
 
     handleChange(event){
+        //Changes the description or title
         let tempVerify = this.state.showVerify;
         if(event.target.name === "tempTitle"){
             if(event.target.value.length === 0)
@@ -451,6 +463,7 @@ class Reservations extends Component {
 
 
     recurringFlavorText(){
+        //Gets the text for the weekly/monthly dates
         let text = {
             dayofweek: '',
             weekofmonth: '',

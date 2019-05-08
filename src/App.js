@@ -74,6 +74,7 @@ class App extends Component {
                         }])
                     }
                     else {
+                        //This room already exists, so add the event to the existing room events array
                         temp[roomid].push({
                             'id': roomid,
                             'title': `\n${record.last_name}\nProject: ${record.team_num}\nTitle: ${record.title}`,
@@ -115,6 +116,7 @@ class App extends Component {
     }
 
     handleAllClick(){
+        //Turn all the rooms off or on
         let toggleTemp = this.state.buttonToggle;
         let allTemp = !this.state.allToggle;
         let temp = [];
