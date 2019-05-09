@@ -92,12 +92,24 @@ class Reservations extends Component {
                 body: JSON.stringify({
                     building: this.props.userInfo.buildingID
                 })
-            }).then(response => response.json())
+            }).then(response => {
+                try{
+                    return response.json()
+                }
+                catch{
+                    alert("Invalid Server Response")
+                }
+            })
                 .then(semester => {
-                    this.setState({
-                        semesterStart: new Date(semester.semester_start),
-                        semesterEnd: new Date(semester.semester_end)
-                    })
+                    try {
+                        this.setState({
+                            semesterStart: new Date(semester.semester_start),
+                            semesterEnd: new Date(semester.semester_end)
+                        })
+                    }
+                    catch{
+                        alert("Invalid Server Response")
+                    }
                 })
         }
     }
@@ -197,41 +209,53 @@ class Reservations extends Component {
                 building: this.props.userInfo.buildingID,
                 startDate: date
             })
-        }).then(response => response.json())
+        }).then(response => {
+            try{
+                return response.json()
+            }
+            catch{
+                alert("Invalid Server Response")
+            }
+        })
             .then( hours => {
-                    let tempDate = null, tempDate2 = null;
-                    if(hours.dayStart !== null && hours.dayEnd !== null) {
-                        //Getting the date variables for the dayStart and dayEnd state values
-                        let tempTime = String(hours.dayStart).split(/[:]/);
-                        tempDate = new Date();
-                        tempDate.setMinutes(parseInt(tempTime[1], 10));
-                        tempDate.setHours(parseInt(tempTime[0], 10));
-                        tempDate2 = new Date();
-                        tempTime = String(hours.dayEnd).split(/[:]/);
-                        tempDate2.setMinutes(parseInt(tempTime[1], 10));
-                        tempDate2.setHours(parseInt(tempTime[0], 10));
+                    try {
+                        let tempDate = null, tempDate2 = null;
+                        if (hours.dayStart !== null && hours.dayEnd !== null) {
+                            //Getting the date variables for the dayStart and dayEnd state values
+                            let tempTime = String(hours.dayStart).split(/[:]/);
+                            tempDate = new Date();
+                            tempDate.setMinutes(parseInt(tempTime[1], 10));
+                            tempDate.setHours(parseInt(tempTime[0], 10));
+                            tempDate2 = new Date();
+                            tempTime = String(hours.dayEnd).split(/[:]/);
+                            tempDate2.setMinutes(parseInt(tempTime[1], 10));
+                            tempDate2.setHours(parseInt(tempTime[0], 10));
+                        }
+
+
+                        this.setState({
+                            dailyHoursLeft: hours.dailyHours,
+                            weeklyHoursLeft: hours.weeklyHours,
+                            maxStartTime: tempDate2 === null ? null : new Date(new Date(tempDate2).setMinutes(tempDate2.getMinutes() - 30)),
+                            startDate: date,
+                            dayStart: tempDate,
+                            dayEnd: tempDate2,
+                            showStartTime: true,
+                            showEndTime: false,
+                            showRecurring: this.state.selectedRoom !== "Any Available Room",
+                            endDate: this.state.endDate <= date ? null : this.state.endDate,
+                            startTime: null,
+                            endTime: null,
+                            weekInMonth: count,
+                            showVerify: tempVerify,
+                            weekdays: days,
+                            showGetRooms: this.state.selectedRoom === "Any Available Room",
+                            showAvailableOptions: false
+                        })
                     }
-
-
-                    this.setState({
-                        dailyHoursLeft: hours.dailyHours,
-                        weeklyHoursLeft: hours.weeklyHours,
-                        maxStartTime: tempDate2 === null ? null : new Date(new Date(tempDate2).setMinutes(tempDate2.getMinutes()-30)),
-                        startDate: date,
-                        dayStart: tempDate,
-                        dayEnd: tempDate2,
-                        showStartTime: true,
-                        showEndTime: false,
-                        showRecurring: this.state.selectedRoom !== "Any Available Room",
-                        endDate: this.state.endDate <= date ? null: this.state.endDate,
-                        startTime: null,
-                        endTime: null,
-                        weekInMonth: count,
-                        showVerify: tempVerify,
-                        weekdays: days,
-                        showGetRooms: this.state.selectedRoom === "Any Available Room",
-                        showAvailableOptions: false
-                    })
+                    catch{
+                        alert("Invalid Server Response")
+                    }
             });
     }
 
@@ -404,45 +428,57 @@ class Reservations extends Component {
                 endTime: this.state.endTime,
                 roomID: roomID
             })
-        }).then(response => response.json())
+        }).then(response => {
+            try{
+                return response.json()
+            }
+            catch{
+                alert("Invalid Server Response")
+            }
+        })
             .then(valid => {
-                let check = false;
-                let newReservations = [];
-                let string;
-                let allstrings = [];
-                valid.map(v => {
-                    string = v.start + ' to ' + v.end;
-                    //If there is a conflict or a student is over in weekly/daily hours
-                    if (v.valid.conflict === 1 || (v.valid.dailyOver === 1 && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3)) || (v.valid.weeklyOver === 1  && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3))) {
-                        string += ' -> Unavailable';
-                        if (v.valid.conflict === 1) {
-                            string += ' -> Schedule conflict';
+                try {
+                    let check = false;
+                    let newReservations = [];
+                    let string;
+                    let allstrings = [];
+                    valid.map(v => {
+                        string = v.start + ' to ' + v.end;
+                        //If there is a conflict or a student is over in weekly/daily hours
+                        if (v.valid.conflict === 1 || (v.valid.dailyOver === 1 && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3)) || (v.valid.weeklyOver === 1 && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3))) {
+                            string += ' -> Unavailable';
+                            if (v.valid.conflict === 1) {
+                                string += ' -> Schedule conflict';
+                            }
+                            if ((v.valid.dailyOver === 1 && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3))) {
+                                string += ' -> Over daily hours'
+                            }
+                            if ((v.valid.weeklyOver === 1 && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3))) {
+                                string += ' -> Over weekly hours'
+                            }
+                        } else {
+                            //If the reservation is available
+                            string += ' -> Available';
+                            newReservations.push({
+                                start: new Date(v.start),
+                                end: new Date(v.end)
+                            });
+                            check = true;
                         }
-                        if ((v.valid.dailyOver === 1  && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3))) {
-                            string += ' -> Over daily hours'
-                        }
-                        if ((v.valid.weeklyOver === 1 && (this.props.userInfo.classID !== 1 && this.props.userInfo.classID !== 3))) {
-                            string += ' -> Over weekly hours'
-                        }
-                    } else {
-                        //If the reservation is available
-                        string += ' -> Available';
-                        newReservations.push({
-                            start: new Date(v.start),
-                            end: new Date(v.end)
-                        });
-                        check = true;
-                    }
-                    allstrings.push(string);
-                });
+                        allstrings.push(string);
+                    });
 
-                //Add all the valid reservations to the state along with the result string
-                this.setState({
-                    verificationResults: allstrings,
-                    modalIsOpen: true,
-                    showSubmit: check,
-                    validReservations: newReservations
-                });
+                    //Add all the valid reservations to the state along with the result string
+                    this.setState({
+                        verificationResults: allstrings,
+                        modalIsOpen: true,
+                        showSubmit: check,
+                        validReservations: newReservations
+                    });
+                }
+                catch{
+                    alert("Invalid Server Response")
+                }
             })
     }
 
@@ -551,10 +587,17 @@ class Reservations extends Component {
                 description: this.state.tempDescription,
                 reservations: this.state.validReservations
             })
-        }).then(response => response.text())
-            .then(valid => {
+        }).then(response => {
+            try{
+                return response.text()
+            }
+            catch{
+                alert("Invalid Server Response")
+            }
+        })
+            .then(() => {
+
                 this.setState({modalIsOpen: false});
-                console.log(valid);
 
                 fetch ('/email', {
                     method: 'post',
@@ -590,16 +633,28 @@ class Reservations extends Component {
                 startTime: this.state.startTime,
                 endTime: this.state.endTime,
             })
-        }).then(response => response.json())
+        }).then(response => {
+            try{
+                return response.json()
+            }
+            catch{
+                alert("Invalid Server Response")
+            }
+        })
             .then(valid => {
-                let rooms = [];
-                valid.map( r => {
-                    rooms.push(r.room_name)
-                });
+                try {
+                    let rooms = [];
+                    valid.map(r => {
+                        rooms.push(r.room_name)
+                    });
 
-                this.setState({
-                    availableRoomOptions: rooms,
-                    showAvailableOptions: true})
+                    this.setState({
+                        availableRoomOptions: rooms,
+                        showAvailableOptions: true
+                    })
+                }
+                catch{}
+                alert("Invalid Server Response")
             })
     }
     handleAvailable(selected){

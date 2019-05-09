@@ -33,8 +33,10 @@ app.post('/calendar', function (req, res) {
 
     connection.query(`call calendarDisplay(${req.body.userID},${req.body.buildingID})`, function(error, results, fields){
         if(error) res.send(error);
-        console.log('Connected');
-        res.send(results[0]);
+        else {
+            console.log('Connected');
+            res.send(results[0]);
+        }
     });
 });
 
@@ -43,8 +45,10 @@ app.post('/login', function(req, res) {
 
     connection.query(`call netidVerification("${nid}")`, function(error, results, fields){
         if(error) res.send(error);
-        console.log('Connected');
-        res.send(results[0]);
+        else {
+            console.log('Connected');
+            res.send(results[0]);
+        }
     });
 });
 
@@ -53,8 +57,10 @@ app.post('/getBuildings', function(req, res) {
 
     connection.query(`call userBuildings(${uid})`, function(error, results, fields){
         if(error) res.send(error);
-        console.log('Connected');
-        res.send(results[0]);
+        else {
+            console.log('Connected');
+            res.send(results[0]);
+        }
     });
 });
 
@@ -119,8 +125,8 @@ app.post('/adminTables', function(req, res) {
 
     connection.query(`call ${table}()`, function(error,results,fields){
        if(error) res.send(error);
-
-       res.send(results[0]);
+       else
+           res.send(results[0]);
     });
 });
 
@@ -131,8 +137,10 @@ app.post('/userReservations', function (req, res) {
 
     connection.query(`call userReservations(${uid},${bid},${orderBy})`, function(error, results, fields){
         if(error) res.send(error);
-        console.log('Connected');
-        res.send(results[0]);
+        else {
+            console.log('Connected');
+            res.send(results[0]);
+        }
     });
 });
 
@@ -142,8 +150,10 @@ app.post('/userAllReservations', function (req, res) {
 
     connection.query(`call userAllReservations(${bid},${orderBy})`, function(error, results, fields){
         if(error) res.send(error);
-        console.log('Connected');
-        res.send(results[0]);
+        else {
+            console.log('Connected');
+            res.send(results[0]);
+        }
     });
 });
 
@@ -154,8 +164,10 @@ app.post('/searchReservations', function (req, res) {
 
     connection.query(`call searchReservations('%${searchTerm}%',${bid},${orderBy})`, function(error, results, fields){
         if(error) res.send(error);
-        console.log('Connected');
-        res.send(results[0]);
+        else {
+            console.log('Connected');
+            res.send(results[0]);
+        }
     });
 });
 
@@ -168,8 +180,10 @@ app.post('/editReservation', function (req, res) {
 
     connection.query(`call editReservation(${recordID},"${start_datetime}","${end_datetime}","${title}","${event_detail}")`, function(error, results, fields){
         if(error) res.send(error);
-        console.log('Connected');
-        res.send(results[0]);
+        else {
+            console.log('Connected');
+            res.send(results[0]);
+        }
     });
 });
 
@@ -394,14 +408,16 @@ app.post('/deleteRoomClass', function(req, res) {
 app.post('/hours', function(req, res) {
     connection.query(`call availableHours( ${req.body.username}, '${req.body.room}',${req.body.building}, '${dateFormat(req.body.startDate, "yyyy-mm-dd hh:MM:ss")}' )`, function(error, results, fields){
         if(error) res.send(error);
-        res.send(results[0][0]);
+        else
+            res.send(results[0][0]);
     });
 });
 
 app.post('/semester', function(req, res) {
     connection.query(`call getSemester(${req.body.building})`, function(error, results, fields){
         if(error) res.send(error);
-        res.send(results[0][0]);
+        else
+            res.send(results[0][0]);
     });
 });
 
@@ -412,8 +428,8 @@ app.post('/availableRooms', function(req, res){
 
     connection.query(`call availableRooms(${req.body.username},${req.body.building},'${startdate + ' ' + starttime}', '${startdate + ' ' + endtime}')`, function(error, results, fields){
         if (error) res.send(error);
-
-        res.send(results[0]);
+        else
+            res.send(results[0]);
     });
 });
 
@@ -426,22 +442,23 @@ app.post('/insertReservations', async function(req, res){
 
         connection.query(`call firstRecurring(${req.body.username},${req.body.room},${req.body.building},'${start}','${end}','${req.body.title}','${req.body.description}')`,async function(error,results,fields) {
             if (error) res.send(error);
+            else {
+                //Send the rest of the reservations to be inserted, make them a promise so that they can be waited on as .query is asynchronous
+                const promises = events.map(async r => {
+                    start = moment(r.start).format('YYYY-MM-DD HH:mm:ss');
+                    end = moment(r.end).format('YYYY-MM-DD HH:mm:ss');
 
-            //Send the rest of the reservations to be inserted, make them a promise so that they can be waited on as .query is asynchronous
-            const promises = events.map(async r => {
-                start = moment(r.start).format('YYYY-MM-DD HH:mm:ss');
-                end = moment(r.end).format('YYYY-MM-DD HH:mm:ss');
-
-                return new Promise(function (resolve, reject) {
-                    connection.query(`call insertReservation(${req.body.username},${req.body.room},${req.body.building},'${start}','${end}','${req.body.title}','${req.body.description}', ${results[0][0].recordID})`, function (error, results, fields) {
-                        if (error) res.send(error);
-                        resolve("Done");
+                    return new Promise(function (resolve, reject) {
+                        connection.query(`call insertReservation(${req.body.username},${req.body.room},${req.body.building},'${start}','${end}','${req.body.title}','${req.body.description}', ${results[0][0].recordID})`, function (error, results, fields) {
+                            if (error) res.send(error);
+                            resolve("Done");
+                        });
                     });
                 });
-            });
-            await(Promise.all(promises));
-            console.log("promises done");
-            res.send('Finished multi');
+                await (Promise.all(promises));
+                console.log("promises done");
+                res.send('Finished multi');
+            }
         });
     }
     else{
@@ -450,7 +467,8 @@ app.post('/insertReservations', async function(req, res){
 
         connection.query(`call insertReservation(${req.body.username},${req.body.room},${req.body.building},'${start}','${end}','${req.body.title}','${req.body.description}', null)`,function(error,results,fields) {
             if(error) res.send(error);
-            res.send("Finished single");
+            else
+                res.send("Finished single");
         })
     }
 });
@@ -465,20 +483,21 @@ app.post('/verifyReservations', async function(req, res) {
        return new Promise(function(resolve,reject) {
            connection.query(`call verifyReservation(${req.body.username},${req.body.building},'${startdate + ' ' + starttime}', '${startdate + ' ' + endtime}', ${req.body.roomID})`, function (error, results, fields) {
                if (error) res.send(error);
+               else {
+                   //Since this is asynchronous to the map assignment, reassign to get correct values
+                   startdate = moment(r).format('YYYY-MM-DD');
+                   starttime = moment(req.body.startTime).format('HH:mm:ss');
+                   endtime = moment(req.body.endTime).format('HH:mm:ss');
 
-               //Since this is asynchronous to the map assignment, reassign to get correct values
-               startdate = moment(r).format('YYYY-MM-DD');
-               starttime = moment(req.body.startTime).format('HH:mm:ss');
-               endtime = moment(req.body.endTime).format('HH:mm:ss');
-
-               resolve({
-                   id: req.body.roomID,
-                   title: req.body.title,
-                   description: req.body.description,
-                   start: startdate + ' ' + starttime,
-                   end: startdate + ' ' + endtime,
-                   valid: results[0][0]
-               });
+                   resolve({
+                       id: req.body.roomID,
+                       title: req.body.title,
+                       description: req.body.description,
+                       start: startdate + ' ' + starttime,
+                       end: startdate + ' ' + endtime,
+                       valid: results[0][0]
+                   });
+               }
            });
        })
 
@@ -499,19 +518,20 @@ app.post('/verifyEditReservations', async function(req, res) {
         return new Promise(function(resolve,reject) {
             connection.query(`call verifyEditReservation(${req.body.username},${req.body.building},'${startdate + ' ' + starttime}', '${startdate + ' ' + endtime}', ${req.body.roomID}, ${req.body.recordID})`, function (error, results, fields) {
                 if (error) res.send(error);
+                else {
+                    //Since this is asynchronous to the map assignment, reassign to get correct values
+                    startdate = moment(r).format('YYYY-MM-DD');
+                    starttime = moment(req.body.startTime).format('HH:mm:ss');
+                    endtime = moment(req.body.endTime).format('HH:mm:ss');
 
-                //Since this is asynchronous to the map assignment, reassign to get correct values
-                startdate = moment(r).format('YYYY-MM-DD');
-                starttime = moment(req.body.startTime).format('HH:mm:ss');
-                endtime = moment(req.body.endTime).format('HH:mm:ss');
-
-                resolve ({
-                    id: req.body.roomID,
-                    title: 'NEW RESERVATION',
-                    start: startdate + ' ' + starttime,
-                    end: startdate + ' ' + endtime,
-                    valid: results[0][0]
-                });
+                    resolve({
+                        id: req.body.roomID,
+                        title: 'NEW RESERVATION',
+                        start: startdate + ' ' + starttime,
+                        end: startdate + ' ' + endtime,
+                        valid: results[0][0]
+                    });
+                }
             });
         })
 
@@ -525,7 +545,8 @@ app.post('/removeEvent', function(req, res) {
 
     connection.query(`call removeEvent(${recordID})`, function(error, results, fields){
         if(error) res.send(error);
-        res.send(results[0]);
+        else
+            res.send(results[0]);
     });
 });
 
