@@ -85,33 +85,44 @@ class EditReservations extends Component {
                 orderBy: filter,
             }),
         })
-            .then(response => response.json())
+            .then(response => {
+                try {
+                     return response.json();
+                }
+                catch {
+                    alert('Invalid Server Response')
+                }
+            })
             .then(reservations => {
-                let events = [];
-
-                // Record all information for the reservations received from SQL proc
-                reservations.map(record => {
-                    events.push({
-                        roomID: record.roomID,
-                        start_datetime: record.start_datetime,
-                        end_datetime: record.end_datetime,
-                        title: record.title,
-                        event_detail: record.event_detail,
-                        recordID: record.recordID,
-                        recurring_recordID: record.recurring_recordID,
-                        room_name: record.room_name,
-                        last_name: record.last_name,
-                        first_name: record.first_name,
-                        course: record.course,
-                        email: record.email,
-                        team_num: record.team_num,
-                        netID: record.netID,
+                try {
+                    let events = [];
+                    // Record all information for the reservations received from SQL proc
+                    reservations.map(record => {
+                        events.push({
+                            roomID: record.roomID,
+                            start_datetime: record.start_datetime,
+                            end_datetime: record.end_datetime,
+                            title: record.title,
+                            event_detail: record.event_detail,
+                            recordID: record.recordID,
+                            recurring_recordID: record.recurring_recordID,
+                            room_name: record.room_name,
+                            last_name: record.last_name,
+                            first_name: record.first_name,
+                            course: record.course,
+                            email: record.email,
+                            team_num: record.team_num,
+                            netID: record.netID,
+                        });
+                        return null;
                     });
-                    return null;
-                });
 
-                // Update new events and re-render
-                this.setState({events: events});
+                    // Update new events and re-render
+                    this.setState({events: events});
+                }
+                catch {
+                    alert('Invalid Server Response')
+                }
             });
 
     }
@@ -146,33 +157,46 @@ class EditReservations extends Component {
                 orderBy: filter,
             }),
         })
-            .then(response => response.json())
+            .then(response => {
+                try {
+
+                    return response.json()
+                }
+                catch {
+                    alert('Invalid Server Response')
+                }
+            })
             .then(reservations => {
-                let events = [];
+                try {
+                    let events = [];
 
-                // Save all reservations returned by the stored procedure
-                reservations.map(record => {
-                    events.push({
-                        roomID: record.roomID,
-                        start_datetime: record.start_datetime,
-                        end_datetime: record.end_datetime,
-                        title: record.title,
-                        event_detail: record.event_detail,
-                        recordID: record.recordID,
-                        recurring_recordID: record.recurring_recordID,
-                        room_name: record.room_name,
-                        last_name: record.last_name,
-                        first_name: record.first_name,
-                        course: record.course,
-                        email: record.email,
-                        team_num: record.team_num,
-                        netID: record.netID,
+                    // Save all reservations returned by the stored procedure
+                    reservations.map(record => {
+                        events.push({
+                            roomID: record.roomID,
+                            start_datetime: record.start_datetime,
+                            end_datetime: record.end_datetime,
+                            title: record.title,
+                            event_detail: record.event_detail,
+                            recordID: record.recordID,
+                            recurring_recordID: record.recurring_recordID,
+                            room_name: record.room_name,
+                            last_name: record.last_name,
+                            first_name: record.first_name,
+                            course: record.course,
+                            email: record.email,
+                            team_num: record.team_num,
+                            netID: record.netID,
+                        });
+                        return null;
                     });
-                    return null;
-                });
 
-                // Update state with new events and re-render
-                this.setState({events: events});
+                    // Update state with new events and re-render
+                    this.setState({events: events});
+                }
+                catch {
+                    alert('Invalid Server Response');
+                }
             });
     }
 
@@ -268,33 +292,45 @@ class EditReservations extends Component {
                 orderBy: this.state.orderBy,
             }),
         })
-            .then(response => response.json())
+            .then(response => {
+                try {
+                    return response.json();
+                }
+                catch {
+                    alert('Invalid Server Response');
+                }
+            })
             .then(reservations => {
-                let events = [];
+                try {
+                    let events = [];
 
-                // Save information from all events returned from stored proc
-                reservations.map(record => {
-                    events.push({
-                        roomID: record.roomID,
-                        start_datetime: record.start_datetime,
-                        end_datetime: record.end_datetime,
-                        title: record.title,
-                        event_detail: record.event_detail,
-                        recordID: record.recordID,
-                        recurring_recordID: record.recurring_recordID,
-                        room_name: record.room_name,
-                        last_name: record.last_name,
-                        first_name: record.first_name,
-                        course: record.course,
-                        email: record.email,
-                        team_num: record.team_num,
-                        netID: record.netID,
+                    // Save information from all events returned from stored proc
+                    reservations.map(record => {
+                        events.push({
+                            roomID: record.roomID,
+                            start_datetime: record.start_datetime,
+                            end_datetime: record.end_datetime,
+                            title: record.title,
+                            event_detail: record.event_detail,
+                            recordID: record.recordID,
+                            recurring_recordID: record.recurring_recordID,
+                            room_name: record.room_name,
+                            last_name: record.last_name,
+                            first_name: record.first_name,
+                            course: record.course,
+                            email: record.email,
+                            team_num: record.team_num,
+                            netID: record.netID,
+                        });
+                        return null;
                     });
-                    return null;
-                });
 
-                // Update event state and re-render
-                this.setState({events: events});
+                    // Update event state and re-render
+                    this.setState({events: events});
+                }
+                catch {
+                    alert('Invalid Server Response');
+                }
             });
     }
 
@@ -669,52 +705,62 @@ class EventDropdown extends Component {
                 reservations: eventArray,
             }),
         })
-            .then(response => response.json())
+            .then(response => {
+                try {
+
+                    return response.json();
+                }
+                catch{
+                    alert('Invalid Server Response')
+                }
+            })
             .then(record => {
-                this.setState({
-                    dateConflict: false,
-                    dailyConflict: false,
-                    weeklyConflict: false,
-                });
+                try {
+                    this.setState({
+                        dateConflict: false,
+                        dailyConflict: false,
+                        weeklyConflict: false,
+                    });
 
-                let conflict = record[0].valid.conflict;
-                let dailyOver = record[0].valid.dailyOver;
-                let weeklyOver = record[0].valid.weeklyOver;
+                    let conflict = record[0].valid.conflict;
+                    let dailyOver = record[0].valid.dailyOver;
+                    let weeklyOver = record[0].valid.weeklyOver;
 
-                // Checks to determine whether:
-                // - changed event conflicts with another event
-                // - user is over daily hour limit
-                // - user is over weekly hour limit
-                if (conflict > 0) {
-                    this.setState({dateConflict: true});
-                }
-                else if (dailyOver > 0 && this.state.userClass !== 1) {
-                    this.setState({dailyConflict: true})
-                }
-                else if (weeklyOver > 0 && this.state.userClass !== 1) {
-                    this.setState({weeklyConflict: true})
-                }
-                else {
-                    // If event edits are valid -> make changes to event
-                    // Send: new info for event
-                    fetch('/editReservation', {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            recordID: this.state.recordID,
-                            start_datetime: this.convertDateTime(this.state.tempDate, this.state.tempStartTime),
-                            end_datetime: this.convertDateTime(this.state.tempDate, this.state.tempEndTime),
-                            title: this.state.tempTitle,
-                            event_detail: this.state.tempDescription,
-                        }),
-                    })
-                        .then(response => {
-                            // Reload page so event info can be updated
-                            window.location.reload();
+                    // Checks to determine whether:
+                    // - changed event conflicts with another event
+                    // - user is over daily hour limit
+                    // - user is over weekly hour limit
+                    if (conflict > 0) {
+                        this.setState({dateConflict: true});
+                    } else if (dailyOver > 0 && this.state.userClass !== 1) {
+                        this.setState({dailyConflict: true})
+                    } else if (weeklyOver > 0 && this.state.userClass !== 1) {
+                        this.setState({weeklyConflict: true})
+                    } else {
+                        // If event edits are valid -> make changes to event
+                        // Send: new info for event
+                        fetch('/editReservation', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                recordID: this.state.recordID,
+                                start_datetime: this.convertDateTime(this.state.tempDate, this.state.tempStartTime),
+                                end_datetime: this.convertDateTime(this.state.tempDate, this.state.tempEndTime),
+                                title: this.state.tempTitle,
+                                event_detail: this.state.tempDescription,
+                            }),
                         })
+                            .then(() => {
+                                // Reload page so event info can be updated
+                                window.location.reload();
+                            })
+                    }
+                }
+                catch {
+                    alert('Invalid Server Response')
                 }
             });
 

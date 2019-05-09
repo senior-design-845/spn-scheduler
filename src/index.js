@@ -9,16 +9,22 @@ import * as serviceWorker from './serviceWorker';
 import EditReservations from "./EditReservations";
 import Login from "./Login";
 
-ReactDOM.render(
-    <Router>
-        <Route exact path="/" render={() => (
-            <Redirect to="/login"/>
-        )}/>
-        <Route exact path="/calendar" component={App}/>
-        <Route path="/myreservations" component={EditReservations}/>
-        <Route path="/admin" component={Admin}/>
-        <Route path="/login" component={Login}/>
-    </Router>, document.getElementById('root'));
+try {
+        ReactDOM.render(
+            <Router>
+                    <Route exact path="/" render={() => (
+                        <Redirect to="/login"/>
+                    )}/>
+                    <Route exact path="/calendar" component={App}/>
+                    <Route path="/myreservations" component={EditReservations}/>
+                    <Route path="/admin" component={Admin}/>
+                    <Route path="/login" component={Login}/>
+            </Router>, document.getElementById('root')
+        );
+}
+catch {
+        alert('Unable to locate server...')
+}
 
 //Testing
 //ReactDOM.render(<Login />, document.getElementById('root'));
