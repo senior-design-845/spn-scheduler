@@ -55,7 +55,14 @@ class Admin extends Component {
             body: JSON.stringify({
                 table: selected.value
             })
-        }).then(response => response.json())
+        }).then(response => {
+            try{
+                return response.json()
+            }
+            catch{
+                alert("Invalid Server Response")
+            }
+        })
             .then(data => {
                 if(typeof data.errno === undefined)
                     alert(data.errno + ': ' + data.code);
@@ -696,7 +703,7 @@ class RoomDropdown extends Component {
                                         />
                                     </label>
                                     <label className = 'dd-edit-item'>
-                                        Room Class:
+                                        Room Class:a
                                         <input name = 'roomClass' type="number" min={1} value={this.state.roomClass} onChange={this.handleChange} />
                                     </label>
                                     <input id='submit-button' type="submit" value="Submit" />

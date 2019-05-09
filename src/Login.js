@@ -59,7 +59,14 @@ class Login extends Component {
             body: JSON.stringify({
                 netid: this.state.netid,
             })
-        }).then(response => response.json())
+        }).then(response => {
+            try{
+                return response.json()
+            }
+            catch{
+                alert("Invalid Server Response")
+            }
+        })
             .then(text => {
                 if(text.length === 0)
                     alert("Invalid Username");

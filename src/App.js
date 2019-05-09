@@ -43,7 +43,14 @@ class App extends Component {
                 userID: this.props.location.state.userID,
                 buildingID: this.props.location.state.buildingID
             })
-        }).then(response => response.json())
+        }).then(response => {
+            try{
+                return response.json()
+            }
+            catch{
+                alert("Invalid Server Response")
+            }
+        })
             .then(reservations => {
                 //Parse through the data and update the state
                 let uniquerooms = [];
