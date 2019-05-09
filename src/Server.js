@@ -282,7 +282,7 @@ app.post('/addBuilding', function(req, res) {
 app.post('/updateBuilding', function(req, res) {
     let start = moment(req.body.semesterStart).format('YYYY-MM-DD');
     let end = moment(req.body.semesterEnd).format('YYYY-MM-DD');
-    connection.query(`call editBuilding(${req.body.buildingID},'${req.body.buildingName}', '${start}', '${end}', '${req.body.dailyLimit}', '${req.body.weeklyLimit}')`, function(error,results,fields){
+    connection.query(`call editBuildingConfig(${req.body.buildingID},'${req.body.buildingName}', '${start}', '${end}', '${req.body.dailyLimit}', '${req.body.weeklyLimit}')`, function(error,results,fields){
         if(error) {
             console.log(error);
             res.send('Error');
