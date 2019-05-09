@@ -81,21 +81,25 @@ class Reservations extends Component {
     }
 
     componentDidMount() {
-
-        //Get the semester start and end dates
-        fetch('/semester',{
-            method: 'post',
-            headers: {
-                'Accept': "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                building: this.props.userInfo.buildingID
-            })
-        }).then(response => response.json())
-            .then( semester =>{
-                this.setState({semesterStart: new Date(semester.semester_start), semesterEnd: new Date(semester.semester_end)})
-            })
+        if(this.props.userInfo.classID !== 1) {
+            //Get the semester start and end dates
+            fetch('/semester', {
+                method: 'post',
+                headers: {
+                    'Accept': "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    building: this.props.userInfo.buildingID
+                })
+            }).then(response => response.json())
+                .then(semester => {
+                    this.setState({
+                        semesterStart: new Date(semester.semester_start),
+                        semesterEnd: new Date(semester.semester_end)
+                    })
+                })
+        }
     }
 
     handleRooms(selected){
