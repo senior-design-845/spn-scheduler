@@ -1,0 +1,50 @@
+@media all and (min-width: 480px) {
+    .Login {
+        padding: 60px 0;
+    }
+
+    .Login form {
+        margin: 0 auto;
+        max-width: 320px;
+    }
+}
+
+body {
+    background: #B7B1A9;
+}
+.page-title {
+    background: #0073ac;
+    color: white;
+    margin-bottom: 2px;
+    font-size: 50px;
+    width: 100%;
+}
+.event-list-wrapper {
+    width: 70%;
+}
+.dd-list-container {
+    background: #00a1de;
+    border-radius: 4px;
+    margin: 10px;
+    text-align: center;
+}
+.dd-list-header {
+    cursor: pointer;
+    color: white;
+}
+.dd-edit-button {
+    cursor: pointer
+}
+.dd-list-items {
+    list-style-type: none;
+}
+.dd-list-content {
+    background: #ffd95b;
+    text-align: left;
+}
+.dd-form-content {
+    background: whitesmoke;
+}
+.dd-edit-item {
+    float: left;
+}

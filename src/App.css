@@ -27,6 +27,10 @@ body {
   color: #61dafb;
 }
 
+#routing-table {
+  float: right;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -35,3 +39,5 @@ body {
     transform: rotate(360deg);
   }
 }
+
+

@@ -1,8 +1,5 @@
-body {
-    background: #43a047;
-}
-.page-title {
-    background: rgba(255, 156, 47, 0.88);
+.page-title-strip {
+    background: #0073ac;
     color: white;
     margin-bottom: 2px;
     font-size: 50px;
@@ -11,15 +8,22 @@ body {
 .event-list-wrapper {
     width: 70%;
 }
+.event-item {
+    margin: 3px;
+    text-align: center;
+    display: inline-grid;
+}
 .dd-list-container {
-    background: #ffa726;
     border-radius: 4px;
     margin: 10px;
-    text-align: center;
+    text-align: left;
 }
 .dd-list-header {
     cursor: pointer;
     color: white;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 0.7fr 1fr 1.4fr 1fr 0.7fr 1fr;
 }
 .dd-edit-button {
     cursor: pointer
@@ -28,12 +32,44 @@ body {
     list-style-type: none;
 }
 .dd-list-content {
-    background: #ffd95b;
+    background: #4ab66e;
     text-align: left;
 }
 .dd-form-content {
     background: whitesmoke;
 }
 .dd-edit-item {
-    float: left;
+    text-align: center;
+    display: grid;
+}
+#sticky-header {
+    background: #008542;
+    margin: 10px;
+    height: 30px;
+    margin-top: 0px;
+    color: white;
+    text-align: center;
+    font-size: 22px;
+    display: grid;
+    grid-template-columns: 0.7fr 1fr 1.4fr 1fr 0.7fr 1fr;
+}
+#header-item {
+    margin: 3px;
+    text-align: center;
+    display: inline-grid;
+}
+#dropdown-filter {
+    display: inline-block;
+    width: 20%;
+    color: white;
+}
+#routing-table {
+    float: right;
+}
+#reservation-buttons {
+    float: right;
+    cursor: pointer;
+}
+#search-box {
+    color: white;
 }

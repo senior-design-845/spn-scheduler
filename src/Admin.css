@@ -1,0 +1,17 @@
+.page-title {
+    background: #0073ac;
+    color: white;
+    margin-bottom: 2px;
+    font-size: 50px;
+    width: 100%;
+}
+.input-data {
+    background: whitesmoke;
+    margin-top: 15px;
+}
+.dd-edit-form {
+    display: inline-block;
+}
+#submit-button {
+    width: 60px;
+}
