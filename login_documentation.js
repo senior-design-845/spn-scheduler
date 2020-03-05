@@ -39,6 +39,7 @@ class Login extends Component {
         this.setState({redirect: true});
     }
 
+	
     handleBuildings(selected){
         let id = 0;
         for(let i=0; i<this.state.buildingNames.length; i++)
@@ -67,6 +68,7 @@ class Login extends Component {
                 alert("Invalid Server Response")
             }
         })
+			//When the user inputs an invalid user name in the prompt.
             .then(text => {
                 if(text.length === 0)
                     alert("Invalid Username");
@@ -77,7 +79,8 @@ class Login extends Component {
                         classID: text[0].classID,
                         email: text[0].email
                     });
-
+					
+					//
                     fetch('/getBuildings', {
                         method: 'POST',
                         headers: {
@@ -109,16 +112,21 @@ class Login extends Component {
 
     };
 
+	//render() provides visuals for the user.
     render(){
         return(
             <div>
 			
+				//The "Login" sign on the top left [Note: This is subject for removal]
                 <div className = 'page-title'>Login</div>
                 <div className="Login">
+				
+					//The document style is for the background. The image itself is hosted by UTD.
                     <style>
 						{document.body.style = 'background: url(https://idp.utdallas.edu/idp/images/background1.png) no-repeat top center;'}
 					</style>
 					
+					//
                     <Form onSubmit={this.handleLogin}>
                         <Form.Group controlId="netid" bsSize="large">
                             <Form.Control
@@ -129,10 +137,13 @@ class Login extends Component {
                             />
                     </Form.Group>
 					
+						//the button class goes into the .css files to grab the specifications for the submit "Login" button
                         <button class = "button" id="submit" type="submit">
                             Login
                         </button>
 						
+					//Once the student logs in-
+					//It will prompt the student to choose a building via dropdown box.
                     </Form>
                     {
                         this.state.showBuildings ? (
@@ -140,12 +151,14 @@ class Login extends Component {
                         ) : null
                     }
 					
+					//Once the student chooses a building, then it will pop up a button that says "Submit."
                     {
                         this.state.showSubmit ? (
                             <button onClick={this.handleSubmit}>Submit</button>
                         ) : null
                     }
 					
+					//Moves to the next page after confirming that their information is correct.
                     {
                         this.state.redirect ? (
                             <Redirect to={{
@@ -158,6 +171,8 @@ class Login extends Component {
                                 }}}/>
                         ) : null
                     }
+					
+					//Copyright footer. Same as the login page for eLearning.
 					<div className = 'page-footer'>Unauthorized use is prohibited. Usage may be subject to security testing and monitoring. Misuse is subject to criminal prosecution. No expectation of privacy except as otherwise provided by applicable privacy laws.
 					</div>
                 </div>
