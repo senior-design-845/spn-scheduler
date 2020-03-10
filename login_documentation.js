@@ -4,7 +4,7 @@ import Dropdown from 'react-dropdown';
 import "./Login.css"
 import {Redirect} from "react-router";
 
-
+//login class that contains values and necessary functions to handle login and submitting
 class Login extends Component {
     constructor(props){
         super(props);
@@ -25,6 +25,7 @@ class Login extends Component {
         this.handleBuildings = this.handleBuildings.bind(this);
     }
 
+    //function that checks if the netid is of valid length (>0)
     validateForm(){
         return this.state.netid.length > 0;
     }
@@ -68,7 +69,7 @@ class Login extends Component {
                 alert("Invalid Server Response")
             }
         })
-			//When the user inputs an invalid user name in the prompt.
+			//Shows a popup box alert when the user inputs an invalid user name in the prompt.
             .then(text => {
                 if(text.length === 0)
                     alert("Invalid Username");
@@ -80,7 +81,7 @@ class Login extends Component {
                         email: text[0].email
                     });
 					
-					//
+					//check if the received building is one of the allowed buildings, which should only be SPN
                     fetch('/getBuildings', {
                         method: 'POST',
                         headers: {
@@ -112,7 +113,7 @@ class Login extends Component {
 
     };
 
-	//render() provides visuals for the user.
+	//render() provides visuals such as the "Login" for the user
     render(){
         return(
             <div>
@@ -126,7 +127,7 @@ class Login extends Component {
 						{document.body.style = 'background: url(https://idp.utdallas.edu/idp/images/background1.png) no-repeat top center;'}
 					</style>
 					
-					//
+					//checks if the submit is a netid to allows access to the room reservation page
                     <Form onSubmit={this.handleLogin}>
                         <Form.Group controlId="netid" bsSize="large">
                             <Form.Control

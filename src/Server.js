@@ -7,7 +7,7 @@ const moment = require('moment');
 const connection = mysql.createConnection({
     host    : 'sakila.chloiuzfkxyi.us-west-2.rds.amazonaws.com',
     user    : 'root',
-    password: 'Kkk11121',     //Need to update to new password
+    password: 'Kkk11121',
     database: 'spn-scheduler'
 });
 

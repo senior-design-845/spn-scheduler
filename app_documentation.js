@@ -151,17 +151,21 @@ class App extends Component {
         return -1;
     }
 
+    //render will provide visuals for the calendar app page
     render() {
     return (
         <div>
+            //sets the background color of the page
             <style>
                 {document.body.style = 'background: #62d2ff;'}
             </style>
+            //
             {this.state.uniqueRooms.map((e) => (
                 <button key={e.id} style={{backgroundColor: e.color}} onClick={() => this.handleRoomClick(this.search(e.title, this.state.uniqueRooms))}>
                     {e.title + ': '}{this.state.buttonToggle[this.search(e.title, this.state.uniqueRooms)] ? 'ON' : 'OFF'}
                 </button>
             ))}
+            //a button which toggles the visibility of the scheduled times of rooms on the calendar
             <button onClick={() => this.handleAllClick()}>
                 Toggle All Rooms: {this.state.allToggle ? 'ALL' : 'NONE'}
             </button>
@@ -183,6 +187,8 @@ class App extends Component {
                 <Link id="link" to={'/login'}>Logout</Link>
             </div>
             <br/><br/>
+            //sets the default view of the calendar, the buttons can be used to change the view of the calendar
+            //between monthly, weekly, or daily. Also sets the background color of the calendar to white.
             <div style={{height: 700}}>
                 <BigCalendar
                     style={{background: 'white'}}
