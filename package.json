@@ -8,6 +8,7 @@
     "bootstrap": "^4.3.1",
     "color-scheme": "^1.0.1",
     "dateformat": "^3.0.3",
+    "express": "^4.17.1",
     "formik": "^1.5.2",
     "interact.js": "^1.2.8",
     "moment": "^2.24.0",
