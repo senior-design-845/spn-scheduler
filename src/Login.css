@@ -1,27 +1,51 @@
 @media all and (min-width: 480px) {
     .Login {
-        padding: 60px 0;
+        position: fixed;
+        width: 340px;
+        height: 289px;
+        top: 50%;
+        left: 50%;
+        margin-top: -140px;
+        margin-left: -170px;
+             background: #fff;
+        border-radius: 3px;
+        border: 1px soild #ccc;
+        box-shadow: 0 1px 2px rgba(0,0,0, .1);
+        line-height: 1.4;
+        
     }
 
     .Login form {
+        font-size: 16px;
         margin: 0 auto;
-        max-width: 320px;
+        margin-left: 25%;
+        padding-top: 45%;
+        font-family: DinPRO-Regular, Arial, sans-serif;
+        line-height: 1.4;    
     }
 }
 
 body {
-    background: #B7B1A9;
+    background: url(https://idp.utdallas.edu/idp/images/background1.png);
+	background-repeat: no-repeat;
 }
 
 .button {
-  background-color: green;
-  border: none;
-  color: white;
-  padding: 10px 40px;
-  text-align: top center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
+    width: 191px;
+	padding: 10px;
+	border: none;
+	display: inline-block;
+	background: linear-gradient(180deg, rgba(0, 114, 78, 1) 0%, rgba(21, 71, 52, 1) 100%);
+	color: #fff;
+	border-radius: 5px;
+}
+
+.image {
+    content:url(https://idp.utdallas.edu/idp/images/utdlogo.png );  
+    margin-left: 3%;
+    height: 170px;
+    width: 220px; 
+    position: fixed;
 }
 
 .page-title {
