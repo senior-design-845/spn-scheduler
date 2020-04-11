@@ -153,7 +153,7 @@ class App extends Component {
         return (
             <div>
                 <style>
-                    {document.body.style = 'background: #e87500;'}
+                    {document.body.style = 'background: white;'}
                 </style>
 
                 {this.state.uniqueRooms.map((e) => (
@@ -164,6 +164,7 @@ class App extends Component {
                 <button onClick={() => this.handleAllClick()}>
                     Toggle All Rooms: {this.state.allToggle ? 'ALL' : 'NONE'}
                 </button>
+
                 <div id='routing-table'>
                     <Link id="link" to={{
                         pathname: '/myreservations',
@@ -184,7 +185,7 @@ class App extends Component {
                 <br /><br />
                 <div style={{ height: 700 }}>
                     <BigCalendar
-                        style={{ background: 'green' }}
+                        style={{ background: 'white' }}
                         events={this.state.events}
                         step={30}
                         defaultView='week'
