@@ -14,4 +14,6 @@
 }
 #submit-button {
     width: 60px;
+    position: relative;
+    top: 19px;
 }
