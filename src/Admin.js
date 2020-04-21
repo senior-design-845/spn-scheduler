@@ -1,14 +1,14 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './Admin.css'
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import Dropdown from 'react-dropdown';
 import moment from "moment";
 import DatePicker from "react-datepicker"
-import {Sticky, StickyContainer} from "react-sticky";
+import { Sticky, StickyContainer } from "react-sticky";
 
 
 class Admin extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             showTable: false,
@@ -24,28 +24,28 @@ class Admin extends Component {
         this.handleDeleteConfirm = this.handleDeleteConfirm.bind(this);
     }
 
-    handleInactive(){
-        this.setState(prevState => ({hideInactive: !prevState.hideInactive}));
+    handleInactive() {
+        this.setState(prevState => ({ hideInactive: !prevState.hideInactive }));
     }
     handleDeleteClick(event) {
         event.preventDefault();
-        this.setState({deleteClick: true});
+        this.setState({ deleteClick: true });
     }
 
-    handleDeleteConfirm(event){
+    handleDeleteConfirm(event) {
         event.preventDefault();
 
-    fetch('/deleteStudents')
-        .then(response => response.text())
-        .then(result => {
-            if(result === "Error")
-                alert("Invalid Submission");
-            else
-                window.location.reload();
-        });
+        fetch('/deleteStudents')
+            .then(response => response.text())
+            .then(result => {
+                if (result === "Error")
+                    alert("Invalid Submission");
+                else
+                    window.location.reload();
+            });
     }
 
-    handleTableChoice(selected){
+    handleTableChoice(selected) {
         fetch('/adminTables', {
             method: 'post',
             headers: {
@@ -56,7 +56,7 @@ class Admin extends Component {
                 table: selected.value
             })
         }).then(response => {
-            try{
+            try {
                 return response.json()
             }
             catch{
@@ -64,7 +64,7 @@ class Admin extends Component {
             }
         })
             .then(data => {
-                if(typeof data.errno === undefined)
+                if (typeof data.errno === undefined)
                     alert(data.errno + ': ' + data.code);
                 else
                     this.setState({
@@ -75,15 +75,15 @@ class Admin extends Component {
             });
     }
 
-    displayData(){
-        if(this.state.selectedTable === "Rooms") {
+    displayData() {
+        if (this.state.selectedTable === "Rooms") {
             let events = [];
             events.push(
                 <div id='form-info'>
                     <RoomDropdown
-                        id = 'form-id-rooms'
-                        add = {true}
-                        data = {null}
+                        id='form-id-rooms'
+                        add={true}
+                        data={null}
                     />
                 </div>
             )
@@ -91,33 +91,33 @@ class Admin extends Component {
                 <StickyContainer>
                     <Sticky>
                         {({
-                              style
-                          }) => (
-                            <header style={style}>
-                                {
-                                    // Top table showing event attribute titles (frozen)
-                                    <div className = 'event-list-wrapper'>
-                                        <div id='sticky-header'>
-                                            <div className = 'header-item'>
-                                                <div>Building</div>
-                                            </div>
-                                            <div className = 'header-item'>
-                                                <div>Room</div>
+                            style
+                        }) => (
+                                <header style={style}>
+                                    {
+                                        // Top table showing event attribute titles (frozen)
+                                        <div className='event-list-wrapper'>
+                                            <div id='sticky-header'>
+                                                <div className='header-item'>
+                                                    <div>Building</div>
+                                                </div>
+                                                <div className='header-item'>
+                                                    <div>Room</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                }
-                            </header>
-                        )}
+                                    }
+                                </header>
+                            )}
                     </Sticky>
                     {
                         // Originating function to create all events on page
-                        <div ref = 'events' className = 'event-list-wrapper'>
+                        <div ref='events' className='event-list-wrapper'>
                             {
                                 this.state.tableData.map(row => {
-                                    if(!this.state.hideInactive || !row.deleted)
+                                    if (!this.state.hideInactive || !row.deleted)
                                         return <RoomDropdown
-                                            data = {row}
+                                            data={row}
                                         />
                                 })
                             }
@@ -127,124 +127,124 @@ class Admin extends Component {
             )
             return events;
         }
-        else if(this.state.selectedTable === "Users"){
+        else if (this.state.selectedTable === "Users") {
             let events = [];
             events.push(
                 <div id='form-info'>
                     <UserDropdown
-                        id = 'form-id-user'
-                        add = {true}
-                        data = {null}
+                        id='form-id-user'
+                        add={true}
+                        data={null}
                     />
                 </div>
-                );
+            );
             events.push(
                 <StickyContainer>
                     <Sticky>
                         {({
-                              style
-                          }) => (
-                            <header style={style}>
-                                {
-                                    // Top table showing event attribute titles (frozen)
-                                    <div className = 'event-list-wrapper'>
-                                        <div id='sticky-header'>
-                                            <div className = 'header-item'>
-                                                <div>User ID</div>
-                                            </div>
-                                            <div className = 'header-item'>
-                                                <div>First Name</div>
-                                            </div>
-                                            <div className = 'header-item'>
-                                                <div>Last Name</div>
-                                            </div>
-                                            <div className = 'header-item'>
-                                                <div>Project#</div>
+                            style
+                        }) => (
+                                <header style={style}>
+                                    {
+                                        // Top table showing event attribute titles (frozen)
+                                        <div className='event-list-wrapper'>
+                                            <div id='sticky-header'>
+                                                <div className='header-item'>
+                                                    <div>User ID</div>
+                                                </div>
+                                                <div className='header-item'>
+                                                    <div>First Name</div>
+                                                </div>
+                                                <div className='header-item'>
+                                                    <div>Last Name</div>
+                                                </div>
+                                                <div className='header-item'>
+                                                    <div>Project#</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                }
-                            </header>
-                        )}
+                                    }
+                                </header>
+                            )}
                     </Sticky>
                     {
                         // Originating function to create all events on page
-                        <div ref = 'events' className = 'event-list-wrapper'>
+                        <div ref='events' className='event-list-wrapper'>
                             {
                                 this.state.tableData.map(row => {
-                                    if(!this.state.hideInactive || !row.deleted)
+                                    if (!this.state.hideInactive || !row.deleted)
                                         return <UserDropdown
-                                            add = {false}
-                                            data = {row}
+                                            add={false}
+                                            data={row}
                                         />
                                 })
                             }
                         </div>
                     }
                 </StickyContainer>
-                );
-            return(events);
+            );
+            return (events);
         }
-        else if(this.state.selectedTable === "Building Configurations"){
+        else if (this.state.selectedTable === "Building Configurations") {
             let events = [];
             events.push(
                 <div id='form-info'>
                     <BuildingDropdown
-                        id = 'form-id-building'
-                        add = {true}
-                        data = {null}
+                        id='form-id-building'
+                        add={true}
+                        data={null}
                     />
                 </div>
-                );
+            );
             events.push(
                 <StickyContainer>
                     <Sticky>
                         {({
-                              style
-                          }) => (
-                            <header style={style}>
-                                {
-                                    // Top table showing event attribute titles (frozen)
-                                    <div className = 'event-list-wrapper'>
-                                        <div id='sticky-header'>
-                                            <div className = 'header-item'>
-                                                <div>Building ID</div>
-                                            </div>
-                                            <div className = 'header-item'>
-                                                <div>Building Name</div>
+                            style
+                        }) => (
+                                <header style={style}>
+                                    {
+                                        // Top table showing event attribute titles (frozen)
+                                        <div className='event-list-wrapper'>
+                                            <div id='sticky-header'>
+                                                <div className='header-item'>
+                                                    <div>Building ID</div>
+                                                </div>
+                                                <div className='header-item'>
+                                                    <div>Building Name</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                }
-                            </header>
-                        )}
+                                    }
+                                </header>
+                            )}
                     </Sticky>
                     {
                         // Originating function to create all events on page
-                        <div ref = 'events' className = 'event-list-wrapper'>
+                        <div ref='events' className='event-list-wrapper'>
                             {
                                 this.state.tableData.map(row => {
-                                    if(!this.state.hideInactive || !row.deleted)
+                                    if (!this.state.hideInactive || !row.deleted)
                                         return <BuildingDropdown
-                                            add = {false}
-                                            data = {row}
+                                            add={false}
+                                            data={row}
                                         />
                                 })
                             }
                         </div>
                     }
                 </StickyContainer>
-                );
-            return(events);
+            );
+            return (events);
         }
-        else if(this.state.selectedTable === "User Classifications"){
+        else if (this.state.selectedTable === "User Classifications") {
             let events = [];
             events.push(
                 <div id='form-info'>
                     <UserClassDropdown
-                        id = 'form-id-userclass'
-                        add = {true}
-                        data = {null}
+                        id='form-id-userclass'
+                        add={true}
+                        data={null}
                     />
                 </div>
             )
@@ -252,33 +252,33 @@ class Admin extends Component {
                 <StickyContainer>
                     <Sticky>
                         {({
-                              style
-                          }) => (
-                            <header style={style}>
-                                {
-                                    // Top table showing event attribute titles (frozen)
-                                    <div className = 'event-list-wrapper'>
-                                        <div id='sticky-header'>
-                                            <div className = 'header-item'>
-                                                <div>User ID</div>
-                                            </div>
-                                            <div className = 'header-item'>
-                                                <div>Classification</div>
+                            style
+                        }) => (
+                                <header style={style}>
+                                    {
+                                        // Top table showing event attribute titles (frozen)
+                                        <div className='event-list-wrapper'>
+                                            <div id='sticky-header'>
+                                                <div className='header-item'>
+                                                    <div>User ID</div>
+                                                </div>
+                                                <div className='header-item'>
+                                                    <div>Classification</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                }
-                            </header>
-                        )}
+                                    }
+                                </header>
+                            )}
                     </Sticky>
                     {
                         // Originating function to create all events on page
-                        <div ref = 'events' className = 'event-list-wrapper'>
+                        <div ref='events' className='event-list-wrapper'>
                             {
                                 this.state.tableData.map(row => {
-                                    if(!this.state.hideInactive || !row.deleted)
+                                    if (!this.state.hideInactive || !row.deleted)
                                         return <UserClassDropdown
-                                            data = {row}
+                                            data={row}
                                         />
                                 })
                             }
@@ -288,14 +288,14 @@ class Admin extends Component {
             )
             return events;
         }
-        else if(this.state.selectedTable === "Classifications"){
+        else if (this.state.selectedTable === "Classifications") {
             let events = [];
             events.push(
                 <div id='form-info'>
                     <ClassDropdown
-                        id = 'form-id-class'
-                        add = {true}
-                        data = {null}
+                        id='form-id-class'
+                        add={true}
+                        data={null}
                     />
                 </div>
             )
@@ -303,30 +303,30 @@ class Admin extends Component {
                 <StickyContainer>
                     <Sticky>
                         {({
-                              style
-                          }) => (
-                            <header style={style}>
-                                {
-                                    // Top table showing event attribute titles (frozen)
-                                    <div className = 'event-list-wrapper'>
-                                        <div id='sticky-header'>
-                                            <div className = 'header-item'>
-                                                <div>Class ID</div>
+                            style
+                        }) => (
+                                <header style={style}>
+                                    {
+                                        // Top table showing event attribute titles (frozen)
+                                        <div className='event-list-wrapper'>
+                                            <div id='sticky-header'>
+                                                <div className='header-item'>
+                                                    <div>Class ID</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                }
-                            </header>
-                        )}
+                                    }
+                                </header>
+                            )}
                     </Sticky>
                     {
                         // Originating function to create all events on page
-                        <div ref = 'events' className = 'event-list-wrapper'>
+                        <div ref='events' className='event-list-wrapper'>
                             {
                                 this.state.tableData.map(row => {
-                                    if(!this.state.hideInactive || !row.deleted)
+                                    if (!this.state.hideInactive || !row.deleted)
                                         return <ClassDropdown
-                                            data = {row}
+                                            data={row}
                                         />
                                 })
                             }
@@ -336,14 +336,14 @@ class Admin extends Component {
             )
             return events;
         }
-        else if(this.state.selectedTable === "Room Classifications"){
+        else if (this.state.selectedTable === "Room Classifications") {
             let events = [];
             events.push(
                 <div id='form-info'>
                     <RoomClassDropdown
-                        id = 'form-id-roomclass'
-                        add = {true}
-                        data = {null}
+                        id='form-id-roomclass'
+                        add={true}
+                        data={null}
                     />
                 </div>
             )
@@ -351,33 +351,33 @@ class Admin extends Component {
                 <StickyContainer>
                     <Sticky>
                         {({
-                              style
-                          }) => (
-                            <header style={style}>
-                                {
-                                    // Top table showing event attribute titles (frozen)
-                                    <div className = 'event-list-wrapper'>
-                                        <div id='sticky-header'>
-                                            <div className = 'header-item'>
-                                                <div>Room ID</div>
-                                            </div>
-                                            <div className = 'header-item'>
-                                                <div>Classification</div>
+                            style
+                        }) => (
+                                <header style={style}>
+                                    {
+                                        // Top table showing event attribute titles (frozen)
+                                        <div className='event-list-wrapper'>
+                                            <div id='sticky-header'>
+                                                <div className='header-item'>
+                                                    <div>Room ID</div>
+                                                </div>
+                                                <div className='header-item'>
+                                                    <div>Classification</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                }
-                            </header>
-                        )}
+                                    }
+                                </header>
+                            )}
                     </Sticky>
                     {
                         // Originating function to create all events on page
-                        <div ref = 'events' className = 'event-list-wrapper'>
+                        <div ref='events' className='event-list-wrapper'>
                             {
                                 this.state.tableData.map(row => {
-                                    if(!this.state.hideInactive || !row.deleted)
+                                    if (!this.state.hideInactive || !row.deleted)
                                         return <RoomClassDropdown
-                                            data = {row}
+                                            data={row}
                                         />
                                 })
                             }
@@ -390,39 +390,39 @@ class Admin extends Component {
     }
 
     render() {
-        let options = ['Users','User Classifications','Classifications','Room Classifications','Rooms','Building Configurations'];
-        return(
+        let options = ['Users', 'User Classifications', 'Classifications', 'Room Classifications', 'Rooms', 'Building Configurations'];
+        return (
             <div>
                 <style>
-                    {document.body.style = 'background: #008542;'}
+                    {document.body.style = 'background: white;'}
                 </style>
-                <div id = 'routing-table'>
+                <div id='routing-table'>
                     <Link id="link" to={{
                         pathname: '/calendar',
                         state: this.props.location.state
                     }}>Calendar</Link>
-                    <br/>
+                    <br />
                     <Link id="link" to={{
                         pathname: '/myreservations',
                         state: this.props.location.state
                     }}>My Reservations</Link>
-                    <br/>
+                    <br />
                     <Link id="link" to={'/login'}>Logout</Link>
                 </div>
-                <div className = 'page-title'>Administrator Actions</div>
-                <Dropdown options={options} onChange={this.handleTableChoice} value={this.state.selectedTable}/>
+                <div className='page-title'>Administrator Actions</div>
+                <Dropdown options={options} onChange={this.handleTableChoice} value={this.state.selectedTable} />
 
                 {
                     this.state.showTable ? (
                         <div>
-                            <button className="float-right" onClick={this.handleInactive}>{this.state.hideInactive ? "Show All":"Hide Inactive"}</button>
+                            <button className="float-right" onClick={this.handleInactive}>{this.state.hideInactive ? "Show All" : "Hide Inactive"}</button>
                             {
                                 this.state.selectedTable === "Users" ? (
                                     !this.state.deleteClick ? (
                                         <button onClick={this.handleDeleteClick}>Remove ALL Students</button>
                                     ) : (
-                                        <button onClick={this.handleDeleteConfirm} style={{'color':'white', 'background':'red'}}>CONFIRM</button>
-                                    )
+                                            <button onClick={this.handleDeleteConfirm} style={{ 'color': 'white', 'background': 'red' }}>CONFIRM</button>
+                                        )
                                 ) : null
                             }
                             {
@@ -455,7 +455,7 @@ class RoomDropdown extends Component {
         this.handleWeekendEnd = this.handleWeekendEnd.bind(this);
 
         let tempTime, tempDayStart, tempDayEnd, tempEndStart, tempEndEnd;
-        if(this.props.data !== null) {
+        if (this.props.data !== null) {
             tempTime = String(this.props.data.weekday_start).split(/[:]/);
             tempDayStart = new Date();
             tempDayStart.setMinutes(parseInt(tempTime[1], 10));
@@ -496,32 +496,32 @@ class RoomDropdown extends Component {
         }
     }
 
-    showDDContent(event){
+    showDDContent(event) {
         event.preventDefault();
 
-        this.setState({showDDContent: true}, () => {
+        this.setState({ showDDContent: true }, () => {
             if (!this.state.ddEditClick)
                 document.addEventListener('click', this.closeDDContent);
         });
     }
 
-    closeDDContent(event){
-        if(this.dropdownMenu === null){
+    closeDDContent(event) {
+        if (this.dropdownMenu === null) {
             {
-                this.setState({showDDContent: false}, () => {
+                this.setState({ showDDContent: false }, () => {
                     document.removeEventListener('click', this.closeDDContent);
                 });
             }
         }
-        else if(!this.dropdownMenu.contains(event.target)){
-            this.setState({showDDContent: false}, () => {
+        else if (!this.dropdownMenu.contains(event.target)) {
+            this.setState({ showDDContent: false }, () => {
                 document.removeEventListener('click', this.closeDDContent);
             });
         }
     }
 
     ddEditClick() {
-        this.setState({showDDContent: true, ddEditClick: true}, () => {
+        this.setState({ showDDContent: true, ddEditClick: true }, () => {
             document.removeEventListener('click', this.closeDDContent);
         });
     }
@@ -545,28 +545,28 @@ class RoomDropdown extends Component {
 
 
     handleChange(event) {   //roomID, buildingID, room_name
-        return this.setState({[event.target.name]: event.target.value});
+        return this.setState({ [event.target.name]: event.target.value });
     }
 
-    handleWeekdayStart(time){
-        this.setState({tempWeekdayStart: time})
+    handleWeekdayStart(time) {
+        this.setState({ tempWeekdayStart: time })
     }
-    handleWeekdayEnd(time){
-        this.setState({tempWeekdayEnd: time})
+    handleWeekdayEnd(time) {
+        this.setState({ tempWeekdayEnd: time })
     }
-    handleWeekendStart(time){
-        this.setState({tempWeekendStart: time})
+    handleWeekendStart(time) {
+        this.setState({ tempWeekendStart: time })
     }
-    handleWeekendEnd(time){
-        this.setState({tempWeekendEnd: time})
+    handleWeekendEnd(time) {
+        this.setState({ tempWeekendEnd: time })
     }
 
     handleDeleteClick(event) {
         event.preventDefault();
-        this.setState({deleteClick: true});
+        this.setState({ deleteClick: true });
     }
 
-    handleDeleteConfirm(event){
+    handleDeleteConfirm(event) {
         event.preventDefault();
 
         fetch('/deleteRoom', {
@@ -582,7 +582,7 @@ class RoomDropdown extends Component {
         })
             .then(response => response.text())
             .then(result => {
-                if(result === "Error")
+                if (result === "Error")
                     alert("Invalid Submission");
                 else
                     window.location.reload();
@@ -613,7 +613,7 @@ class RoomDropdown extends Component {
             }),
         }).then(response => response.text())
             .then(result => {
-                if(result === "Error")
+                if (result === "Error")
                     alert("Invalid Submission");
                 else
                     window.location.reload();
@@ -622,38 +622,38 @@ class RoomDropdown extends Component {
 
     render() {
         let formatted;
-        if(!this.props.add)
+        if (!this.props.add)
             formatted = {
                 dayStart: moment(this.state.weekday_start).format('HH:mm'),
                 dayEnd: moment(this.state.weekday_end).format('HH:mm'),
                 endStart: moment(this.state.weekend_start).format('HH:mm'),
                 endEnd: moment(this.state.weekend_end).format('HH:mm')
             };
-        return(
-                this.props.add ? (
-                    <div className='dd-list-container'>
-                        <div className = 'dd-list-header'>
-                            <div className = 'event-item'>
-                                Add Room
+        return (
+            this.props.add ? (
+                <div className='dd-list-container'>
+                    <div className='dd-list-header'>
+                        <div className='event-item'>
+                            Add Room
                             </div>
-                        </div>
-                        {
-                            // Edit form for events shown on 'edit' click
-                            <div className = 'dd-list-content'>
-                            <div className = 'dd-form-content'>
-                                <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                    <label className = 'dd-edit-item'>
+                    </div>
+                    {
+                        // Edit form for events shown on 'edit' click
+                        <div className='dd-list-content'>
+                            <div className='dd-form-content'>
+                                <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                    <label className='dd-edit-item'>
                                         Building ID:
-                                        <input name = 'buildingID' type="number" value={this.state.buildingID} onChange={this.handleChange} />
+                                        <input name='buildingID' type="number" value={this.state.buildingID} onChange={this.handleChange} />
                                     </label>
-                                    <label className = 'dd-edit-item'>
+                                    <label className='dd-edit-item'>
                                         Room Name:
-                                        <input name = 'tempRoomName' type="text" maxLength={45} value={this.state.tempRoomName} onChange={this.handleChange} />
+                                        <input name='tempRoomName' type="text" maxLength={45} value={this.state.tempRoomName} onChange={this.handleChange} />
                                     </label>
-                                    <label className = 'dd-edit-item'>
+                                    <label className='dd-edit-item'>
                                         Weekday Start:
                                         <DatePicker
-                                            name = 'weekday-start'
+                                            name='weekday-start'
                                             selected={this.state.tempWeekdayStart}
                                             onChange={this.handleWeekdayStart}
                                             showTimeSelect
@@ -663,10 +663,10 @@ class RoomDropdown extends Component {
                                             timeCaption="Start"
                                         />
                                     </label>
-                                    <label className = 'dd-edit-item'>
+                                    <label className='dd-edit-item'>
                                         Weekday End:
                                         <DatePicker
-                                            name = 'weekday-end'
+                                            name='weekday-end'
                                             selected={this.state.tempWeekdayEnd}
                                             onChange={this.handleWeekdayEnd}
                                             showTimeSelect
@@ -676,10 +676,10 @@ class RoomDropdown extends Component {
                                             timeCaption="End"
                                         />
                                     </label>
-                                    <label className = 'dd-edit-item'>
+                                    <label className='dd-edit-item'>
                                         Weekend Start:
                                         <DatePicker
-                                            name = 'weekend-start'
+                                            name='weekend-start'
                                             selected={this.state.tempWeekendStart}
                                             onChange={this.handleWeekendStart}
                                             showTimeSelect
@@ -689,10 +689,10 @@ class RoomDropdown extends Component {
                                             timeCaption="Start"
                                         />
                                     </label>
-                                    <label className = 'dd-edit-item'>
+                                    <label className='dd-edit-item'>
                                         Weekend End:
                                         <DatePicker
-                                            name = 'weekend-end'
+                                            name='weekend-end'
                                             selected={this.state.tempWeekendEnd}
                                             onChange={this.handleWeekendEnd}
                                             showTimeSelect
@@ -702,146 +702,146 @@ class RoomDropdown extends Component {
                                             timeCaption="End"
                                         />
                                     </label>
-                                    <label className = 'dd-edit-item'>
+                                    <label className='dd-edit-item'>
                                         Room Class:a
-                                        <input name = 'roomClass' type="number" min={1} value={this.state.roomClass} onChange={this.handleChange} />
+                                        <input name='roomClass' type="number" min={1} value={this.state.roomClass} onChange={this.handleChange} />
                                     </label>
                                     <input id='submit-button' type="submit" value="Submit" />
                                 </form>
                                 {
                                     this.state.invalidSub ? (
-                                        <div id = 'invalid-submission-error' style={{'color':'red'}}>
+                                        <div id='invalid-submission-error' style={{ 'color': 'red' }}>
                                             Invalid submission
                                         </div>
                                     ) : null
                                 }
-                                <br/>
+                                <br />
                             </div>
-                            </div>
-                        }
-                    </div>
-                ) : (
+                        </div>
+                    }
+                </div>
+            ) : (
                     // The shown portion of the individual events
                     <div className='dd-list-container'>
-                        <div className = 'dd-list-header' onClick={this.showDDContent}>
-                            <div className = 'event-item'>
+                        <div className='dd-list-header' onClick={this.showDDContent}>
+                            <div className='event-item'>
                                 {this.state.building_name}
                             </div>
-                            <div className = 'event-item'>
+                            <div className='event-item'>
                                 {this.state.room_name}
                             </div>
                         </div>
                         {
                             this.state.showDDContent ? (
-                                <div className = 'dd-list-content' ref={(element) => {this.dropdownMenu = element;}}>
-                                    <div className = 'dd-list-items'>
+                                <div className='dd-list-content' ref={(element) => { this.dropdownMenu = element; }}>
+                                    <div className='dd-list-items'>
                                         Building ID: {this.state.buildingID}
                                     </div>
-                                    <div className = 'dd-list-items'>
+                                    <div className='dd-list-items'>
                                         Room ID: {this.state.roomID}
                                     </div>
-                                    <div className = 'dd-list-items'>
+                                    <div className='dd-list-items'>
                                         Weekday Start: {formatted.dayStart}
                                     </div>
-                                    <div className = 'dd-list-items'>
+                                    <div className='dd-list-items'>
                                         Weekday End: {formatted.dayEnd}
                                     </div>
-                                    <div className = 'dd-list-items'>
+                                    <div className='dd-list-items'>
                                         Weekend Start: {formatted.endStart}
                                     </div>
-                                    <div className = 'dd-list-items'>
+                                    <div className='dd-list-items'>
                                         Weekend End: {formatted.endEnd}
                                     </div>
-                                    <div className = 'dd-list-items'>
+                                    <div className='dd-list-items'>
                                         {this.state.inactive ? 'Inactive' : 'Active'}
                                     </div>
                                     {
                                         !this.state.ddEditClick ? (
-                                            <button className = 'dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
+                                            <button className='dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
                                         ) : (
-                                            // Edit form for events shown on 'edit' click
-                                            <div className = 'dd-form-content'>
-                                                <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                                    <label className = 'dd-edit-item'>
-                                                        Room Name:
-                                                        <input name = 'tempRoomName' type="text" maxLength={45} value={this.state.tempRoomName} onChange={this.handleChange} />
-                                                    </label>
-                                                    <label className = 'dd-edit-item'>
-                                                         Weekday Start:
+                                                // Edit form for events shown on 'edit' click
+                                                <div className='dd-form-content'>
+                                                    <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                                        <label className='dd-edit-item'>
+                                                            Room Name:
+                                                        <input name='tempRoomName' type="text" maxLength={45} value={this.state.tempRoomName} onChange={this.handleChange} />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            Weekday Start:
                                                         <DatePicker
-                                                            name = 'weekday-start'
-                                                            selected={this.state.tempWeekdayStart}
-                                                            onChange={this.handleWeekdayStart}
-                                                            showTimeSelect
-                                                            showTimeSelectOnly
-                                                            timeIntervals={30}
-                                                            dateFormat='HH:mm'
-                                                            timeCaption="Start"
-                                                        />
-                                                    </label>
-                                                    <label className = 'dd-edit-item'>
-                                                        Weekday End:
+                                                                name='weekday-start'
+                                                                selected={this.state.tempWeekdayStart}
+                                                                onChange={this.handleWeekdayStart}
+                                                                showTimeSelect
+                                                                showTimeSelectOnly
+                                                                timeIntervals={30}
+                                                                dateFormat='HH:mm'
+                                                                timeCaption="Start"
+                                                            />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            Weekday End:
                                                         <DatePicker
-                                                            name = 'weekday-end'
-                                                            selected={this.state.tempWeekdayEnd}
-                                                            onChange={this.handleWeekdayEnd}
-                                                            showTimeSelect
-                                                            showTimeSelectOnly
-                                                            timeIntervals={30}
-                                                            dateFormat='HH:mm'
-                                                            timeCaption="End"
-                                                        />
-                                                    </label>
-                                                    <label className = 'dd-edit-item'>
-                                                    Weekend Start:
+                                                                name='weekday-end'
+                                                                selected={this.state.tempWeekdayEnd}
+                                                                onChange={this.handleWeekdayEnd}
+                                                                showTimeSelect
+                                                                showTimeSelectOnly
+                                                                timeIntervals={30}
+                                                                dateFormat='HH:mm'
+                                                                timeCaption="End"
+                                                            />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            Weekend Start:
                                                     <DatePicker
-                                                        name = 'weekend-start'
-                                                        selected={this.state.tempWeekendStart}
-                                                        onChange={this.handleWeekendStart}
-                                                        showTimeSelect
-                                                        showTimeSelectOnly
-                                                        timeIntervals={30}
-                                                        dateFormat='HH:mm'
-                                                        timeCaption="Start"
-                                                    />
-                                                    </label>
-                                                    <label className = 'dd-edit-item'>
-                                                    Weekend End:
+                                                                name='weekend-start'
+                                                                selected={this.state.tempWeekendStart}
+                                                                onChange={this.handleWeekendStart}
+                                                                showTimeSelect
+                                                                showTimeSelectOnly
+                                                                timeIntervals={30}
+                                                                dateFormat='HH:mm'
+                                                                timeCaption="Start"
+                                                            />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            Weekend End:
                                                     <DatePicker
-                                                        name = 'weekend-end'
-                                                        selected={this.state.tempWeekendEnd}
-                                                        onChange={this.handleWeekendEnd}
-                                                        showTimeSelect
-                                                        showTimeSelectOnly
-                                                        timeIntervals={30}
-                                                        dateFormat='HH:mm'
-                                                        timeCaption="End"
-                                                    />
-                                                    </label>
+                                                                name='weekend-end'
+                                                                selected={this.state.tempWeekendEnd}
+                                                                onChange={this.handleWeekendEnd}
+                                                                showTimeSelect
+                                                                showTimeSelectOnly
+                                                                timeIntervals={30}
+                                                                dateFormat='HH:mm'
+                                                                timeCaption="End"
+                                                            />
+                                                        </label>
 
-                                                    <input id='submit-button' type="submit" value="Submit" />
+                                                        <input id='submit-button' type="submit" value="Submit" />
+                                                        {
+                                                            !this.state.deleteClick ? (
+                                                                <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
+                                                            ) : (
+                                                                    <button onClick={this.handleDeleteConfirm} style={{ 'color': 'white', 'background': 'red' }}>CONFIRM</button>
+                                                                )
+                                                        }
+                                                    </form>
                                                     {
-                                                        !this.state.deleteClick ? (
-                                                            <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
-                                                        ) : (
-                                                            <button onClick={this.handleDeleteConfirm} style={{'color':'white', 'background':'red'}}>CONFIRM</button>
-                                                        )
+                                                        this.state.invalidSub ? (
+                                                            <div id='invalid-submission-error' style={{ 'color': 'red' }}>
+                                                                Invalid submission
+                                                            </div>
+                                                        ) : null
                                                     }
-                                                </form>
-                                                {
-                                                    this.state.invalidSub ? (
-                                                        <div id = 'invalid-submission-error' style={{'color':'red'}}>
-                                                            Invalid submission
-                                                        </div>
-                                                    ) : null
-                                                }
-                                                <button className = 'dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
-                                            </div>
-                                        )
+                                                    <button className='dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
+                                                </div>
+                                            )
                                     }
 
                                 </div>
-                            ) : ( null )
+                            ) : (null)
                         }
                     </div>
                 )
@@ -872,7 +872,7 @@ class UserDropdown extends Component {
             tempLast: this.props.data === null ? '' : this.props.data.last_name,
             email: this.props.data === null ? '' : this.props.data.email,
             tempEmail: this.props.data === null ? '' : this.props.data.email,
-            course:this.props.data === null ? '' : this.props.data.course,
+            course: this.props.data === null ? '' : this.props.data.course,
             tempCourse: this.props.data === null ? '' : this.props.data.course,
             teamNumber: this.props.data === null ? null : this.props.data.team_num,
             tempTeam: this.props.data === null ? null : this.props.data.team_num,
@@ -884,32 +884,32 @@ class UserDropdown extends Component {
         }
     }
 
-    showDDContent(event){
+    showDDContent(event) {
         event.preventDefault();
 
-        this.setState({showDDContent: true}, () => {
+        this.setState({ showDDContent: true }, () => {
             if (!this.state.ddEditClick)
                 document.addEventListener('click', this.closeDDContent);
         });
     }
 
-    closeDDContent(event){
-        if(this.dropdownMenu === null){
+    closeDDContent(event) {
+        if (this.dropdownMenu === null) {
             {
-                this.setState({showDDContent: false}, () => {
+                this.setState({ showDDContent: false }, () => {
                     document.removeEventListener('click', this.closeDDContent);
                 });
             }
         }
-        else if(!this.dropdownMenu.contains(event.target)){
-            this.setState({showDDContent: false}, () => {
+        else if (!this.dropdownMenu.contains(event.target)) {
+            this.setState({ showDDContent: false }, () => {
                 document.removeEventListener('click', this.closeDDContent);
             });
         }
     }
 
     ddEditClick() {
-        this.setState({showDDContent: true, ddEditClick: true}, () => {
+        this.setState({ showDDContent: true, ddEditClick: true }, () => {
             document.removeEventListener('click', this.closeDDContent);
         });
     }
@@ -934,15 +934,15 @@ class UserDropdown extends Component {
 
 
     handleChange(event) {   //roomID, buildingID, room_name
-        return this.setState({[event.target.name]: event.target.value});
+        return this.setState({ [event.target.name]: event.target.value });
     }
 
     handleDeleteClick(event) {
         event.preventDefault();
-        this.setState({deleteClick: true});
+        this.setState({ deleteClick: true });
     }
 
-    handleDeleteConfirm(event){
+    handleDeleteConfirm(event) {
         event.preventDefault();
 
         fetch('/deleteUser', {
@@ -958,7 +958,7 @@ class UserDropdown extends Component {
         })
             .then(response => response.text())
             .then(result => {
-                if(result === "Error")
+                if (result === "Error")
                     alert("Invalid Submission");
                 else
                     window.location.reload();
@@ -990,7 +990,7 @@ class UserDropdown extends Component {
         }).then(response => response.text())
             .then(result => {
                 console.log(result);
-                if(result === "Error")
+                if (result === "Error")
                     alert("Invalid Submission");
                 else
                     window.location.reload();
@@ -998,57 +998,57 @@ class UserDropdown extends Component {
     }
 
     render() {
-        return(
+        return (
             this.props.data === null ? (
                 <div className='dd-list-container'>
-                    <div className = 'dd-list-header'>
+                    <div className='dd-list-header'>
                         Add User
                     </div>
                     {
-                        <div className = 'dd-list-content'>
+                        <div className='dd-list-content'>
                             {
                                 // Edit form for events
-                                <div className = 'dd-form-content'>
-                                    <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                        <label className = 'dd-edit-item'>
+                                <div className='dd-form-content'>
+                                    <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                        <label className='dd-edit-item'>
                                             Net ID:
-                                            <input name = 'tempNetID' type="text" maxLength={45} value={this.state.tempNetID} onChange={this.handleChange} />
+                                            <input name='tempNetID' type="text" maxLength={45} value={this.state.tempNetID} onChange={this.handleChange} />
                                         </label>
-                                        <label className = 'dd-edit-item'>
+                                        <label className='dd-edit-item'>
                                             First Name:
-                                            <input name = 'tempFirst' type="text" maxLength={45} value={this.state.tempFirst} onChange={this.handleChange} />
+                                            <input name='tempFirst' type="text" maxLength={45} value={this.state.tempFirst} onChange={this.handleChange} />
                                         </label>
-                                        <label className = 'dd-edit-item'>
+                                        <label className='dd-edit-item'>
                                             Last Name:
-                                            <input name = 'tempLast' type="text" maxLength={45} value={this.state.tempLast} onChange={this.handleChange} />
+                                            <input name='tempLast' type="text" maxLength={45} value={this.state.tempLast} onChange={this.handleChange} />
                                         </label>
-                                        <label className = 'dd-edit-item'>
+                                        <label className='dd-edit-item'>
                                             Email:
-                                            <input name = 'tempEmail' type="text" maxLength={45} value={this.state.tempEmail} onChange={this.handleChange} />
+                                            <input name='tempEmail' type="text" maxLength={45} value={this.state.tempEmail} onChange={this.handleChange} />
                                         </label>
-                                        <label className = 'dd-edit-item'>
+                                        <label className='dd-edit-item'>
                                             Course:
-                                            <input name = 'tempCourse' type="text" maxLength={45} value={this.state.tempCourse} onChange={this.handleChange} />
+                                            <input name='tempCourse' type="text" maxLength={45} value={this.state.tempCourse} onChange={this.handleChange} />
                                         </label>
-                                        <label className = 'dd-edit-item'>
+                                        <label className='dd-edit-item'>
                                             Project Number:
-                                            <input name = 'tempTeam' type="text" maxLength={45} value={this.state.tempTeam} onChange={this.handleChange} />
+                                            <input name='tempTeam' type="text" maxLength={45} value={this.state.tempTeam} onChange={this.handleChange} />
                                         </label>
-                                        <label className = 'dd-edit-item'>
+                                        <label className='dd-edit-item'>
                                             User Class:
-                                            <input name = 'userClass' type="number" min={1} value={this.state.userClass} onChange={this.handleChange} />
+                                            <input name='userClass' type="number" min={1} value={this.state.userClass} onChange={this.handleChange} />
                                         </label>
 
                                         <input id='submit-button' type="submit" value="Submit" />
                                     </form>
                                     {
                                         this.state.invalidSub ? (
-                                            <div id = 'invalid-submission-error' style={{'color':'red'}}>
+                                            <div id='invalid-submission-error' style={{ 'color': 'red' }}>
                                                 Invalid submission
                                             </div>
                                         ) : null
                                     }
-                                    <br/>
+                                    <br />
                                 </div>
                             }
 
@@ -1056,96 +1056,96 @@ class UserDropdown extends Component {
                     }
                 </div>
             ) : (
-            // The shown portion of the individual events
-            <div className='dd-list-container'>
-                <div className = 'dd-list-header' onClick={this.showDDContent}>
-                    <div className = 'event-item'>
-                        {this.state.userID}
-                    </div>
-                    <div className = 'event-item'>
-                        {this.state.firstName}
-                    </div>
-                    <div className = 'event-item'>
-                        {this.state.lastName}
-                    </div>
-                    <div className = 'event-item'>
-                        {this.state.teamNumber}
-                    </div>
-                </div>
-                {
-                    this.state.showDDContent ? (
-                        <div className = 'dd-list-content' ref={(element) => {this.dropdownMenu = element;}}>
-                            <div className = 'dd-list-items'>
-                                Net ID: {this.state.netID}
+                    // The shown portion of the individual events
+                    <div className='dd-list-container'>
+                        <div className='dd-list-header' onClick={this.showDDContent}>
+                            <div className='event-item'>
+                                {this.state.userID}
                             </div>
-                            <div className = 'dd-list-items'>
-                                Email: {this.state.email}
+                            <div className='event-item'>
+                                {this.state.firstName}
                             </div>
-                            <div className = 'dd-list-items'>
-                                Course: {this.state.course}
+                            <div className='event-item'>
+                                {this.state.lastName}
                             </div>
-
-                            <div className = 'dd-list-items'>
-                                {this.state.inactive ? 'Inactive' : 'Active'}
+                            <div className='event-item'>
+                                {this.state.teamNumber}
                             </div>
-                            {
-                                !this.state.ddEditClick ? (
-                                    <button className = 'dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
-                                ) : (
-                                    // Edit form for events shown on 'edit' click
-                                    <div className = 'dd-form-content'>
-                                        <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                            <label className = 'dd-edit-item'>
-                                                Net ID:
-                                                <input name = 'tempNetID' type="text" maxLength={45} value={this.state.tempNetID} onChange={this.handleChange} />
-                                            </label>
-                                            <label className = 'dd-edit-item'>
-                                                First Name:
-                                                <input name = 'tempFirst' type="text" maxLength={45} value={this.state.tempFirst} onChange={this.handleChange} />
-                                            </label>
-                                            <label className = 'dd-edit-item'>
-                                                Last Name:
-                                                <input name = 'tempLast' type="text" maxLength={45} value={this.state.tempLast} onChange={this.handleChange} />
-                                            </label>
-                                            <label className = 'dd-edit-item'>
-                                                Email:
-                                                <input name = 'tempEmail' type="text" maxLength={45} value={this.state.tempEmail} onChange={this.handleChange} />
-                                            </label>
-                                            <label className = 'dd-edit-item'>
-                                                Course:
-                                                <input name = 'tempCourse' type="text" maxLength={45} value={this.state.tempCourse} onChange={this.handleChange} />
-                                            </label>
-                                            <label className = 'dd-edit-item'>
-                                                Project Number:
-                                                <input name = 'tempTeam' type="text" maxLength={45} value={this.state.tempTeam} onChange={this.handleChange} />
-                                            </label>
-
-                                            <input id='submit-button' type="submit" value="Submit" />
-                                            {
-                                                !this.state.deleteClick ? (
-                                                    <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
-                                                ) : (
-                                                    <button onClick={this.handleDeleteConfirm} style={{'color':'white', 'background':'red'}}>CONFIRM</button>
-                                                )
-                                            }
-                                        </form>
-                                        {
-                                            this.state.invalidSub ? (
-                                                <div id = 'invalid-submission-error' style={{'color':'red'}}>
-                                                    Invalid submission
-                                                </div>
-                                            ) : null
-                                        }
-                                        <button className = 'dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
-                                    </div>
-                                )
-                            }
-
                         </div>
-                    ) : ( null )
-                }
-            </div>
-            )
+                        {
+                            this.state.showDDContent ? (
+                                <div className='dd-list-content' ref={(element) => { this.dropdownMenu = element; }}>
+                                    <div className='dd-list-items'>
+                                        Net ID: {this.state.netID}
+                                    </div>
+                                    <div className='dd-list-items'>
+                                        Email: {this.state.email}
+                                    </div>
+                                    <div className='dd-list-items'>
+                                        Course: {this.state.course}
+                                    </div>
+
+                                    <div className='dd-list-items'>
+                                        {this.state.inactive ? 'Inactive' : 'Active'}
+                                    </div>
+                                    {
+                                        !this.state.ddEditClick ? (
+                                            <button className='dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
+                                        ) : (
+                                                // Edit form for events shown on 'edit' click
+                                                <div className='dd-form-content'>
+                                                    <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                                        <label className='dd-edit-item'>
+                                                            Net ID:
+                                                <input name='tempNetID' type="text" maxLength={45} value={this.state.tempNetID} onChange={this.handleChange} />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            First Name:
+                                                <input name='tempFirst' type="text" maxLength={45} value={this.state.tempFirst} onChange={this.handleChange} />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            Last Name:
+                                                <input name='tempLast' type="text" maxLength={45} value={this.state.tempLast} onChange={this.handleChange} />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            Email:
+                                                <input name='tempEmail' type="text" maxLength={45} value={this.state.tempEmail} onChange={this.handleChange} />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            Course:
+                                                <input name='tempCourse' type="text" maxLength={45} value={this.state.tempCourse} onChange={this.handleChange} />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            Project Number:
+                                                <input name='tempTeam' type="text" maxLength={45} value={this.state.tempTeam} onChange={this.handleChange} />
+                                                        </label>
+
+                                                        <input id='submit-button' type="submit" value="Submit" />
+                                                        {
+                                                            !this.state.deleteClick ? (
+                                                                <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
+                                                            ) : (
+                                                                    <button onClick={this.handleDeleteConfirm} style={{ 'color': 'white', 'background': 'red' }}>CONFIRM</button>
+                                                                )
+                                                        }
+                                                    </form>
+                                                    {
+                                                        this.state.invalidSub ? (
+                                                            <div id='invalid-submission-error' style={{ 'color': 'red' }}>
+                                                                Invalid submission
+                                                            </div>
+                                                        ) : null
+                                                    }
+                                                    <button className='dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
+                                                </div>
+                                            )
+                                    }
+
+                                </div>
+                            ) : (null)
+                        }
+                    </div>
+                )
         );
     }
 }
@@ -1163,7 +1163,7 @@ class BuildingDropdown extends Component {
         this.handleDeleteClick = this.handleDeleteClick.bind(this);
         this.handleDeleteConfirm = this.handleDeleteConfirm.bind(this);
         this.handleSemesterStart = this.handleSemesterStart.bind(this);
-        this.handleSemesterEnd  = this.handleSemesterEnd.bind(this);
+        this.handleSemesterEnd = this.handleSemesterEnd.bind(this);
 
         this.state = {
             buildingID: this.props.data === null ? null : this.props.data.buildingID,
@@ -1184,32 +1184,32 @@ class BuildingDropdown extends Component {
         }
     }
 
-    showDDContent(event){
+    showDDContent(event) {
         event.preventDefault();
 
-        this.setState({showDDContent: true}, () => {
+        this.setState({ showDDContent: true }, () => {
             if (!this.state.ddEditClick)
                 document.addEventListener('click', this.closeDDContent);
         });
     }
 
-    closeDDContent(event){
-        if(this.dropdownMenu === null){
+    closeDDContent(event) {
+        if (this.dropdownMenu === null) {
             {
-                this.setState({showDDContent: false}, () => {
+                this.setState({ showDDContent: false }, () => {
                     document.removeEventListener('click', this.closeDDContent);
                 });
             }
         }
-        else if(!this.dropdownMenu.contains(event.target)){
-            this.setState({showDDContent: false}, () => {
+        else if (!this.dropdownMenu.contains(event.target)) {
+            this.setState({ showDDContent: false }, () => {
                 document.removeEventListener('click', this.closeDDContent);
             });
         }
     }
 
     ddEditClick() {
-        this.setState({showDDContent: true, ddEditClick: true}, () => {
+        this.setState({ showDDContent: true, ddEditClick: true }, () => {
             document.removeEventListener('click', this.closeDDContent);
         });
     }
@@ -1233,22 +1233,22 @@ class BuildingDropdown extends Component {
 
 
     handleChange(event) {   //roomID, buildingID, room_name
-        return this.setState({[event.target.name]: event.target.value});
+        return this.setState({ [event.target.name]: event.target.value });
     }
 
-    handleSemesterStart(date){
-        this.setState({tempSemesterStart: date})
+    handleSemesterStart(date) {
+        this.setState({ tempSemesterStart: date })
     }
-    handleSemesterEnd(date){
-        this.setState({tempSemesterEnd: date})
+    handleSemesterEnd(date) {
+        this.setState({ tempSemesterEnd: date })
     }
 
     handleDeleteClick(event) {
         event.preventDefault();
-        this.setState({deleteClick: true});
+        this.setState({ deleteClick: true });
     }
 
-    handleDeleteConfirm(event){
+    handleDeleteConfirm(event) {
         event.preventDefault();
 
         fetch('/deleteBuilding', {
@@ -1264,7 +1264,7 @@ class BuildingDropdown extends Component {
         })
             .then(response => response.text())
             .then(result => {
-                if(result === "Error")
+                if (result === "Error")
                     alert("Invalid Submission");
                 else
                     window.location.reload();
@@ -1293,7 +1293,7 @@ class BuildingDropdown extends Component {
             }),
         }).then(response => response.text())
             .then(result => {
-                if(result === "Error")
+                if (result === "Error")
                     alert("Invalid Submission");
                 else
                     window.location.reload();
@@ -1303,161 +1303,161 @@ class BuildingDropdown extends Component {
     render() {
         let start = moment(this.state.semesterStart).format('MMMM DD, YYYY');
         let end = moment(this.state.semesterEnd).format('MMMM DD, YYYY');
-        return(
+        return (
             this.props.data === null ? (
                 // The shown portion of the individual events
                 <div className='dd-list-container'>
-                    <div className = 'dd-list-header'>
+                    <div className='dd-list-header'>
                         Add Building
                     </div>
                     {
-                        <div className = 'dd-list-content'>
-                            <div className = 'dd-form-content'>
-                                <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                    <label className = 'dd-edit-item'>
+                        <div className='dd-list-content'>
+                            <div className='dd-form-content'>
+                                <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                    <label className='dd-edit-item'>
                                         Building Name:
-                                        <input name = 'tempBuildingName' type="text" maxLength={45} value={this.state.tempBuildingName} onChange={this.handleChange} />
+                                        <input name='tempBuildingName' type="text" maxLength={45} value={this.state.tempBuildingName} onChange={this.handleChange} />
                                     </label>
-                                    <label className = 'dd-edit-item'>
+                                    <label className='dd-edit-item'>
                                         Semester Start:
                                         <DatePicker
-                                            name = 'semester-start'
+                                            name='semester-start'
                                             selected={this.state.tempSemesterStart}
                                             onChange={this.handleSemesterStart}
                                             dateFormat='MMMM d, yyyy'
                                             timeCaption="Start"
                                         />
                                     </label>
-                                    <label className = 'dd-edit-item'>
+                                    <label className='dd-edit-item'>
                                         Semester End:
                                         <DatePicker
-                                            name = 'semester-end'
+                                            name='semester-end'
                                             selected={this.state.tempSemesterEnd}
                                             onChange={this.handleSemesterEnd}
                                             dateFormat='MMMM d, yyyy'
                                             timeCaption="End"
                                         />
                                     </label>
-                                    <label className = 'dd-edit-item'>
+                                    <label className='dd-edit-item'>
                                         Daily Limit:
-                                        <input name = 'tempDailyLimit' type="number" min={0} max={24} value={this.state.tempDailyLimit} onChange={this.handleChange} />
+                                        <input name='tempDailyLimit' type="number" min={0} max={24} value={this.state.tempDailyLimit} onChange={this.handleChange} />
                                     </label>
-                                    <label className = 'dd-edit-item'>
+                                    <label className='dd-edit-item'>
                                         Weekly Limit:
-                                        <input name = 'tempWeeklyLimit' type="number" min={0} max={168} value={this.state.tempWeeklyLimit} onChange={this.handleChange} />
+                                        <input name='tempWeeklyLimit' type="number" min={0} max={168} value={this.state.tempWeeklyLimit} onChange={this.handleChange} />
                                     </label>
 
                                     <input id='submit-button' type="submit" value="Submit" />
                                 </form>
                                 {
                                     this.state.invalidSub ? (
-                                        <div id = 'invalid-submission-error' style={{'color':'red'}}>
+                                        <div id='invalid-submission-error' style={{ 'color': 'red' }}>
                                             Invalid submission
                                         </div>
                                     ) : null
                                 }
-                                <br/>
-                                </div>
+                                <br />
+                            </div>
                         </div>
                     }
                 </div>
             ) : (
-                // The shown portion of the individual events
-                <div className='dd-list-container'>
-                    <div className = 'dd-list-header' onClick={this.showDDContent}>
-                        <div className = 'event-item'>
-                            {this.state.buildingID}
-                        </div>
-                        <div className = 'event-item'>
-                            {this.state.buildingName}
-                        </div>
-                    </div>
-                    {
-                        this.state.showDDContent ? (
-                            <div className = 'dd-list-content' ref={(element) => {this.dropdownMenu = element;}}>
-                                <div className = 'dd-list-items'>
-                                    Semester Start: {start}
-                                </div>
-                                <div className = 'dd-list-items'>
-                                    Semester End: {end}
-                                </div>
-                                <div className = 'dd-list-items'>
-                                    Daily Limit: {this.state.dailyLimit}
-                                </div>
-                                <div className = 'dd-list-items'>
-                                    Weekly Limit: {this.state.weeklyLimit}
-                                </div>
-
-                                <div className = 'dd-list-items'>
-                                    {this.state.inactive ? 'Inactive' : 'Active'}
-                                </div>
-                                {
-                                    !this.state.ddEditClick ? (
-                                        <button className = 'dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
-                                    ) : (
-                                        // Edit form for events shown on 'edit' click
-                                        <div className = 'dd-form-content'>
-                                            <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                                <label className = 'dd-edit-item'>
-                                                    Building Name:
-                                                    <input name = 'tempBuildingName' type="text" maxLength={45} value={this.state.tempBuildingName} onChange={this.handleChange} />
-                                                </label>
-                                                <label className = 'dd-edit-item'>
-                                                    Semester Start:
-                                                    <DatePicker
-                                                        name = 'semester-start'
-                                                        selected={this.state.tempSemesterStart}
-                                                        onChange={this.handleSemesterStart}
-                                                        dateFormat='MMMM d, yyyy'
-                                                        timeCaption="Start"
-                                                    />
-                                                </label>
-                                                <label className = 'dd-edit-item'>
-                                                    Semester End:
-                                                    <DatePicker
-                                                        name = 'semester-end'
-                                                        selected={this.state.tempSemesterEnd}
-                                                        onChange={this.handleSemesterEnd}
-                                                        dateFormat='MMMM d, yyyy'
-                                                        timeCaption="End"
-                                                    />
-                                                </label>
-                                                <label className = 'dd-edit-item'>
-                                                    Daily Limit:
-                                                    <input name = 'tempDailyLimit' type="number" min={0} max={24} value={this.state.tempDailyLimit} onChange={this.handleChange} />
-                                                </label>
-                                                <label className = 'dd-edit-item'>
-                                                    Weekly Limit:
-                                                    <input name = 'tempWeeklyLimit' type="number" min={0} max={168} value={this.state.tempWeeklyLimit} onChange={this.handleChange} />
-                                                </label>
-
-                                                <input id='submit-button' type="submit" value="Submit" />
-                                                {
-                                                    !this.state.deleteClick ? (
-                                                        <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
-                                                    ) : (
-                                                        <button onClick={this.handleDeleteConfirm} style={{'color':'white', 'background':'red'}}>CONFIRM</button>
-                                                    )
-                                                }
-                                            </form>
-                                            {
-                                                this.state.invalidSub ? (
-                                                    <div id = 'invalid-submission-error' style={{'color':'red'}}>
-                                                        Invalid submission
-                                                    </div>
-                                                ) : null
-                                            }
-                                            <button className = 'dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
-                                        </div>
-                                    )
-                                }
-
+                    // The shown portion of the individual events
+                    <div className='dd-list-container'>
+                        <div className='dd-list-header' onClick={this.showDDContent}>
+                            <div className='event-item'>
+                                {this.state.buildingID}
                             </div>
-                        ) : ( null )
-                    }
+                            <div className='event-item'>
+                                {this.state.buildingName}
+                            </div>
+                        </div>
+                        {
+                            this.state.showDDContent ? (
+                                <div className='dd-list-content' ref={(element) => { this.dropdownMenu = element; }}>
+                                    <div className='dd-list-items'>
+                                        Semester Start: {start}
+                                    </div>
+                                    <div className='dd-list-items'>
+                                        Semester End: {end}
+                                    </div>
+                                    <div className='dd-list-items'>
+                                        Daily Limit: {this.state.dailyLimit}
+                                    </div>
+                                    <div className='dd-list-items'>
+                                        Weekly Limit: {this.state.weeklyLimit}
+                                    </div>
 
-                </div>
-            )
+                                    <div className='dd-list-items'>
+                                        {this.state.inactive ? 'Inactive' : 'Active'}
+                                    </div>
+                                    {
+                                        !this.state.ddEditClick ? (
+                                            <button className='dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
+                                        ) : (
+                                                // Edit form for events shown on 'edit' click
+                                                <div className='dd-form-content'>
+                                                    <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                                        <label className='dd-edit-item'>
+                                                            Building Name:
+                                                    <input name='tempBuildingName' type="text" maxLength={45} value={this.state.tempBuildingName} onChange={this.handleChange} />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            Semester Start:
+                                                    <DatePicker
+                                                                name='semester-start'
+                                                                selected={this.state.tempSemesterStart}
+                                                                onChange={this.handleSemesterStart}
+                                                                dateFormat='MMMM d, yyyy'
+                                                                timeCaption="Start"
+                                                            />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            Semester End:
+                                                    <DatePicker
+                                                                name='semester-end'
+                                                                selected={this.state.tempSemesterEnd}
+                                                                onChange={this.handleSemesterEnd}
+                                                                dateFormat='MMMM d, yyyy'
+                                                                timeCaption="End"
+                                                            />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            Daily Limit:
+                                                    <input name='tempDailyLimit' type="number" min={0} max={24} value={this.state.tempDailyLimit} onChange={this.handleChange} />
+                                                        </label>
+                                                        <label className='dd-edit-item'>
+                                                            Weekly Limit:
+                                                    <input name='tempWeeklyLimit' type="number" min={0} max={168} value={this.state.tempWeeklyLimit} onChange={this.handleChange} />
+                                                        </label>
+
+                                                        <input id='submit-button' type="submit" value="Submit" />
+                                                        {
+                                                            !this.state.deleteClick ? (
+                                                                <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
+                                                            ) : (
+                                                                    <button onClick={this.handleDeleteConfirm} style={{ 'color': 'white', 'background': 'red' }}>CONFIRM</button>
+                                                                )
+                                                        }
+                                                    </form>
+                                                    {
+                                                        this.state.invalidSub ? (
+                                                            <div id='invalid-submission-error' style={{ 'color': 'red' }}>
+                                                                Invalid submission
+                                                            </div>
+                                                        ) : null
+                                                    }
+                                                    <button className='dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
+                                                </div>
+                                            )
+                                    }
+
+                                </div>
+                            ) : (null)
+                        }
+
+                    </div>
+                )
         );
     }
 }
@@ -1487,32 +1487,32 @@ class UserClassDropdown extends Component {
         }
     }
 
-    showDDContent(event){
+    showDDContent(event) {
         event.preventDefault();
 
-        this.setState({showDDContent: true}, () => {
+        this.setState({ showDDContent: true }, () => {
             if (!this.state.ddEditClick)
                 document.addEventListener('click', this.closeDDContent);
         });
     }
 
-    closeDDContent(event){
-        if(this.dropdownMenu === null){
+    closeDDContent(event) {
+        if (this.dropdownMenu === null) {
             {
-                this.setState({showDDContent: false}, () => {
+                this.setState({ showDDContent: false }, () => {
                     document.removeEventListener('click', this.closeDDContent);
                 });
             }
         }
-        else if(!this.dropdownMenu.contains(event.target)){
-            this.setState({showDDContent: false}, () => {
+        else if (!this.dropdownMenu.contains(event.target)) {
+            this.setState({ showDDContent: false }, () => {
                 document.removeEventListener('click', this.closeDDContent);
             });
         }
     }
 
     ddEditClick() {
-        this.setState({showDDContent: true, ddEditClick: true}, () => {
+        this.setState({ showDDContent: true, ddEditClick: true }, () => {
             document.removeEventListener('click', this.closeDDContent);
         });
     }
@@ -1532,15 +1532,15 @@ class UserClassDropdown extends Component {
 
 
     handleChange(event) {   //roomID, buildingID, room_name
-        return this.setState({[event.target.name]: event.target.value});
+        return this.setState({ [event.target.name]: event.target.value });
     }
 
     handleDeleteClick(event) {
         event.preventDefault();
-        this.setState({deleteClick: true});
+        this.setState({ deleteClick: true });
     }
 
-    handleDeleteConfirm(event){
+    handleDeleteConfirm(event) {
         event.preventDefault();
 
         fetch('/deleteUserClass', {
@@ -1557,7 +1557,7 @@ class UserClassDropdown extends Component {
         })
             .then(response => response.text())
             .then(result => {
-                if(result === "Error")
+                if (result === "Error")
                     alert("Invalid Submission");
                 else
                     window.location.reload();
@@ -1584,41 +1584,41 @@ class UserClassDropdown extends Component {
         }).then(response => response.text())
             .then(result => {
                 console.log(result);
-                if(result === "Error")
+                if (result === "Error")
                     alert("Invalid Submission");
-               // else
-                    //window.location.reload();
+                // else
+                //window.location.reload();
             });
     }
 
     render() {
-        return(
+        return (
             this.props.data === null ? (
                 // The shown portion of the individual events
                 <div className='dd-list-container'>
-                    <div className = 'dd-list-header'>
+                    <div className='dd-list-header'>
                         Add User Classification
                     </div>
                     {
-                        <div className = 'dd-list-content' >
+                        <div className='dd-list-content' >
                             {
                                 // Edit form for events shown on 'edit' click
-                                <div className = 'dd-form-content'>
-                                    <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                        <label className = 'dd-edit-item'>
+                                <div className='dd-form-content'>
+                                    <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                        <label className='dd-edit-item'>
                                             User ID:
-                                            <input name = 'userID' type="number" min={1} value={this.state.userID} onChange={this.handleChange} />
+                                            <input name='userID' type="number" min={1} value={this.state.userID} onChange={this.handleChange} />
                                         </label>
-                                        <label className = 'dd-edit-item'>
+                                        <label className='dd-edit-item'>
                                             Class ID:
-                                            <input name = 'tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
+                                            <input name='tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
                                         </label>
 
                                         <input id='submit-button' type="submit" value="Submit" />
                                     </form>
                                     {
                                         this.state.invalidSub ? (
-                                            <div id = 'invalid-submission-error' style={{'color':'red'}}>
+                                            <div id='invalid-submission-error' style={{ 'color': 'red' }}>
                                                 Invalid submission
                                             </div>
                                         ) : null
@@ -1630,60 +1630,60 @@ class UserClassDropdown extends Component {
                     }
                 </div>
             ) : (
-                // The shown portion of the individual events
-                <div className='dd-list-container'>
-                    <div className = 'dd-list-header' onClick={this.showDDContent}>
-                        <div className = 'event-item'>
-                            {this.state.userID}
-                        </div>
-                        <div className = 'event-item'>
-                            {this.state.userClass}
-                        </div>
-                    </div>
-                    {
-                        this.state.showDDContent ? (
-                            <div className = 'dd-list-content' ref={(element) => {this.dropdownMenu = element;}}>
-                                <div className = 'dd-list-items'>
-                                    {this.state.inactive ? 'Inactive' : 'Active'}
-                                </div>
-                                {
-                                    !this.state.ddEditClick ? (
-                                        <button className = 'dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
-                                    ) : (
-                                        // Edit form for events shown on 'edit' click
-                                        <div className = 'dd-form-content'>
-                                            <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                                <label className = 'dd-edit-item'>
-                                                    User Class ID:
-                                                    <input name = 'tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
-                                                </label>
-
-                                                <input id='submit-button' type="submit" value="Submit" />
-                                                {
-                                                    !this.state.deleteClick ? (
-                                                        <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
-                                                    ) : (
-                                                        <button onClick={this.handleDeleteConfirm} style={{'color':'white', 'background':'red'}}>CONFIRM</button>
-                                                    )
-                                                }
-                                            </form>
-                                            {
-                                                this.state.invalidSub ? (
-                                                    <div id = 'invalid-submission-error' style={{'color':'red'}}>
-                                                        Invalid submission
-                                                    </div>
-                                                ) : null
-                                            }
-                                            <button className = 'dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
-                                        </div>
-                                    )
-                                }
-
+                    // The shown portion of the individual events
+                    <div className='dd-list-container'>
+                        <div className='dd-list-header' onClick={this.showDDContent}>
+                            <div className='event-item'>
+                                {this.state.userID}
                             </div>
-                        ) : ( null )
-                    }
-                </div>
-            )
+                            <div className='event-item'>
+                                {this.state.userClass}
+                            </div>
+                        </div>
+                        {
+                            this.state.showDDContent ? (
+                                <div className='dd-list-content' ref={(element) => { this.dropdownMenu = element; }}>
+                                    <div className='dd-list-items'>
+                                        {this.state.inactive ? 'Inactive' : 'Active'}
+                                    </div>
+                                    {
+                                        !this.state.ddEditClick ? (
+                                            <button className='dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
+                                        ) : (
+                                                // Edit form for events shown on 'edit' click
+                                                <div className='dd-form-content'>
+                                                    <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                                        <label className='dd-edit-item'>
+                                                            User Class ID:
+                                                    <input name='tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
+                                                        </label>
+
+                                                        <input id='submit-button' type="submit" value="Submit" />
+                                                        {
+                                                            !this.state.deleteClick ? (
+                                                                <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
+                                                            ) : (
+                                                                    <button onClick={this.handleDeleteConfirm} style={{ 'color': 'white', 'background': 'red' }}>CONFIRM</button>
+                                                                )
+                                                        }
+                                                    </form>
+                                                    {
+                                                        this.state.invalidSub ? (
+                                                            <div id='invalid-submission-error' style={{ 'color': 'red' }}>
+                                                                Invalid submission
+                                                            </div>
+                                                        ) : null
+                                                    }
+                                                    <button className='dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
+                                                </div>
+                                            )
+                                    }
+
+                                </div>
+                            ) : (null)
+                        }
+                    </div>
+                )
         );
     }
 }
@@ -1712,32 +1712,32 @@ class ClassDropdown extends Component {
         }
     }
 
-    showDDContent(event){
+    showDDContent(event) {
         event.preventDefault();
 
-        this.setState({showDDContent: true}, () => {
+        this.setState({ showDDContent: true }, () => {
             if (!this.state.ddEditClick)
                 document.addEventListener('click', this.closeDDContent);
         });
     }
 
-    closeDDContent(event){
-        if(this.dropdownMenu === null){
+    closeDDContent(event) {
+        if (this.dropdownMenu === null) {
             {
-                this.setState({showDDContent: false}, () => {
+                this.setState({ showDDContent: false }, () => {
                     document.removeEventListener('click', this.closeDDContent);
                 });
             }
         }
-        else if(!this.dropdownMenu.contains(event.target)){
-            this.setState({showDDContent: false}, () => {
+        else if (!this.dropdownMenu.contains(event.target)) {
+            this.setState({ showDDContent: false }, () => {
                 document.removeEventListener('click', this.closeDDContent);
             });
         }
     }
 
     ddEditClick() {
-        this.setState({showDDContent: true, ddEditClick: true}, () => {
+        this.setState({ showDDContent: true, ddEditClick: true }, () => {
             document.removeEventListener('click', this.closeDDContent);
         });
     }
@@ -1757,15 +1757,15 @@ class ClassDropdown extends Component {
 
 
     handleChange(event) {   //roomID, buildingID, room_name
-        return this.setState({[event.target.name]: event.target.value});
+        return this.setState({ [event.target.name]: event.target.value });
     }
 
     handleDeleteClick(event) {
         event.preventDefault();
-        this.setState({deleteClick: true});
+        this.setState({ deleteClick: true });
     }
 
-    handleDeleteConfirm(event){
+    handleDeleteConfirm(event) {
         event.preventDefault();
 
         fetch('/deleteClass', {
@@ -1781,7 +1781,7 @@ class ClassDropdown extends Component {
         })
             .then(response => response.text())
             .then(result => {
-                if(result === "Error")
+                if (result === "Error")
                     alert("Invalid Submission");
                 else
                     window.location.reload();
@@ -1806,7 +1806,7 @@ class ClassDropdown extends Component {
             }),
         }).then(response => response.text())
             .then(result => {
-                if(result === "Error")
+                if (result === "Error")
                     alert("Invalid Submission");
                 else
                     window.location.reload();
@@ -1814,29 +1814,29 @@ class ClassDropdown extends Component {
     }
 
     render() {
-        return(
+        return (
             this.props.data === null ? (
                 // The shown portion of the individual events
                 <div className='dd-list-container'>
-                    <div className = 'dd-list-header'>
+                    <div className='dd-list-header'>
                         Classifications
                     </div>
                     {
-                        <div className = 'dd-list-content' ref={(element) => {this.dropdownMenu = element;}}>
+                        <div className='dd-list-content' ref={(element) => { this.dropdownMenu = element; }}>
                             {
                                 // Edit form for events shown on 'edit' click
-                                <div className = 'dd-form-content'>
-                                    <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                        <label className = 'dd-edit-item'>
+                                <div className='dd-form-content'>
+                                    <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                        <label className='dd-edit-item'>
                                             Class Detail:
-                                            <input name = 'tempClassDetail' type="text" max={45} value={this.state.tempClassDetail} onChange={this.handleChange} />
+                                            <input name='tempClassDetail' type="text" max={45} value={this.state.tempClassDetail} onChange={this.handleChange} />
                                         </label>
 
                                         <input id='submit-button' type="submit" value="Submit" />
                                     </form>
                                     {
                                         this.state.invalidSub ? (
-                                            <div id = 'invalid-submission-error' style={{'color':'red'}}>
+                                            <div id='invalid-submission-error' style={{ 'color': 'red' }}>
                                                 Invalid submission
                                             </div>
                                         ) : null
@@ -1847,60 +1847,60 @@ class ClassDropdown extends Component {
                     }
                 </div>
             ) : (
-                // The shown portion of the individual events
-                <div className='dd-list-container'>
-                    <div className = 'dd-list-header' onClick={this.showDDContent}>
-                        <div className = 'event-item'>
-                            {this.state.classID}
-                        </div>
-                    </div>
-                    {
-                        this.state.showDDContent ? (
-                            <div className = 'dd-list-content' ref={(element) => {this.dropdownMenu = element;}}>
-                                <div className = 'dd-list-items'>
-                                    Class Details: {this.state.classDetail}
-                                </div>
-                                <div className = 'dd-list-items'>
-                                    {this.state.inactive ? 'Inactive' : 'Active'}
-                                </div>
-                                {
-                                    !this.state.ddEditClick ? (
-                                        <button className = 'dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
-                                    ) : (
-                                        // Edit form for events shown on 'edit' click
-                                        <div className = 'dd-form-content'>
-                                            <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                                <label className = 'dd-edit-item'>
-                                                    Class Detail:
-                                                    <input name = 'tempClassDetail' type="text" max={45} value={this.state.tempClassDetail} onChange={this.handleChange} />
-                                                </label>
-
-                                                <input id='submit-button' type="submit" value="Submit" />
-                                                {
-                                                    !this.state.deleteClick ? (
-                                                        <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
-                                                    ) : (
-                                                        <button onClick={this.handleDeleteConfirm} style={{'color':'white', 'background':'red'}}>CONFIRM</button>
-                                                    )
-                                                }
-                                            </form>
-                                            {
-                                                this.state.invalidSub ? (
-                                                    <div id = 'invalid-submission-error' style={{'color':'red'}}>
-                                                        Invalid submission
-                                                    </div>
-                                                ) : null
-                                            }
-                                            <button className = 'dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
-                                        </div>
-                                    )
-                                }
-
+                    // The shown portion of the individual events
+                    <div className='dd-list-container'>
+                        <div className='dd-list-header' onClick={this.showDDContent}>
+                            <div className='event-item'>
+                                {this.state.classID}
                             </div>
-                        ) : ( null )
-                    }
-                </div>
-            )
+                        </div>
+                        {
+                            this.state.showDDContent ? (
+                                <div className='dd-list-content' ref={(element) => { this.dropdownMenu = element; }}>
+                                    <div className='dd-list-items'>
+                                        Class Details: {this.state.classDetail}
+                                    </div>
+                                    <div className='dd-list-items'>
+                                        {this.state.inactive ? 'Inactive' : 'Active'}
+                                    </div>
+                                    {
+                                        !this.state.ddEditClick ? (
+                                            <button className='dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
+                                        ) : (
+                                                // Edit form for events shown on 'edit' click
+                                                <div className='dd-form-content'>
+                                                    <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                                        <label className='dd-edit-item'>
+                                                            Class Detail:
+                                                    <input name='tempClassDetail' type="text" max={45} value={this.state.tempClassDetail} onChange={this.handleChange} />
+                                                        </label>
+
+                                                        <input id='submit-button' type="submit" value="Submit" />
+                                                        {
+                                                            !this.state.deleteClick ? (
+                                                                <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
+                                                            ) : (
+                                                                    <button onClick={this.handleDeleteConfirm} style={{ 'color': 'white', 'background': 'red' }}>CONFIRM</button>
+                                                                )
+                                                        }
+                                                    </form>
+                                                    {
+                                                        this.state.invalidSub ? (
+                                                            <div id='invalid-submission-error' style={{ 'color': 'red' }}>
+                                                                Invalid submission
+                                                            </div>
+                                                        ) : null
+                                                    }
+                                                    <button className='dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
+                                                </div>
+                                            )
+                                    }
+
+                                </div>
+                            ) : (null)
+                        }
+                    </div>
+                )
         );
     }
 }
@@ -1930,32 +1930,32 @@ class RoomClassDropdown extends Component {
         }
     }
 
-    showDDContent(event){
+    showDDContent(event) {
         event.preventDefault();
 
-        this.setState({showDDContent: true}, () => {
+        this.setState({ showDDContent: true }, () => {
             if (!this.state.ddEditClick)
                 document.addEventListener('click', this.closeDDContent);
         });
     }
 
-    closeDDContent(event){
-        if(this.dropdownMenu === null){
+    closeDDContent(event) {
+        if (this.dropdownMenu === null) {
             {
-                this.setState({showDDContent: false}, () => {
+                this.setState({ showDDContent: false }, () => {
                     document.removeEventListener('click', this.closeDDContent);
                 });
             }
         }
-        else if(!this.dropdownMenu.contains(event.target)){
-            this.setState({showDDContent: false}, () => {
+        else if (!this.dropdownMenu.contains(event.target)) {
+            this.setState({ showDDContent: false }, () => {
                 document.removeEventListener('click', this.closeDDContent);
             });
         }
     }
 
     ddEditClick() {
-        this.setState({showDDContent: true, ddEditClick: true}, () => {
+        this.setState({ showDDContent: true, ddEditClick: true }, () => {
             document.removeEventListener('click', this.closeDDContent);
         });
     }
@@ -1975,15 +1975,15 @@ class RoomClassDropdown extends Component {
 
 
     handleChange(event) {   //roomID, buildingID, room_name
-        return this.setState({[event.target.name]: event.target.value});
+        return this.setState({ [event.target.name]: event.target.value });
     }
 
     handleDeleteClick(event) {
         event.preventDefault();
-        this.setState({deleteClick: true});
+        this.setState({ deleteClick: true });
     }
 
-    handleDeleteConfirm(event){
+    handleDeleteConfirm(event) {
         event.preventDefault();
 
         fetch('/deleteRoomClass', {
@@ -2000,7 +2000,7 @@ class RoomClassDropdown extends Component {
         })
             .then(response => response.text())
             .then(result => {
-                if(result === "Error")
+                if (result === "Error")
                     alert("Invalid Submission");
                 else
                     window.location.reload();
@@ -2027,7 +2027,7 @@ class RoomClassDropdown extends Component {
             }),
         }).then(response => response.text())
             .then(result => {
-                if(result === "Error")
+                if (result === "Error")
                     alert("Invalid Submission");
                 else
                     window.location.reload();
@@ -2035,37 +2035,37 @@ class RoomClassDropdown extends Component {
     }
 
     render() {
-        return(
+        return (
             this.props.data === null ? (
                 // The shown portion of the individual events
                 <div className='dd-list-container'>
-                    <div className = 'dd-list-header'>
+                    <div className='dd-list-header'>
                         Add Room Classification
                     </div>
                     {
-                        <div className = 'dd-list-content'>
+                        <div className='dd-list-content'>
                             {
                                 // Edit form for events shown on 'edit' click
-                                <div className = 'dd-form-content'>
-                                    <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                        <label className = 'dd-edit-item'>
+                                <div className='dd-form-content'>
+                                    <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                        <label className='dd-edit-item'>
                                             Room ID:
-                                            <input name = 'roomID' type="number" min={1} value={this.state.roomID} onChange={this.handleChange} />
+                                            <input name='roomID' type="number" min={1} value={this.state.roomID} onChange={this.handleChange} />
                                         </label>
-                                        <label className = 'dd-edit-item'>
+                                        <label className='dd-edit-item'>
                                             Room Class ID:
-                                            <input name = 'tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
+                                            <input name='tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
                                         </label>
-                                        <label className = 'dd-edit-item'>
+                                        <label className='dd-edit-item'>
                                             Building ID:
-                                            <input name = 'buildingID' type="number" min={1} value={this.state.buildingID} onChange={this.handleChange} />
+                                            <input name='buildingID' type="number" min={1} value={this.state.buildingID} onChange={this.handleChange} />
                                         </label>
 
                                         <input id='submit-button' type="submit" value="Submit" />
                                     </form>
                                     {
                                         this.state.invalidSub ? (
-                                            <div id = 'invalid-submission-error' style={{'color':'red'}}>
+                                            <div id='invalid-submission-error' style={{ 'color': 'red' }}>
                                                 Invalid submission
                                             </div>
                                         ) : null
@@ -2078,58 +2078,58 @@ class RoomClassDropdown extends Component {
             ) : (
                     // The shown portion of the individual events
                     <div className='dd-list-container'>
-                        <div className = 'dd-list-header' onClick={this.showDDContent}>
-                            <div className = 'event-item'>
+                        <div className='dd-list-header' onClick={this.showDDContent}>
+                            <div className='event-item'>
                                 {this.state.roomID}
                             </div>
-                            <div className = 'event-item'>
+                            <div className='event-item'>
                                 {this.state.roomClass}
                             </div>
                         </div>
                         {
                             this.state.showDDContent ? (
-                                <div className = 'dd-list-content' ref={(element) => {this.dropdownMenu = element;}}>
-                                    <div className = 'dd-list-items'>
+                                <div className='dd-list-content' ref={(element) => { this.dropdownMenu = element; }}>
+                                    <div className='dd-list-items'>
                                         {this.state.inactive ? 'Inactive' : 'Active'}
                                     </div>
                                     {
                                         !this.state.ddEditClick ? (
-                                            <button className = 'dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
+                                            <button className='dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
                                         ) : (
-                                            // Edit form for events shown on 'edit' click
-                                            <div className = 'dd-form-content'>
-                                                <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                                    <label className = 'dd-edit-item'>
-                                                        Class ID:
-                                                        <input name = 'tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
-                                                    </label>
+                                                // Edit form for events shown on 'edit' click
+                                                <div className='dd-form-content'>
+                                                    <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                                        <label className='dd-edit-item'>
+                                                            Class ID:
+                                                        <input name='tempClassID' type="number" min={1} value={this.state.tempClassID} onChange={this.handleChange} />
+                                                        </label>
 
-                                                    <input id='submit-button' type="submit" value="Submit" />
+                                                        <input id='submit-button' type="submit" value="Submit" />
+                                                        {
+                                                            !this.state.deleteClick ? (
+                                                                <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
+                                                            ) : (
+                                                                    <button onClick={this.handleDeleteConfirm} style={{ 'color': 'white', 'background': 'red' }}>CONFIRM</button>
+                                                                )
+                                                        }
+                                                    </form>
                                                     {
-                                                        !this.state.deleteClick ? (
-                                                            <button onClick={this.handleDeleteClick}>{!this.state.inactive ? 'Remove' : 'Reactivate'}</button>
-                                                        ) : (
-                                                            <button onClick={this.handleDeleteConfirm} style={{'color':'white', 'background':'red'}}>CONFIRM</button>
-                                                        )
+                                                        this.state.invalidSub ? (
+                                                            <div id='invalid-submission-error' style={{ 'color': 'red' }}>
+                                                                Invalid submission
+                                                            </div>
+                                                        ) : null
                                                     }
-                                                </form>
-                                                {
-                                                    this.state.invalidSub ? (
-                                                        <div id = 'invalid-submission-error' style={{'color':'red'}}>
-                                                            Invalid submission
-                                                        </div>
-                                                    ) : null
-                                                }
-                                                <button className = 'dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
-                                            </div>
-                                        )
+                                                    <button className='dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
+                                                </div>
+                                            )
                                     }
 
                                 </div>
-                            ) : ( null )
+                            ) : (null)
                         }
                     </div>
-            )
+                )
         );
     }
 }

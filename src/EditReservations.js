@@ -1,24 +1,24 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './EditReservations.css'
 import moment from 'moment'
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import Dropdown from 'react-dropdown';
-import {Sticky, StickyContainer} from 'react-sticky';
+import { Sticky, StickyContainer } from 'react-sticky';
 
 class EditReservations extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            userID : this.props.location.state.userID,
-            userClass : this.props.location.state.classID,
-            buildingID : this.props.location.state.buildingID,
+            userID: this.props.location.state.userID,
+            userClass: this.props.location.state.classID,
+            buildingID: this.props.location.state.buildingID,
             orderBy: 1,
-            events : [],
+            events: [],
             allReservations: false,
-            showPastRes : false,
+            showPastRes: false,
             filter: 'Date',
         };
 
@@ -38,7 +38,7 @@ class EditReservations extends Component {
     // Creation of each individual list item.
     createItem(item) {
         console.log(this.state.userClass, ' ', this.state.userID);
-        return(
+        return (
             <EventDropdown
                 event={item}
                 userClass={this.state.userClass}
@@ -52,14 +52,14 @@ class EditReservations extends Component {
 
     // Function to create all list items based on returned criteria
     createItems(items) {
-        return(items.map(this.createItem));
+        return (items.map(this.createItem));
     }
 
     // Function to return all reservations in the 'schedule' table based
     // on userID, buildingID, and list order
     getReservations(orderBy) {
         // Set saved events to 'null' to re-render data
-        this.setState({events : []});
+        this.setState({ events: [] });
 
         // Determine how to filter received data
         let filter = 0;
@@ -87,7 +87,7 @@ class EditReservations extends Component {
         })
             .then(response => {
                 try {
-                     return response.json();
+                    return response.json();
                 }
                 catch {
                     alert('Invalid Server Response')
@@ -118,7 +118,7 @@ class EditReservations extends Component {
                     });
 
                     // Update new events and re-render
-                    this.setState({events: events});
+                    this.setState({ events: events });
                 }
                 catch {
                     alert('Invalid Server Response')
@@ -131,7 +131,7 @@ class EditReservations extends Component {
     // based on userID and buildingID
     handleAllRes(orderBy) {
         // Set 'events' state to 'null' to re-render and remove old events
-        this.setState({events : [], allReservations: true});
+        this.setState({ events: [], allReservations: true });
 
         // Determine how to order results
         console.log(orderBy);
@@ -192,7 +192,7 @@ class EditReservations extends Component {
                     });
 
                     // Update state with new events and re-render
-                    this.setState({events: events});
+                    this.setState({ events: events });
                 }
                 catch {
                     alert('Invalid Server Response');
@@ -203,24 +203,24 @@ class EditReservations extends Component {
     // Function for 'My Reservations' button, which shows only reservations
     // owned by the current user
     handleMyRes() {
-        this.setState({allReservations : false});
+        this.setState({ allReservations: false });
 
         this.getReservations();
     }
 
     // Function for 'Show Previous' button which shows events from the past
     handlePastRes() {
-        this.setState({showPastRes : true});
+        this.setState({ showPastRes: true });
     }
 
     // Function for 'Hide Previous' button which hides past events
     handleHidePast() {
-        this.setState({showPastRes : false});
+        this.setState({ showPastRes: false });
     }
 
     // Function to evaluate and save any changed info inside of a text box
     handleChange(event) {
-        return this.setState({[event.target.name]: event.target.value});
+        return this.setState({ [event.target.name]: event.target.value });
     }
 
     // Function to determine which filter the user has applied to the data
@@ -229,27 +229,27 @@ class EditReservations extends Component {
         let orderBy = 0
         switch (option.value) {
             case 'Date':
-                this.setState({filter: 'Date', orderBy: 1});
+                this.setState({ filter: 'Date', orderBy: 1 });
                 orderBy = 1;
                 break;
             case 'Room':
-                this.setState({filter: 'Room', orderBy: 2});
+                this.setState({ filter: 'Room', orderBy: 2 });
                 orderBy = 2;
                 break;
             case 'Name':
-                this.setState({filter: 'Name', orderBy: 3});
+                this.setState({ filter: 'Name', orderBy: 3 });
                 orderBy = 3;
                 break;
             case 'Course':
-                this.setState({filter: 'Course', orderBy: 4});
+                this.setState({ filter: 'Course', orderBy: 4 });
                 orderBy = 4;
                 break;
             case 'Project #':
-                this.setState({filter: 'Project #', orderBy: 5});
+                this.setState({ filter: 'Project #', orderBy: 5 });
                 orderBy = 5;
                 break;
             case 'NetID':
-                this.setState({filter: 'NetID', orderBy: 6});
+                this.setState({ filter: 'NetID', orderBy: 6 });
                 orderBy = 6;
                 break;
         }
@@ -275,7 +275,7 @@ class EditReservations extends Component {
         }
 
         // Empty event state to re-render events
-        this.setState({events : []});
+        this.setState({ events: [] });
 
         // Server call to call 'searchReservations()' stored proc
         // Send: searchTerm, buildingID, orderBy
@@ -326,7 +326,7 @@ class EditReservations extends Component {
                     });
 
                     // Update event state and re-render
-                    this.setState({events: events});
+                    this.setState({ events: events });
                 }
                 catch {
                     alert('Invalid Server Response');
@@ -343,19 +343,19 @@ class EditReservations extends Component {
         // Possible options for 'Sort' filter
         let filterOptions = ['Date', 'Room', 'Name', 'Course', 'Project #', 'NetID'];
 
-        return(
+        return (
             <div>
                 {/* Set background color of page */}
                 <style>
-                    {document.body.style = 'background: #008542;'}
+                    {document.body.style = 'background: white;'}
                 </style>
                 {/* Links for routing to other pages */}
-                <div id = 'routing-table'>
+                <div id='routing-table'>
                     <Link id="link" to={{
                         pathname: '/calendar',
                         state: this.props.location.state
                     }}>Calendar</Link>
-                    <br/>
+                    <br />
                     {
                         /* Only show admin button if user is admin */
                         this.state.userClass === 1 ? (
@@ -365,19 +365,19 @@ class EditReservations extends Component {
                             }}>Admin</Link>
                         ) : (null)
                     }
-                    <br/>
+                    <br />
                     <Link id="link" to={'/login'}>Logout</Link>
                 </div>
                 {/* Strip for title at top of the page */}
-                <div className = 'page-title-strip'>My Reservations</div>
-                <div id = 'reservation-buttons'>
+                <div className='page-title-strip'>My Reservations</div>
+                <div id='reservation-buttons'>
                     {
                         // Show these two buttons if user is Admin
                         this.state.userClass === 1 ? (
-                            <div id = 'admin-buttons'>
+                            <div id='admin-buttons'>
                                 <button onClick={this.handleAllRes}>All Reservations</button>
-                                <button onClick = {this.handleMyRes} > My Reservations</button>
-                                <br/>
+                                <button onClick={this.handleMyRes} > My Reservations</button>
+                                <br />
                             </div>
                         ) : null
                     }
@@ -386,8 +386,8 @@ class EditReservations extends Component {
                         !this.state.showPastRes ? (
                             <button onClick={this.handlePastRes}>Show Previous</button>
                         ) : (
-                            <button onClick={this.handleHidePast}>Hide Previous</button>
-                        )
+                                <button onClick={this.handleHidePast}>Hide Previous</button>
+                            )
                     }
                 </div>
                 <div>
@@ -395,7 +395,7 @@ class EditReservations extends Component {
                         // Show search box and sort menu if user is Admin
                         this.state.userClass === 1 ? (
                             <div>
-                                <form id = 'search-box' onSubmit={this.handleSearch}>
+                                <form id='search-box' onSubmit={this.handleSearch}>
                                     <label>
                                         Search:
                                         <input name='searchTerm' onChange={this.handleChange} type="text" />
@@ -403,7 +403,7 @@ class EditReservations extends Component {
                                     <input type="submit" value="Search" />
                                 </form>
                                 <div id='dropdown-filter'>
-                                    Sort: <Dropdown options={filterOptions} onChange={this.handleFilter} value={this.state.filter} placeholder={"Date"}/>
+                                    Sort: <Dropdown options={filterOptions} onChange={this.handleFilter} value={this.state.filter} placeholder={"Date"} />
                                 </div>
                             </div>
                         ) : (null)
@@ -413,40 +413,40 @@ class EditReservations extends Component {
                 <StickyContainer>
                     <Sticky>
                         {({
-                              style
-                          }) => (
-                            <header style={style}>
-                                {
-                                    // Top table showing event attribute titles (frozen)
-                                    <div className = 'event-list-wrapper'>
-                                        <div id='sticky-header'>
-                                            <div className = 'header-item'>
-                                                <div>Room</div>
-                                            </div>
-                                            <div className = 'header-item'>
-                                                <div>Date</div>
-                                            </div>
-                                            <div className = 'header-item'>
-                                                <div>Time</div>
-                                            </div>
-                                            <div className = 'header-item'>
-                                                <div>Title</div>
-                                            </div>
-                                            <div className = 'header-item'>
-                                                <div>Project#</div>
-                                            </div>
-                                            <div className = 'header-item'>
-                                                <div>Name</div>
+                            style
+                        }) => (
+                                <header style={style}>
+                                    {
+                                        // Top table showing event attribute titles (frozen)
+                                        <div className='event-list-wrapper'>
+                                            <div id='sticky-header'>
+                                                <div className='header-item'>
+                                                    <div>Room</div>
+                                                </div>
+                                                <div className='header-item'>
+                                                    <div>Date</div>
+                                                </div>
+                                                <div className='header-item'>
+                                                    <div>Time</div>
+                                                </div>
+                                                <div className='header-item'>
+                                                    <div>Title</div>
+                                                </div>
+                                                <div className='header-item'>
+                                                    <div>Project#</div>
+                                                </div>
+                                                <div className='header-item'>
+                                                    <div>Name</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                }
-                            </header>
-                        )}
+                                    }
+                                </header>
+                            )}
                     </Sticky>
                     {
                         // Originating function to create all events on page
-                        <div ref = 'events' className = 'event-list-wrapper'>
+                        <div ref='events' className='event-list-wrapper'>
                             {this.createItems(this.state.events)}
                         </div>
                     }
@@ -476,7 +476,7 @@ class EventDropdown extends Component {
 
         let previous = false;
         let background = '#00a1de';
-        if (dateObjectStart < (new Date())) {previous = true; background = 'grey';}
+        if (dateObjectStart < (new Date())) { previous = true; background = 'grey'; }
 
         // Initialize all functions
         this.showDDContent = this.showDDContent.bind(this);
@@ -535,45 +535,45 @@ class EventDropdown extends Component {
     // updated properties
     componentWillReceiveProps(nextProps) {
         this.setState({
-            eventObject : nextProps.event,
-            userClass : nextProps.userClass,
-            userID : nextProps.userID,
-            buildingID : nextProps.buildingID,
-            showPastRes : nextProps.showPastRes,
+            eventObject: nextProps.event,
+            userClass: nextProps.userClass,
+            userID: nextProps.userID,
+            buildingID: nextProps.buildingID,
+            showPastRes: nextProps.showPastRes,
             orderBy: nextProps.orderBy,
         });
     }
 
     // Function to show event dropdown if event is clicked
-    showDDContent(event){
+    showDDContent(event) {
         event.preventDefault();
 
-        this.setState({showDDContent: true}, () => {
+        this.setState({ showDDContent: true }, () => {
             if (!this.state.ddEditClick)
                 document.addEventListener('click', this.closeDDContent);
         });
     }
 
     // Function to close event dropdown if anywhere else is clicked
-    closeDDContent(event){
-        if(this.dropdownMenu === null){
+    closeDDContent(event) {
+        if (this.dropdownMenu === null) {
             {
-                this.setState({showDDContent: false}, () => {
+                this.setState({ showDDContent: false }, () => {
                     document.removeEventListener('click', this.closeDDContent);
                 });
             }
         }
         else
-        if(!this.dropdownMenu.contains(event.target)){
-            this.setState({showDDContent: false}, () => {
-                document.removeEventListener('click', this.closeDDContent);
-            });
-        }
+            if (!this.dropdownMenu.contains(event.target)) {
+                this.setState({ showDDContent: false }, () => {
+                    document.removeEventListener('click', this.closeDDContent);
+                });
+            }
     }
 
     // Handler function for 'Edit' button
     ddEditClick(event) {
-        this.setState({showDDContent: true, ddEditClick: true}, () => {
+        this.setState({ showDDContent: true, ddEditClick: true }, () => {
             document.removeEventListener('click', this.closeDDContent);
         });
     }
@@ -604,7 +604,7 @@ class EventDropdown extends Component {
         let rawDateSplit = rawDate.split(/[- :T]/);
         let t = rawDateSplit.map(item => parseInt(item, 10));
 
-        return (new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])));
+        return (new Date(Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5])));
     }
 
     // Function to return a full DateTime string based on separate date and time
@@ -626,12 +626,12 @@ class EventDropdown extends Component {
 
     // Handles change and saves info within any text box
     handleChange(event) {
-        return this.setState({[event.target.name]: event.target.value});
+        return this.setState({ [event.target.name]: event.target.value });
     }
 
     // Handler function for change in the DatePicker
     handleDateChange(date) {
-        this.setState({tempDate: date});
+        this.setState({ tempDate: date });
     }
 
     // Handler function for change in start time
@@ -648,13 +648,13 @@ class EventDropdown extends Component {
 
     // Handler function for change in end time
     handleEndTimeChange(time) {
-        this.setState({tempEndTime: time});
+        this.setState({ tempEndTime: time });
     }
 
     // Handler function for pressing 'delete' button
     handleDeleteClick(event) {
         event.preventDefault();
-        this.setState({deleteClick: true});
+        this.setState({ deleteClick: true });
     }
 
     // Handler function for pressing 'CONFIRM DELETE' button
@@ -731,11 +731,11 @@ class EventDropdown extends Component {
                     // - user is over daily hour limit
                     // - user is over weekly hour limit
                     if (conflict > 0) {
-                        this.setState({dateConflict: true});
+                        this.setState({ dateConflict: true });
                     } else if (dailyOver > 0 && this.state.userClass !== 1) {
-                        this.setState({dailyConflict: true})
+                        this.setState({ dailyConflict: true })
                     } else if (weeklyOver > 0 && this.state.userClass !== 1) {
-                        this.setState({weeklyConflict: true})
+                        this.setState({ weeklyConflict: true })
                     } else {
                         // If event edits are valid -> make changes to event
                         // Send: new info for event
@@ -767,156 +767,156 @@ class EventDropdown extends Component {
     }
 
     render() {
-        return(
+        return (
             // The shown portion of the individual events
-            <div className='dd-list-container' style={{'background': this.state.background}}>
-            {
-                !this.state.showPastRes && this.state.previous ? (null) : (
-                    <div>
-                        {/* Shows information regarding the events */}
-                        <div className = 'dd-list-header' onClick={this.showDDContent}>
-                            <div className = 'event-item'>
-                                <div>{this.state.room_name}</div>
-                            </div>
-                            <div className = 'event-item'>
-                                <div>{this.state.startDate}</div>
-                            </div>
-                            <div className = 'event-item'>
-                                <div>{this.state.startTime} - {this.state.endTime}</div>
-                            </div>
-                            <div className = 'event-item'>
-                                <div>{this.state.title}</div>
-                            </div>
-                            <div className = 'event-item'>
-                                <div>{this.state.team_num}</div>
-                            </div>
-                            <div className = 'event-item'>
-                                <div>{this.state.last_name}, {this.state.first_name}</div>
-                            </div>
-                        </div>
-                        {
-                            // All extra information displayed when an event is clicked
-                            this.state.showDDContent ? (
-                                <div className = 'dd-list-content' ref={(element) => {this.dropdownMenu = element;}}>
-
-                                    <div className = 'dd-list-items'>
-                                        Description: {this.state.description}
-                                    </div>
-                                    <div className = 'dd-list-items'>
-                                        NetID: {this.state.netID}
-                                    </div>
-                                    <div className = 'dd-list-items'>
-                                        Course: {this.state.course}
-                                    </div>
-                                    <div className = 'dd-list-items'>
-                                        Email: {this.state.email}
-                                    </div>
-                                    {
-                                        !this.state.previous ? (
-                                            !this.state.ddEditClick ? (
-                                                <button className = 'dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
-                                            ) : (
-                                                // Form that is shown when the 'Edit' button is clicked
-                                                <div className = 'dd-form-content'>
-                                                    <form className = 'dd-edit-form' onSubmit={this.handleSubmit}>
-                                                        <label className = 'dd-edit-item'>
-                                                            Title:
-                                                            <input name = 'tempTitle' type="text" value={this.state.tempTitle} onChange={this.handleChange} />
-                                                        </label>
-                                                        <label className = 'dd-edit-item'>
-                                                            Description:
-                                                            <input name = 'tempDescription' type="text" value={this.state.tempDescription} onChange={this.handleChange} />
-                                                        </label>
-                                                        <label className = 'dd-edit-item'>
-                                                            Date :
-                                                            <DatePicker
-                                                                name = 'tempStartDate'
-                                                                selected={this.state.tempDate}
-                                                                onChange={this.handleDateChange}
-                                                                timeIntervals={30}
-                                                                dateFormat="MMMM d, yyyy"
-                                                                timeCaption="Start"
-                                                            />
-                                                        </label>
-                                                        <label className = 'dd-edit-item'>
-                                                            Start Time :
-                                                            <DatePicker
-                                                                name = 'tempStartTime'
-                                                                selected={this.state.tempStartTime}
-                                                                onChange={this.handleStartTimeChange}
-                                                                showTimeSelect
-                                                                showTimeSelectOnly
-                                                                timeIntervals={30}
-                                                                dateFormat="h:mm aa"
-                                                                timeCaption="Start"
-                                                            />
-                                                        </label>
-                                                        <label className = 'dd-edit-item'>
-                                                            End Time :
-                                                            <DatePicker
-                                                                name = 'tempEndTime'
-                                                                selected={this.state.tempEndTime}
-                                                                onChange={this.handleEndTimeChange}
-                                                                showTimeSelect
-                                                                showTimeSelectOnly
-                                                                minTime={this.state.minTime}
-                                                                maxTime={this.state.maxTime}
-                                                                timeIntervals={30}
-                                                                dateFormat="h:mm aa"
-                                                                timeCaption="End"
-                                                            />
-                                                        </label>
-                                                        <input type="submit" value="Submit" />
-                                                        {
-                                                            // Toggle between 'Delete' and 'CONFIRM DELETE'
-                                                            !this.state.deleteClick ? (
-                                                                <button onClick={this.handleDeleteClick}>Delete</button>
-                                                            ) : (
-                                                                <button onClick={this.handleDeleteConfirm} style={{'color':'white', 'background':'red'}}>CONFIRM DELETE</button>
-                                                            )
-                                                        }
-                                                    </form>
-                                                    {/* Display any conflicts encountered */}
-                                                    {
-                                                        this.state.dateConflict ? (
-                                                            <div id='date-conflict-error' style={{'color':'red'}}>
-                                                                Date conflicts with another event
-                                                            </div>
-                                                        ) : null
-                                                    }
-                                                    {
-                                                        this.state.weeklyConflict ? (
-                                                            <div id = 'weekly-hour-error' style={{'color':'red'}}>
-                                                                Your weekly hour limit has been reached
-                                                            </div>
-                                                        ) : null
-                                                    }
-                                                    {
-                                                        this.state.dailyConflict ? (
-                                                            <div id = 'daily-hour-error' style={{'color':'red'}}>
-                                                                Your daily hour limit has been reached
-                                                            </div>
-                                                        ) : null
-                                                    }
-                                                    {
-                                                        this.state.invalidSub ? (
-                                                            <div id = 'invalid-submission-error' style={{'color':'red'}}>
-                                                                Invalid submission
-                                                            </div>
-                                                        ) : null
-                                                    }
-                                                    <button className = 'dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
-                                                </div>
-                                            )
-                                        ) : ( null )
-                                    }
-
+            <div className='dd-list-container' style={{ 'background': this.state.background }}>
+                {
+                    !this.state.showPastRes && this.state.previous ? (null) : (
+                        <div>
+                            {/* Shows information regarding the events */}
+                            <div className='dd-list-header' onClick={this.showDDContent}>
+                                <div className='event-item'>
+                                    <div>{this.state.room_name}</div>
                                 </div>
-                            ) : ( null )
-                        }
-                    </div>
-                )
-            }
+                                <div className='event-item'>
+                                    <div>{this.state.startDate}</div>
+                                </div>
+                                <div className='event-item'>
+                                    <div>{this.state.startTime} - {this.state.endTime}</div>
+                                </div>
+                                <div className='event-item'>
+                                    <div>{this.state.title}</div>
+                                </div>
+                                <div className='event-item'>
+                                    <div>{this.state.team_num}</div>
+                                </div>
+                                <div className='event-item'>
+                                    <div>{this.state.last_name}, {this.state.first_name}</div>
+                                </div>
+                            </div>
+                            {
+                                // All extra information displayed when an event is clicked
+                                this.state.showDDContent ? (
+                                    <div className='dd-list-content' ref={(element) => { this.dropdownMenu = element; }}>
+
+                                        <div className='dd-list-items'>
+                                            Description: {this.state.description}
+                                        </div>
+                                        <div className='dd-list-items'>
+                                            NetID: {this.state.netID}
+                                        </div>
+                                        <div className='dd-list-items'>
+                                            Course: {this.state.course}
+                                        </div>
+                                        <div className='dd-list-items'>
+                                            Email: {this.state.email}
+                                        </div>
+                                        {
+                                            !this.state.previous ? (
+                                                !this.state.ddEditClick ? (
+                                                    <button className='dd-edit-button' onClick={this.ddEditClick}>EDIT</button>
+                                                ) : (
+                                                        // Form that is shown when the 'Edit' button is clicked
+                                                        <div className='dd-form-content'>
+                                                            <form className='dd-edit-form' onSubmit={this.handleSubmit}>
+                                                                <label className='dd-edit-item'>
+                                                                    Title:
+                                                            <input name='tempTitle' type="text" value={this.state.tempTitle} onChange={this.handleChange} />
+                                                                </label>
+                                                                <label className='dd-edit-item'>
+                                                                    Description:
+                                                            <input name='tempDescription' type="text" value={this.state.tempDescription} onChange={this.handleChange} />
+                                                                </label>
+                                                                <label className='dd-edit-item'>
+                                                                    Date :
+                                                            <DatePicker
+                                                                        name='tempStartDate'
+                                                                        selected={this.state.tempDate}
+                                                                        onChange={this.handleDateChange}
+                                                                        timeIntervals={30}
+                                                                        dateFormat="MMMM d, yyyy"
+                                                                        timeCaption="Start"
+                                                                    />
+                                                                </label>
+                                                                <label className='dd-edit-item'>
+                                                                    Start Time :
+                                                            <DatePicker
+                                                                        name='tempStartTime'
+                                                                        selected={this.state.tempStartTime}
+                                                                        onChange={this.handleStartTimeChange}
+                                                                        showTimeSelect
+                                                                        showTimeSelectOnly
+                                                                        timeIntervals={30}
+                                                                        dateFormat="h:mm aa"
+                                                                        timeCaption="Start"
+                                                                    />
+                                                                </label>
+                                                                <label className='dd-edit-item'>
+                                                                    End Time :
+                                                            <DatePicker
+                                                                        name='tempEndTime'
+                                                                        selected={this.state.tempEndTime}
+                                                                        onChange={this.handleEndTimeChange}
+                                                                        showTimeSelect
+                                                                        showTimeSelectOnly
+                                                                        minTime={this.state.minTime}
+                                                                        maxTime={this.state.maxTime}
+                                                                        timeIntervals={30}
+                                                                        dateFormat="h:mm aa"
+                                                                        timeCaption="End"
+                                                                    />
+                                                                </label>
+                                                                <input type="submit" value="Submit" />
+                                                                {
+                                                                    // Toggle between 'Delete' and 'CONFIRM DELETE'
+                                                                    !this.state.deleteClick ? (
+                                                                        <button onClick={this.handleDeleteClick}>Delete</button>
+                                                                    ) : (
+                                                                            <button onClick={this.handleDeleteConfirm} style={{ 'color': 'white', 'background': 'red' }}>CONFIRM DELETE</button>
+                                                                        )
+                                                                }
+                                                            </form>
+                                                            {/* Display any conflicts encountered */}
+                                                            {
+                                                                this.state.dateConflict ? (
+                                                                    <div id='date-conflict-error' style={{ 'color': 'red' }}>
+                                                                        Date conflicts with another event
+                                                                    </div>
+                                                                ) : null
+                                                            }
+                                                            {
+                                                                this.state.weeklyConflict ? (
+                                                                    <div id='weekly-hour-error' style={{ 'color': 'red' }}>
+                                                                        Your weekly hour limit has been reached
+                                                                    </div>
+                                                                ) : null
+                                                            }
+                                                            {
+                                                                this.state.dailyConflict ? (
+                                                                    <div id='daily-hour-error' style={{ 'color': 'red' }}>
+                                                                        Your daily hour limit has been reached
+                                                                    </div>
+                                                                ) : null
+                                                            }
+                                                            {
+                                                                this.state.invalidSub ? (
+                                                                    <div id='invalid-submission-error' style={{ 'color': 'red' }}>
+                                                                        Invalid submission
+                                                                    </div>
+                                                                ) : null
+                                                            }
+                                                            <button className='dd-cancel-button' onClick={this.ddCancelClick}>CANCEL</button>
+                                                        </div>
+                                                    )
+                                            ) : (null)
+                                        }
+
+                                    </div>
+                                ) : (null)
+                            }
+                        </div>
+                    )
+                }
             </div>
         );
     }
