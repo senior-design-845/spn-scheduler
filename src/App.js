@@ -28,7 +28,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        let colors = ['#e6194b', '#3cb44b', '#14bfb1', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#9a6324', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075']
+        let colors = ['#f98866', '#ff420e', '#80bd9e', '#89da59', '#ffbb00', '#c4dfe6', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#9a6324', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075']
         //var colors = [ '#ce93d8', '#8e24aa', '#ab47bc', '#64b5f6', '#2196f3', '#1976d2', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#9a6324', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075' ]
         let i = 0;
 
