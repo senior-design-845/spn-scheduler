@@ -703,7 +703,7 @@ class RoomDropdown extends Component {
                                         />
                                     </label>
                                     <label className='dd-edit-item'>
-                                        Room Class:a
+                                        Room Class:
                                         <input name='roomClass' type="number" min={1} value={this.state.roomClass} onChange={this.handleChange} />
                                     </label>
                                     <input id='submit-button' type="submit" value="Submit" />
